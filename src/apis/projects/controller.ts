@@ -4,22 +4,36 @@ import { tokenPayloadService } from '../user/service'
 
 export const projectsController = async (req: Request, res: Response) => {
     const payload = tokenPayloadService(req)
-    const companyId = payload.role === 'ADMIN' || payload.role === 'SUPERADMIN' ? req.body.companyId : payload.companyId
+    let companyId = req.body.companyId
+
+    if ((payload.role === 'ADMIN' || payload.role === 'SUPERADMIN') && companyId) {
+        companyId = Number(companyId)
+    } else {
+        companyId = payload.companyId
+    }
 
     const projects = await projectsService({ companyId })
     return res.json({
         status: 'success',
+
         projects
     })
 }
 
 export const createProjectController = async (req: Request, res: Response) => {
     const payload = tokenPayloadService(req)
-    const area = req.body.area
-    const companyId = req.body.companyId
+    const area = Number(req.body.area)
+    const companyId = payload.companyId
     const createdBy = payload.userId
     const projectName = req.body.projectName
     const address = req.body.address
+
+    if (!companyId) {
+        return res.json({
+            status: 'error',
+            message: 'Company ID is required'
+        })
+    }
 
     const p = await createProjectService({ area, companyId, createdBy, projectName, address })
     if (!p) {
@@ -38,8 +52,8 @@ export const createProjectController = async (req: Request, res: Response) => {
 export const updateProjectController = async (req: Request, res: Response) => {
     const payload = tokenPayloadService(req)
     const projectId = Number(req.body.projectId)
-    const area = req.body.area
-    const companyId = req.body.companyId
+    const area = Number(req.body.area)
+    const companyId = Number(req.body.companyId)
     const createdBy = payload.userId
     const projectName = req.body.projectName
     const address = req.body.address
