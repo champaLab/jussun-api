@@ -13,6 +13,7 @@ import {
 } from './service'
 import { findOneCompanyService } from '../company/service'
 import { company } from '@prisma/client'
+import { dateFormatter } from '../../utils/dateFormat'
 
 export const loginController = async (req: Request, res: Response) => {
     const tel = req.body.tel
@@ -127,6 +128,8 @@ export const meController = async (req: Request, res: Response) => {
 export const userController = async (req: Request, res: Response) => {
     const payload = tokenPayloadService(req)
     const key = req.body.key
+    const page = req.body.page ? Number(req.body.page) : 1
+
     let companyId = req.body.companyId
     if ((payload.role === 'ADMIN' || payload.role === 'SUPERADMIN') && companyId) {
         companyId = Number(companyId)
@@ -134,7 +137,13 @@ export const userController = async (req: Request, res: Response) => {
         companyId = payload.companyId
     }
 
-    const users = await findManyUserService({ companyId, key })
+    const u = await findManyUserService({ companyId, key, page })
+
+    const users = u.map((user) => ({
+        ...user,
+        createdAt: dateFormatter(user.createdAt)
+    }))
+
     return res.json({
         status: 'success',
         users

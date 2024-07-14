@@ -32,6 +32,6 @@ export default {
     API_BOT_URL: `${process.env.API_BOT_URL}`,
     QR_ENCRYPTION_KEY: `${process.env.QR_ENCRYPTION_KEY}`,
     CONTACT_NUMBER: `${process.env.CONTACT_NUMBER}`,
-    ROW_PER_PAGE: Number(`${process.env.ROW_PER_PAGE}`),
+    ROW_PER_PAGE: Number(`${process.env.ROW_PER_PAGE ?? 0}`),
     EXCEL_PASSCODE: `${process.env.EXCEL_PASSCODE}`
 }

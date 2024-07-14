@@ -1,13 +1,10 @@
 import dayjs from 'dayjs'
+import 'dayjs/locale/lo'
+import updateLocale from 'dayjs/plugin/updateLocale'
+dayjs.extend(updateLocale)
 
 export function dateFormatService(date: string) {
     return dayjs(date).format('YYYY-MM-DD')
-}
-
-export function dateFormatter(date: Date | any): string {
-    const formatted = dayjs(date).format('YYYY-MM-DD')
-    if (formatted.includes('Invalid')) return ''
-    return formatted
 }
 
 //
@@ -23,4 +20,8 @@ export function dateTimeFormat(date: Date | string | any): string {
 
 export const today = (date = new Date()) => {
     return dayjs(dayjs(date).add(7, 'hours').format()).toISOString()
+}
+
+export const dateFormatter = (date: Date | null) => {
+    return dayjs(date).locale('lo').format('DD MMM YYYY HH:mm')
 }

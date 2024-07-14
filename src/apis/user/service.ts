@@ -3,23 +3,25 @@ import prismaClient from '../../prisma'
 import { company, users } from '@prisma/client'
 import { TUserCreateModel, TUserPayloadModel } from './type'
 import { Request } from 'express'
+import env from '../../env'
 
-export const findManyUserService = async (data: { companyId: number; key: string | null }) => {
-    const filter: any = { companyId: data.companyId }
-
-    if (data.key) {
-        filter.OR = [{ fullName: { contains: data.key } }, { lastName: { contains: data.key } }]
-    }
-
-    console.log(data)
-    console.log(filter)
+export const findManyUserService = async (data: { companyId: number; key: string | null; page: number }) => {
+    const skip = data.key ? 1 : (data.page - 1) * env.ROW_PER_PAGE
+    const take = env.ROW_PER_PAGE
 
     try {
-        const user = await prismaClient.users.findMany({ where: filter })
+        const user = await prismaClient.users.findMany({
+            where: {
+                companyId: data.companyId,
+                AND: data.key !== null && data.key !== '' ? [{ fullName: data.key }, { lastName: { contains: data.key } }] : []
+            },
+            skip,
+            take
+        })
         return user
     } catch (err) {
         logger.error(err)
-        return null
+        return []
     }
 }
 
