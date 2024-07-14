@@ -4,11 +4,12 @@ import prismaClient from '../../prisma'
 import dayjs from 'dayjs'
 import { ProjectModel } from './type'
 
-export const projectsService = async (data: { companyId: number }) => {
+export const projectsService = async (data: { companyId: number; key: string | null }) => {
     try {
         const p = await prismaClient.projects.findMany({
             where: {
-                companyId: data.companyId
+                companyId: data.companyId,
+                projectName: data.key ? { contains: data.key } : {}
             }
         })
         return p
