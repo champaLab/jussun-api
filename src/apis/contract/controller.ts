@@ -8,10 +8,10 @@ export const ContractController = async (req: Request, res: Response) => {
     const payload = tokenPayloadService(req)
     const projectId = req.body.projectId
 
-    const Contract = await contractService({ projectId })
+    const contracts = await contractService({ projectId })
     return res.json({
         status: 'success',
-        Contract
+        contracts
     })
 }
 
