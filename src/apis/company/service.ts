@@ -22,6 +22,7 @@ export const companiesService = async (data: { companyId: number }) => {
 }
 
 export const createCompanyService = async (data: CompanyModel) => {
+    console.log({data})
     try {
         const p = await prismaClient.company.create({
             data: {

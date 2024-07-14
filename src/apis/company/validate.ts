@@ -10,6 +10,7 @@ export const valCompanyCreate = [
 
 export const valCompanyUpdate = [
     body('companyId').not().isEmpty().withMessage('ກະລຸນາເລືອກ ບໍລິສັດ'),
+    body('companyName').not().isEmpty().withMessage('ກະລຸນາປ້ອນຊື່ບໍລິສັດ'),
     body('tel').not().isEmpty().withMessage('ກະລຸນາປ້ອນ ໝາຍເລກໂທລະສັບ'),
     body('address').not().isEmpty().withMessage('ກະລຸນາປ້ອນ ທີ່ຢູ່ ບໍລິສັດ')
 ]
