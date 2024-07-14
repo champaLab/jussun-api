@@ -6,6 +6,7 @@ export const projectsController = async (req: Request, res: Response) => {
     const payload = tokenPayloadService(req)
     let companyId = req.body.companyId
     const key = req.body.key
+    const page = req.body.page ? Number(req.body.page) : 1
 
     if ((payload.role === 'ADMIN' || payload.role === 'SUPERADMIN') && companyId) {
         companyId = Number(companyId)
@@ -13,10 +14,9 @@ export const projectsController = async (req: Request, res: Response) => {
         companyId = payload.companyId
     }
 
-    const projects = await projectsService({ companyId, key })
+    const projects = await projectsService({ companyId, key, page })
     return res.json({
         status: 'success',
-
         projects
     })
 }

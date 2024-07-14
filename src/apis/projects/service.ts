@@ -3,19 +3,36 @@ import logger from '../../configs/winston'
 import prismaClient from '../../prisma'
 import dayjs from 'dayjs'
 import { ProjectModel } from './type'
+import env from '../../env'
 
-export const projectsService = async (data: { companyId: number; key: string | null }) => {
+export const projectsService = async (data: { companyId: number; key: string | null; page: number }) => {
+    const skip = data.key ? 0 : (data.page - 1) * env.ROW_PER_PAGE
+    const take = env.ROW_PER_PAGE
+    const key = data.key ? `%${data.key}%` : null
+
     try {
-        const p = await prismaClient.projects.findMany({
-            where: {
-                companyId: data.companyId,
-                projectName: data.key ? { contains: data.key } : {}
-            }
-        })
+        if (!key) {
+            const p = await prismaClient.projects.findMany({
+                where: { companyId: data.companyId }
+            })
+            return p
+        }
+
+        const p = await prismaClient.$queryRaw`
+        SELECT p.* FROM projects p 
+        WHERE p.companyId = ${data.companyId} 
+        AND (
+            p.projectName LIKE ${key}  OR 
+            p.address LIKE ${key} 
+        ) ORDER BY p.createdAt DESC 
+        LIMIT ${take} OFFSET ${skip} 
+        `
         return p
     } catch (err) {
         logger.error(err)
         return []
+    } finally {
+        prismaClient.$disconnect()
     }
 }
 

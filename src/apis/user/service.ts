@@ -6,7 +6,7 @@ import { Request } from 'express'
 import env from '../../env'
 
 export const findManyUserService = async (data: { companyId: number; key: string | null; page: number }) => {
-    const skip = data.key ? 1 : (data.page - 1) * env.ROW_PER_PAGE
+    const skip = data.key ? 0 : (data.page - 1) * env.ROW_PER_PAGE
     const take = env.ROW_PER_PAGE
 
     try {
