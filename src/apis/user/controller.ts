@@ -126,9 +126,10 @@ export const meController = async (req: Request, res: Response) => {
 
 export const userController = async (req: Request, res: Response) => {
     const payload = tokenPayloadService(req)
+    const key = req.body.key
     const companyId = payload.role === 'ADMIN' || payload.role === 'SUPERADMIN' ? req.body.companyId : payload.companyId
 
-    const users = await findManyUserService({ companyId })
+    const users = await findManyUserService({ companyId, key })
     return res.json({
         status: 'success',
         users

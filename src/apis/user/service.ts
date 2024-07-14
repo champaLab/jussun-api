@@ -4,9 +4,15 @@ import { company, users } from '@prisma/client'
 import { TUserCreateModel, TUserPayloadModel } from './type'
 import { Request } from 'express'
 
-export const findManyUserService = async (data: { companyId: number }) => {
+export const findManyUserService = async (data: { companyId: number; key: string | null }) => {
+    const filter: any = { companyId: data.companyId }
+
+    if (data.key) {
+        filter.OR = [{ fullName: { contains: data.key } }, { lastName: { contains: data.key } }]
+    }
+
     try {
-        const user = await prismaClient.users.findMany({ where: { companyId: data.companyId } })
+        const user = await prismaClient.users.findMany({ where: filter })
         return user
     } catch (err) {
         logger.error(err)
