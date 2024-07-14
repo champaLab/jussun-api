@@ -21,8 +21,8 @@ router.post('/users/create', verify, valUserCreate, valResult, createUserControl
 router.post('/users/update', verify, valUserUpdate, valResult, updateUserController)
 
 router.post('/company', verify, companyController)
-router.post('/company/create', verify, valCompanyCreate, valResult, upload('company', true).single('file'), createCompanyController)
-router.post('/company/update', verify, valCompanyUpdate, valResult, upload('company', true).single('file'), updateCompanyController)
+router.post('/company/create', verify, upload('company', true).single('file'), valCompanyCreate, valResult, createCompanyController)
+router.post('/company/update', verify, upload('company', true).single('file'), valCompanyUpdate, valResult, updateCompanyController)
 
 router.post('/projects', verify, projectsController)
 router.post('/projects/create', verify, valProjectCreate, valResult, createProjectController)

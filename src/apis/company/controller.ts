@@ -5,7 +5,12 @@ import { getPhotoPath } from '../../utils/fileUrl'
 
 export const companyController = async (req: Request, res: Response) => {
     const payload = tokenPayloadService(req)
-    const companyId = payload.role === 'ADMIN' || payload.role === 'SUPERADMIN' ? req.body.companyId : payload.companyId
+    let companyId = req.body.companyId
+    if ((payload.role === 'ADMIN' || payload.role === 'SUPERADMIN') && companyId) {
+        companyId = req.body.companyId
+    } else {
+        companyId = payload.companyId
+    }
 
     const company = await companiesService({ companyId })
     return res.json({
@@ -18,10 +23,10 @@ export const createCompanyController = async (req: Request, res: Response) => {
     const payload = tokenPayloadService(req)
     const abbreviatedLetters = req.body.abbreviatedLetters
     const companyId = req.body.companyId
-    const createdBy = req.body.createdBy
+    const createdBy = payload.userId
     const address = req.body.address
     const companyName = req.body.companyName
-    const companyStatus = req.body.companyStatus
+    const companyStatus = req.body.companyStatus === "true"  
     const email = req.body.email
     const fax = req.body.fax
     const tel = req.body.tel
