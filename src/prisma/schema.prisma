@@ -1,0 +1,71 @@
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "mysql"
+  url      = env("PRISMA_DB_CONN")
+}
+
+/// This model or at least one of its fields has comments in the database, and requires an additional setup for migrations: Read more: https://pris.ly/d/database-comments
+model users {
+  userId     Int       @id @unique(map: "users_pk2") @default(autoincrement())
+  companyId  Int?
+  fullName   String    @db.VarChar(80)
+  lastName   String    @db.VarChar(80)
+  tel        String    @unique(map: "tel") @db.VarChar(8)
+  password   String    @db.VarChar(255)
+  role       String    @default("CUSTOMER") @db.VarChar(10)
+  userStatus Boolean   @default(true)
+  createdAt  DateTime? @default(now()) @db.DateTime(0)
+  updatedAt  DateTime? @db.DateTime(0)
+}
+
+model company {
+  companyId          Int       @id @unique(map: "company_pk2") @default(autoincrement())
+  companyName        String    @unique(map: "company_pk3") @db.VarChar(255)
+  logoPath           String    @db.VarChar(255)
+  fax                String?   @db.VarChar(20)
+  tel                String    @db.VarChar(8)
+  email              String?   @db.VarChar(60)
+  whatsapp           String?   @db.VarChar(8)
+  address            String    @db.VarChar(100)
+  abbreviatedLetters String?   @db.VarChar(20)
+  createdBy          Int
+  updatedBy          Int?
+  companyStatus      Boolean   @default(true)
+  createdAt          DateTime? @default(now()) @db.DateTime(0)
+  updatedAt          DateTime? @unique(map: "company_pk4") @db.DateTime(0)
+}
+
+/// This model or at least one of its fields has comments in the database, and requires an additional setup for migrations: Read more: https://pris.ly/d/database-comments
+model contracts {
+  contractId          Int       @id @unique(map: "contracts_pk2") @default(autoincrement())
+  companyId           Int
+  docId               String    @db.VarChar(15)
+  createdBy           Int
+  updatedBy           Int?
+  projectId           Int
+  price               Float
+  totalPrice          Float
+  currency            String    @default("LAK") @db.VarChar(10)
+  area                Float
+  numberOfInstallment Int       @default(1)
+  paidDate            Int
+  modeOfPayment       String    @default("monthly") @db.VarChar(10)
+  payInAdvance        Float?    @default(0)
+  createdAt           DateTime? @db.DateTime(0)
+  updatedAt           DateTime? @db.DateTime(0)
+}
+
+model projects {
+  projectId   Int       @id @unique(map: "projects_pk2") @default(autoincrement())
+  companyId   Int
+  area        Float
+  projectName String    @db.VarChar(200)
+  address     String?   @db.VarChar(100)
+  createdBy   Int
+  updatedBy   Int?
+  createdAt   DateTime? @default(now()) @db.DateTime(0)
+  updatedAt   DateTime? @db.DateTime(0)
+}

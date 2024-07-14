@@ -1,0 +1,24 @@
+FROM node:16-bullseye-slim
+
+WORKDIR /app
+
+RUN yarn global add pm2
+
+COPY package.json .
+COPY yarn.lock .
+
+RUN yarn
+
+COPY . .
+
+COPY .env.prod .env
+
+RUN yarn db
+
+RUN rm -rf .env*
+
+RUN yarn build
+
+EXPOSE 6443
+
+CMD ["yarn", "serve"]
