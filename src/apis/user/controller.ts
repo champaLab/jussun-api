@@ -14,6 +14,7 @@ import {
 import { findOneCompanyService } from '../company/service'
 import { company } from '@prisma/client'
 import { dateFormatter } from '../../utils/dateFormat'
+import { responseData } from '../../utils/functions'
 
 export const loginController = async (req: Request, res: Response) => {
     const tel = req.body.tel
@@ -138,11 +139,7 @@ export const userController = async (req: Request, res: Response) => {
     }
 
     const u = await findManyUserService({ companyId, key, page })
-
-    const users = u.map((user) => ({
-        ...user,
-        createdAt: dateFormatter(user.createdAt)
-    }))
+    const users = await responseData(u)
 
     return res.json({
         status: 'success',

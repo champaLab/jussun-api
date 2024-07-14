@@ -1,5 +1,6 @@
 import { Request } from 'express'
 import env from '../env'
+import { dateFormatter } from './dateFormat'
 
 export function delay(ms: number) {
     return new Promise((resolve) => {
@@ -72,4 +73,17 @@ export function getPassportUrl(req: Request, file: string) {
 export function getThumbnailUrl(req: Request, file: string) {
     const date = file.substring(0, 8)
     return `${req.protocol}://${req.headers.host}/article/${date}/${file}`
+}
+
+export const responseData = async (data: any) => {
+    const newData =
+        data.length == 0
+            ? []
+            : data.map((item) => ({
+                  ...item,
+                  createdAt: dateFormatter(item.createdAt),
+                  updatedAt: dateFormatter(item.updatedAt)
+              }))
+
+    return newData
 }

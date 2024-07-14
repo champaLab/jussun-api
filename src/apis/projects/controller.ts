@@ -1,6 +1,7 @@
 import { Request, Response } from 'express'
 import { createProjectService, projectsService, updateProjectService } from './service'
 import { tokenPayloadService } from '../user/service'
+import { responseData } from '../../utils/functions'
 
 export const projectsController = async (req: Request, res: Response) => {
     const payload = tokenPayloadService(req)
@@ -14,7 +15,9 @@ export const projectsController = async (req: Request, res: Response) => {
         companyId = payload.companyId
     }
 
-    const projects = await projectsService({ companyId, key, page })
+    const p = await projectsService({ companyId, key, page })
+    const projects = await responseData(p)
+
     return res.json({
         status: 'success',
         projects

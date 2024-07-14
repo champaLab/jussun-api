@@ -23,5 +23,6 @@ export const today = (date = new Date()) => {
 }
 
 export const dateFormatter = (date: Date | null) => {
-    return dayjs(date).locale('lo').format('DD MMM YYYY HH:mm')
+    if (date) return dayjs(date).locale('lo').format('DD MMM YYYY HH:mm')
+    return null
 }

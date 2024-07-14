@@ -5,23 +5,40 @@ import { TUserCreateModel, TUserPayloadModel } from './type'
 import { Request } from 'express'
 import env from '../../env'
 
-export const findManyUserService = async (data: { companyId: number; key: string | null; page: number }) => {
+export const findManyUserService = async (data: { companyId: number; key: string; page: number }) => {
     const skip = data.key ? 0 : (data.page - 1) * env.ROW_PER_PAGE
     const take = env.ROW_PER_PAGE
+    const key = data.key ? `%${data.key}%` : null
 
+    console.log('findManyUserService', { data })
     try {
-        const user = await prismaClient.users.findMany({
-            where: {
-                companyId: data.companyId,
-                AND: data.key !== null && data.key !== '' ? [{ fullName: data.key }, { lastName: { contains: data.key } }] : []
-            },
-            skip,
-            take
-        })
+        if (!key) {
+            const user = await prismaClient.users.findMany({
+                where: {
+                    companyId: data.companyId
+                },
+                skip,
+                take
+            })
+            return user
+        }
+
+        const user: any[] = await prismaClient.$queryRaw`
+            SELECT * FROM users 
+            WHERE 
+            companyId = ${data.companyId} AND (
+                fullName LIKE ${key} OR 
+                lastName LIKE ${key} 
+                OR tel LIKE ${key}
+            ) ORDER BY createdAt DESC
+             LIMIT ${take} OFFSET ${skip}        
+        `
         return user
     } catch (err) {
         logger.error(err)
         return []
+    } finally {
+        prismaClient.$disconnect()
     }
 }
 
