@@ -127,7 +127,12 @@ export const meController = async (req: Request, res: Response) => {
 export const userController = async (req: Request, res: Response) => {
     const payload = tokenPayloadService(req)
     const key = req.body.key
-    const companyId = payload.role === 'ADMIN' || payload.role === 'SUPERADMIN' ? req.body.companyId : payload.companyId
+    let companyId = req.body.companyId
+    if ((payload.role === 'ADMIN' || payload.role === 'SUPERADMIN') && companyId) {
+        companyId = Number(companyId)
+    } else {
+        companyId = payload.companyId
+    }
 
     const users = await findManyUserService({ companyId, key })
     return res.json({
@@ -143,8 +148,16 @@ export const createUserController = async (req: Request, res: Response) => {
     const lastName = req.body.lastName
     const pass = req.body.password
     const role = req.body.role
-    const companyId = role === 'CUSTOMER' ? null : payload.companyId
     const userStatus = true
+    let companyId: number | null = req.body.companyId
+
+    if (role === 'CUSTOMER') {
+        companyId = null
+    } else if (companyId && (payload.role === 'ADMIN' || payload.role === 'SUPERADMIN')) {
+        companyId = Number(companyId)
+    } else if (!companyId) {
+        companyId = payload.companyId
+    }
 
     const user = await findOneUserService({ tel })
     if (user) {
@@ -177,8 +190,18 @@ export const updateUserController = async (req: Request, res: Response) => {
     const lastName = req.body.lastName
     const pass = req.body.password != '' ? req.body.password : null
     const role = req.body.role
-    const companyId = role === 'CUSTOMER' ? null : payload.companyId
+
     const userStatus = req.body.userStatus
+
+    let companyId: number | null = req.body.companyId
+
+    if (role === 'CUSTOMER') {
+        companyId = null
+    } else if (companyId && (payload.role === 'ADMIN' || payload.role === 'SUPERADMIN')) {
+        companyId = Number(companyId)
+    } else if (!companyId) {
+        companyId = payload.companyId
+    }
 
     const user = await findOneUserService({ tel })
     if (user && user.userId !== userId) {
@@ -198,9 +221,6 @@ export const updateUserController = async (req: Request, res: Response) => {
             })
         }
     } else {
-        console.log(req.body)
-        console.log('-'.repeat(200))
-
         const updated = await updateUserService(userId, { tel, companyId, fullName, lastName, password: '', role, userStatus })
         if (!updated) {
             return res.json({

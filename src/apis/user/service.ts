@@ -11,6 +11,9 @@ export const findManyUserService = async (data: { companyId: number; key: string
         filter.OR = [{ fullName: { contains: data.key } }, { lastName: { contains: data.key } }]
     }
 
+    console.log(data)
+    console.log(filter)
+
     try {
         const user = await prismaClient.users.findMany({ where: filter })
         return user
