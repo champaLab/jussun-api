@@ -9,7 +9,7 @@ import { valLogin, valUserCreate, valUserUpdate } from './apis/user/validate'
 import { ContractController, createContractController, updateContractController } from './apis/contract/controller'
 import { valCompany, valCompanyCreate, valCompanyUpdate } from './apis/company/validate'
 import { valContract, valContractCreate, valContractUpdate } from './apis/contract/validate'
-import { valProject, valProjectCreate, valProjectUpdate } from './apis/projects/validate'
+import { valProjectCreate, valProjectUpdate } from './apis/projects/validate'
 import { valResult } from './utils/validateResult'
 
 const router = Router()
@@ -24,7 +24,7 @@ router.post('/company', verify, companyController)
 router.post('/company/create', verify, upload('company', true).single('file'), valCompanyCreate, valResult, createCompanyController)
 router.post('/company/update', verify, upload('company', true).single('file'), valCompanyUpdate, valResult, updateCompanyController)
 
-router.post('/projects', verify, valProject, valResult, projectsController)
+router.post('/projects', verify, projectsController)
 router.post('/projects/create', verify, valProjectCreate, valResult, createProjectController)
 router.post('/projects/update', verify, valProjectUpdate, valResult, updateProjectController)
 

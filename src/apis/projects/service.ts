@@ -38,6 +38,7 @@ export const createProjectService = async (data: ProjectModel) => {
 }
 
 export const updateProjectService = async (projectId: number, data: ProjectModel) => {
+    console.log({ data, projectId })
     try {
         const p = await prismaClient.projects.update({
             where: {
