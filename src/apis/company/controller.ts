@@ -2,7 +2,6 @@ import { Request, Response } from 'express'
 import { companiesService, createCompanyService, updateCompanyService } from './service'
 import { tokenPayloadService } from '../user/service'
 import { getPhotoPath } from '../../utils/fileUrl'
-import { responseData } from '../../utils/functions'
 import { dateFormatter } from '../../utils/dateFormat'
 import env from '../../env'
 
