@@ -10,5 +10,4 @@ export interface CompanyModel {
     fax: string | null
     email: string | null
     whatsapp: string | null
-    createBy: number
 }

@@ -2,6 +2,9 @@ import { Request, Response } from 'express'
 import { companiesService, createCompanyService, updateCompanyService } from './service'
 import { tokenPayloadService } from '../user/service'
 import { getPhotoPath } from '../../utils/fileUrl'
+import { responseData } from '../../utils/functions'
+import { dateFormatter } from '../../utils/dateFormat'
+import env from '../../env'
 
 export const companyController = async (req: Request, res: Response) => {
     const payload = tokenPayloadService(req)
@@ -13,9 +16,18 @@ export const companyController = async (req: Request, res: Response) => {
     }
 
     const company = await companiesService({ companyId })
+
+    const companyRes = company.map((item) => ({
+        ...item,
+        logoPath: item.logoPath ? `${env.HOST_IMAGE}${env.BASE_PATH}${item.logoPath}` : null,
+        logoOriginal: item.logoPath,
+        createdAt: dateFormatter(item.createdAt),
+        updatedAt: dateFormatter(item.updatedAt)
+    }))
+
     return res.json({
         status: 'success',
-        company
+        company: companyRes
     })
 }
 
@@ -26,13 +38,12 @@ export const createCompanyController = async (req: Request, res: Response) => {
     const createdBy = payload.userId
     const address = req.body.address
     const companyName = req.body.companyName
-    const companyStatus = req.body.companyStatus === "true"  
+    const companyStatus = req.body.companyStatus === 'true'
     const email = req.body.email
     const fax = req.body.fax
     const tel = req.body.tel
     const whatsapp = req.body.whatsapp
-    const createBy = payload.userId
-    const logoPath = getPhotoPath(req.file) ?? req.body.logoOri
+    const logoPath = getPhotoPath(req.file) ?? req.body.logoOriginal
 
     const p = await createCompanyService({
         abbreviatedLetters,
@@ -45,8 +56,7 @@ export const createCompanyController = async (req: Request, res: Response) => {
         fax,
         logoPath,
         tel,
-        whatsapp,
-        createBy
+        whatsapp
     })
     if (!p) {
         return res.json({
@@ -64,19 +74,18 @@ export const createCompanyController = async (req: Request, res: Response) => {
 export const updateCompanyController = async (req: Request, res: Response) => {
     const payload = tokenPayloadService(req)
     const abbreviatedLetters = req.body.abbreviatedLetters
-    const companyId = req.body.companyId
-    const createdBy = req.body.createdBy
+    const companyId = Number(req.body.companyId)
+    const createdBy = payload.userId
     const address = req.body.address
     const companyName = req.body.companyName
-    const companyStatus = req.body.companyStatus
+    const companyStatus = req.body.companyStatus === 'true'
     const email = req.body.email
     const fax = req.body.fax
     const tel = req.body.tel
     const whatsapp = req.body.whatsapp
-    const createBy = payload.userId
-    const logoPath = getPhotoPath(req.file) ?? req.body.logoOri
+    const logoPath = getPhotoPath(req.file) ?? req.body.logoOriginal
 
-    const p = await updateCompanyService(
+    const p = await updateCompanyService({
         abbreviatedLetters,
         companyId,
         createdBy,
@@ -87,9 +96,8 @@ export const updateCompanyController = async (req: Request, res: Response) => {
         fax,
         logoPath,
         tel,
-        whatsapp,
-        createBy
-    )
+        whatsapp
+    })
     if (!p) {
         return res.json({
             status: 'error',

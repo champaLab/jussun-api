@@ -22,7 +22,7 @@ export const companiesService = async (data: { companyId: number }) => {
 }
 
 export const createCompanyService = async (data: CompanyModel) => {
-    console.log({data})
+    console.log({ data })
     try {
         const p = await prismaClient.company.create({
             data: {
@@ -45,20 +45,8 @@ export const createCompanyService = async (data: CompanyModel) => {
     }
 }
 
-export const updateCompanyService = async (
-    data: CompanyModel,
-    companyId: any,
-    createdBy: any,
-    address: any,
-    companyName: any,
-    companyStatus: any,
-    email: any,
-    fax: any,
-    logoPath: any,
-    tel: any,
-    whatsapp: any,
-    createBy: number
-) => {
+export const updateCompanyService = async (data: CompanyModel) => {
+    console.log(data)
     try {
         const p = await prismaClient.company.update({
             where: {
@@ -80,6 +68,7 @@ export const updateCompanyService = async (
         return p
     } catch (err) {
         logger.error(err)
+        console.log(err)
         return null
     }
 }
