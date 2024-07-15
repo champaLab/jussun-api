@@ -3,12 +3,21 @@ import { Request, Response } from 'express'
 import { tokenPayloadService } from '../user/service'
 import { createContractService, contractService, updateContractService, finOneProjectService, updateProjectAreaService } from './service'
 import dayjs from 'dayjs'
+import { responseData } from '../../utils/functions'
 
 export const ContractController = async (req: Request, res: Response) => {
     const payload = tokenPayloadService(req)
-    const projectId = req.body.projectId
+    const projectId = req.body.projectId ? Number(req.body.projectId) : null
+    let companyId = payload.companyId
+    const key = req.body.key
+    const page = req.body.page ? Number(req.body.page) : 1
 
-    const contracts = await contractService({ projectId })
+    if (payload.role === 'ADMIN' || payload.role == 'SUPERADMIN') {
+        companyId = Number(req.body.companyId)
+    }
+
+    const contract = await contractService({ projectId, companyId, key, page })
+    const contracts = await responseData(contract)
     return res.json({
         status: 'success',
         contracts
@@ -30,7 +39,9 @@ export const createContractController = async (req: Request, res: Response) => {
     const paidDate = Number(req.body.paidDate)
     const price = Number(req.body.price)
     const projectId = Number(req.body.projectId)
-    const totalPrice = Number(req.body.totalPrice)
+    const customerIdOne = Number(req.body.customerIdOne)
+    const customerIdTwo = req.body.customerIdTwo ? Number(req.body.customerIdTwo) : null
+    const totalPrice = price * area
     const updatedAt = dayjs().toDate()
     const createdAt = dayjs().toDate()
 
@@ -43,14 +54,15 @@ export const createContractController = async (req: Request, res: Response) => {
         })
     }
 
-    if (project.area < area) {
+    const newArea = project.area - area
+    if (newArea < 0) {
         return res.json({
             status: 'error',
-            message: 'ເນື້ອທີ່ໂຄງການ ບໍ່ພຽງພໍ'
+            message: `ເນື້ອທີ່ໂຄງການ ບໍ່ພຽງພໍ, ເນື້ອທີ່ທັງໝົດ ${(project.area - area).toLocaleString()}`
         })
     }
 
-    const projectArea = updateProjectAreaService({ area: project.area - area, projectId })
+    const projectArea = await updateProjectAreaService({ area: newArea, projectId })
     if (!projectArea) {
         return res.json({
             status: 'error',
@@ -74,7 +86,9 @@ export const createContractController = async (req: Request, res: Response) => {
         projectId,
         totalPrice,
         updatedAt,
-        updatedBy
+        updatedBy,
+        customerIdOne,
+        customerIdTwo
     })
     if (!p) {
         return res.json({
@@ -91,10 +105,9 @@ export const createContractController = async (req: Request, res: Response) => {
 
 export const updateContractController = async (req: Request, res: Response) => {
     const payload = tokenPayloadService(req)
-    const area = Number(req.body.area)
     const companyId = Number(payload.companyId)
-    const contractId = req.body.contractId
-    const createdBy = payload.userId
+    const contractId = Number(req.body.contractId)
+    const createdBy = Number(req.body.createdBy)
     const updatedBy = payload.userId
     const currency = req.body.currency
     const docId = req.body.docId
@@ -104,9 +117,52 @@ export const updateContractController = async (req: Request, res: Response) => {
     const paidDate = Number(req.body.paidDate)
     const price = Number(req.body.price)
     const projectId = Number(req.body.projectId)
-    const totalPrice = Number(req.body.totalPrice)
+    const area = Number(req.body.area)
+    const oldProjectId = Number(req.body.oldProjectId)
+    const oldArea = Number(req.body.oldArea)
+    const totalPrice = price * area
     const updatedAt = dayjs().toDate()
     const createdAt = dayjs().toDate()
+    const customerIdOne = Number(req.body.customerIdOne)
+    const customerIdTwo = req.body.customerIdTwo ? Number(req.body.customerIdTwo) : null
+
+    if (oldArea != area || oldProjectId != projectId) {
+        const projectOld = await finOneProjectService({ projectId: oldProjectId })
+        const projectNew = await finOneProjectService({ projectId })
+        if (!projectOld || !projectNew) {
+            return res.json({
+                status: 'error',
+                message: 'ບໍ່ພົບຂໍ້ມູນ ໂຄງການ'
+            })
+        }
+
+        if (oldProjectId === projectId) {
+            const newAre = projectOld.area + oldArea - area
+            if (newAre < 0) {
+                return res.json({
+                    status: 'error',
+                    message: `ເນື້ອທີ່ໂຄງການ ບໍ່ພຽງພໍ, ເນື້ອທີ່ທັງໝົດ ${(projectOld.area - area).toLocaleString()}`
+                })
+            }
+
+            await updateProjectAreaService({ area: newAre, projectId })
+        } else if (oldProjectId !== projectId) {
+            const _newAre = projectNew.area - area
+            const _oldArea = projectOld.area + oldArea
+
+            if (_newAre < 0) {
+                return res.json({
+                    status: 'error',
+                    message: `ເນື້ອທີ່ໂຄງການ ທີ່ທ່ານເລືອກ ບໍ່ພຽງພໍ, ເນື້ອທີ່ທັງໝົດ ${(projectNew.area - area).toLocaleString()}`
+                })
+            }
+            console.log({ _newAre, _oldArea })
+            console.log('-'.repeat(200))
+
+            await updateProjectAreaService({ area: _newAre, projectId })
+            await updateProjectAreaService({ area: _oldArea, projectId: oldProjectId })
+        }
+    }
 
     const p = await updateContractService({
         area,
@@ -124,7 +180,9 @@ export const updateContractController = async (req: Request, res: Response) => {
         projectId,
         totalPrice,
         updatedAt,
-        updatedBy
+        updatedBy,
+        customerIdOne,
+        customerIdTwo
     })
     if (!p) {
         return res.json({

@@ -144,3 +144,21 @@ export const tokenPayloadService = (req: Request): TUserPayloadModel => {
     const data = req.tokenPayload
     return data
 }
+
+export const findUserService = async (data: { key: string }) => {
+    try {
+        const user = await prismaClient.users.findFirst({
+            where: {
+                OR: [{ tel: data.key }, { fullName: { contains: data.key } }, { lastName: { contains: data.key } }]
+            }
+        })
+
+        return user
+    } catch (err) {
+        logger.error(err)
+        console.error(err)
+        return null
+    } finally {
+        prismaClient.$disconnect()
+    }
+}

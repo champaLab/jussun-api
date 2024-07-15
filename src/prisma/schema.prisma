@@ -52,9 +52,11 @@ model contracts {
   area                Float
   numberOfInstallment Int       @default(1)
   paidDate            Int
-  modeOfPayment       String    @default("monthly") @db.VarChar(10)
+  modeOfPayment       String    @default("monthly") @db.VarChar(20)
   payInAdvance        Float?    @default(0)
-  createdAt           DateTime? @db.DateTime(0)
+  customerIdOne       Int
+  customerIdTwo       Int?
+  createdAt           DateTime? @default(now()) @db.DateTime(0)
   updatedAt           DateTime? @db.DateTime(0)
 }
 

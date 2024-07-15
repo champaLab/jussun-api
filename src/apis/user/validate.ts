@@ -38,3 +38,5 @@ export const valUserUpdate = [
             return true
         })
 ]
+
+export const valUserFind = [body('key').not().isEmpty().withMessage('ກະລຸນາປ້ອນ ຄຳຄົ້ນຫາ')]

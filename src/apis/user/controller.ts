@@ -6,6 +6,7 @@ import {
     createUserService,
     findManyUserService,
     findOneUserService,
+    findUserService,
     mergePayloadUserService,
     tokenPayloadService,
     updateUserAndPasswordService,
@@ -239,5 +240,24 @@ export const updateUserController = async (req: Request, res: Response) => {
     return res.json({
         status: 'success',
         message: 'ແກ້ໄຂຂໍ້ມູນຜູ້ໃຊ້ງານ ສຳເລັດແລ້ວ'
+    })
+}
+
+export const findOneUserController = async (req: Request, res: Response) => {
+    const key = req.body.key
+
+    const user = await findUserService({ key })
+    if (!user) {
+        return res.json({
+            status: 'error',
+            message: 'ບໍ່ພົບຂໍ້ມູນທີ່ຄົ້ນຫາ',
+            user: null
+        })
+    }
+
+    return res.json({
+        status: 'success',
+        message: 'ພົບຂໍ້ມູນ 1 ລາຍການ',
+        user
     })
 }
