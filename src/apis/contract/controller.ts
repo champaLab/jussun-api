@@ -44,6 +44,7 @@ export const createContractController = async (req: Request, res: Response) => {
     const totalPrice = price * area
     const updatedAt = dayjs().toDate()
     const createdAt = dayjs().toDate()
+    const contractStatus = 'ACTIVE'
 
     const project = await finOneProjectService({ projectId })
 
@@ -88,7 +89,11 @@ export const createContractController = async (req: Request, res: Response) => {
         updatedAt,
         updatedBy,
         customerIdOne,
-        customerIdTwo
+        customerIdTwo,
+        contractStatus,
+        cancelAt: null,
+        cancelBy: null,
+        reason: null
     })
     if (!p) {
         return res.json({
@@ -125,6 +130,11 @@ export const updateContractController = async (req: Request, res: Response) => {
     const createdAt = dayjs().toDate()
     const customerIdOne = Number(req.body.customerIdOne)
     const customerIdTwo = req.body.customerIdTwo ? Number(req.body.customerIdTwo) : null
+
+    const contractStatus = req.body.contractStatus
+    const cancelAt = req.body.cancelAt
+    const cancelBy = req.body.cancelBy
+    const reason = req.body.reason
 
     if (oldArea != area || oldProjectId != projectId) {
         const projectOld = await finOneProjectService({ projectId: oldProjectId })
@@ -182,7 +192,11 @@ export const updateContractController = async (req: Request, res: Response) => {
         updatedAt,
         updatedBy,
         customerIdOne,
-        customerIdTwo
+        customerIdTwo,
+        cancelAt,
+        cancelBy,
+        reason,
+        contractStatus
     })
     if (!p) {
         return res.json({
