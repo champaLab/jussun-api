@@ -7,7 +7,7 @@
     "scripts": {
         "dev": "nodemon --delay 800ms src/index.ts",
         "start": "ts-node src/index.ts",
-        "serve": "pm2 start ./dist/index.js --name jutsun",
+        "serve": "pm2 start ./dist/index.js --name jutsun && pm2 save",
         "serv": "yarn serve",
         "git:pull": "git fetch --all && git merge --no-edit origin/master",
         "git:reset": "git reset --hard origin/master",
@@ -53,7 +53,7 @@
         "xlsx": "^0.18.5"
     },
     "devDependencies": {
-        "@prisma/client": "^5.16.2",
+        "@prisma/client": "^5.17.0",
         "@types/cls-hooked": "^4.3.6",
         "@types/cors": "^2.8.17",
         "@types/dotenv": "^8.2.0",
@@ -68,7 +68,7 @@
         "@types/uuid": "^10.0.0",
         "@types/xlsx": "^0.0.36",
         "nodemon": "^3.1.4",
-        "prisma": "^5.16.2",
+        "prisma": "^5.17.0",
         "typescript": "^5.5.3",
         "winston-daily-rotate-file": "^5.0.0"
     }

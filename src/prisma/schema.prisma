@@ -49,6 +49,7 @@ model contracts {
   price               Float
   totalPrice          Float
   currency            String    @default("LAK") @db.VarChar(10)
+  contractStatus      String    @default("ACTIVE") @db.VarChar(20)
   area                Float
   numberOfInstallment Int       @default(1)
   paidDate            Int
@@ -58,6 +59,9 @@ model contracts {
   customerIdTwo       Int?
   createdAt           DateTime? @default(now()) @db.DateTime(0)
   updatedAt           DateTime? @db.DateTime(0)
+  cancelAt            DateTime? @db.DateTime(0)
+  cancelBy            Int?
+  reason              String?   @db.VarChar(255)
 }
 
 model projects {
@@ -70,4 +74,50 @@ model projects {
   updatedBy   Int?
   createdAt   DateTime? @default(now()) @db.DateTime(0)
   updatedAt   DateTime? @db.DateTime(0)
+}
+
+model exchange {
+  exchangeId Int       @id @unique(map: "exchange_pk2") @default(autoincrement())
+  companyId  Int
+  lak        Float
+  thb        Float
+  usd        Float
+  createdBy  Int
+  updatedBy  Int?
+  createdAt  DateTime? @default(now()) @db.DateTime(0)
+  updatedAt  DateTime? @db.DateTime(0)
+  deletedAt  DateTime? @db.DateTime(0)
+}
+
+/// This model or at least one of its fields has comments in the database, and requires an additional setup for migrations: Read more: https://pris.ly/d/database-comments
+model invoice {
+  invoiceId     Int       @id @unique(map: "invoice_pk2") @default(autoincrement())
+  amount        Float
+  fines         Float?    @default(0)
+  contractId    Int
+  currency      String    @db.VarChar(30)
+  invoiceStatus String    @default("PENDING") @db.VarChar(20)
+  paidDate      DateTime? @db.DateTime(0)
+  createdAt     DateTime? @default(now()) @db.DateTime(0)
+  updatedAt     DateTime? @db.DateTime(0)
+}
+
+/// This model or at least one of its fields has comments in the database, and requires an additional setup for migrations: Read more: https://pris.ly/d/database-comments
+model transaction {
+  transactionId   Int       @id @unique(map: "transaction_pk2")
+  ip              String    @db.VarChar(200)
+  amount          Float
+  remark          String?   @db.VarChar(255)
+  currency        String    @db.VarChar(5)
+  pamentMethod    String    @db.VarChar(50)
+  transactionUUID String?   @db.VarChar(50)
+  contractId      Int
+  currencyLAK     Float
+  currencyTHB     Float
+  currencyUSD     Float
+  createdBy       Int?
+  updatedBy       Int?
+  createdAt       DateTime? @default(now()) @db.DateTime(0)
+  updatedAt       DateTime? @db.DateTime(0)
+  deletedAt       DateTime? @db.DateTime(0)
 }

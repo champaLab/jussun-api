@@ -1,0 +1,9 @@
+# pull data from github
+git pull --no-rebase
+
+#Create new branch
+git checkout -b feat/...
+
+#Merge data from another branch
+git merge  Branch-name --no-ff
+

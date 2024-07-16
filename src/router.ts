@@ -11,6 +11,8 @@ import { valCompany, valCompanyCreate, valCompanyUpdate } from './apis/company/v
 import { valContract, valContractCreate, valContractUpdate } from './apis/contract/validate'
 import { valProjectCreate, valProjectUpdate } from './apis/projects/validate'
 import { valResult } from './utils/validateResult'
+import { findManyPaidToDayController } from './apis/payment/controller'
+import { valInvoicePaidToday } from './apis/payment/validate'
 
 const router = Router()
 
@@ -32,5 +34,8 @@ router.post('/projects/update', verify, valProjectUpdate, valResult, updateProje
 router.post('/contracts', verify, valContract, valResult, ContractController)
 router.post('/contracts/create', verify, valContractCreate, valResult, createContractController)
 router.post('/contracts/update', verify, valContractUpdate, valResult, updateContractController)
+
+// TODO: PAYMENT
+router.post('/invoice/today', verify, valInvoicePaidToday, valResult, findManyPaidToDayController)
 
 export default router
