@@ -6,7 +6,7 @@ import { createProjectController, projectsController, updateProjectController } 
 import { verify } from './utils/jwt'
 import { createUserController, findOneUserController, loginController, meController, updateUserController, userController } from './apis/user/controller'
 import { valLogin, valUserCreate, valUserFind, valUserUpdate } from './apis/user/validate'
-import { ContractController, createContractController, updateContractController } from './apis/contract/controller'
+import { ContractController, createContractController, updateContractController, updateContractStatusController } from './apis/contract/controller'
 import { valCompany, valCompanyCreate, valCompanyUpdate } from './apis/company/validate'
 import { valContract, valContractCreate, valContractUpdate } from './apis/contract/validate'
 import { valProjectCreate, valProjectUpdate } from './apis/projects/validate'
@@ -34,6 +34,7 @@ router.post('/projects/update', verify, valProjectUpdate, valResult, updateProje
 router.post('/contracts', verify, valContract, valResult, ContractController)
 router.post('/contracts/create', verify, valContractCreate, valResult, createContractController)
 router.post('/contracts/update', verify, valContractUpdate, valResult, updateContractController)
+router.post('/contracts/update/status', verify, updateContractStatusController)
 
 // TODO: PAYMENT
 router.post('/invoice/today', verify, valInvoicePaidToday, valResult, findManyPaidToDayController)

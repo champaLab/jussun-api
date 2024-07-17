@@ -147,27 +147,40 @@ export const createContractService = async (data: contracts) => {
 }
 
 export const updateContractService = async (data: contracts) => {
-    console.log(data)
+    const { cancelAt, createdAt, ...newData } = data
+
+    try {
+        const p = await prismaClient.contracts.update({
+            where: {
+                contractId: data.contractId
+            },
+            data: newData
+        })
+        return p
+    } catch (err) {
+        logger.error(err)
+        console.log(err)
+        return null
+    }
+}
+
+export const updateContractStatusService = async (data: {
+    cancelAt: Date | null
+    cancelBy: number
+    reason: string
+    contractId: number
+    contractStatus: string
+}) => {
     try {
         const p = await prismaClient.contracts.update({
             where: {
                 contractId: data.contractId
             },
             data: {
-                area: data.area,
-                updatedBy: data.updatedBy,
-                docId: data.docId,
-                paidDate: data.paidDate,
-                price: data.price,
-                projectId: data.projectId,
-                totalPrice: data.totalPrice,
-                currency: data.currency,
-                modeOfPayment: data.modeOfPayment,
-                numberOfInstallment: data.numberOfInstallment,
-                payInAdvance: data.payInAdvance,
-                customerIdOne: data.customerIdOne,
-                customerIdTwo: data.customerIdTwo,
-                updatedAt: dayjs().toDate()
+                cancelAt: data.cancelAt,
+                cancelBy: data.cancelBy,
+                reason: data.reason,
+                contractStatus: data.contractStatus
             }
         })
         return p

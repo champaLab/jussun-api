@@ -1,7 +1,14 @@
 import { Request, Response } from 'express'
 
 import { tokenPayloadService } from '../user/service'
-import { createContractService, contractService, updateContractService, finOneProjectService, updateProjectAreaService } from './service'
+import {
+    createContractService,
+    contractService,
+    updateContractService,
+    finOneProjectService,
+    updateProjectAreaService,
+    updateContractStatusService
+} from './service'
 import dayjs from 'dayjs'
 import { responseData } from '../../utils/functions'
 
@@ -135,6 +142,7 @@ export const updateContractController = async (req: Request, res: Response) => {
     const cancelAt = req.body.cancelAt
     const cancelBy = req.body.cancelBy
     const reason = req.body.reason
+    const updateStatus = req.body.updateStatus
 
     if (oldArea != area || oldProjectId != projectId) {
         const projectOld = await finOneProjectService({ projectId: oldProjectId })
@@ -197,6 +205,34 @@ export const updateContractController = async (req: Request, res: Response) => {
         cancelBy,
         reason,
         contractStatus
+    })
+    if (!p) {
+        return res.json({
+            status: 'error',
+            message: 'ແກ້ໄຂຂໍ້ມູນສັນຍາ ຜິດພາດ ລອງໃໝ່ໃນພາຍຫຼັງ'
+        })
+    }
+
+    return res.json({
+        status: 'success',
+        message: 'ແກ້ໄຂຂໍ້ມູນສັນຍາ ສຳເລັດແລ້ວ'
+    })
+}
+
+export const updateContractStatusController = async (req: Request, res: Response) => {
+    const payload = tokenPayloadService(req)
+    const contractStatus = req.body.contractStatus
+    const contractId = Number(req.body.contractId)
+    const cancelBy = payload.userId
+    const reason = contractStatus == 'ACTIVE' ? null : req.body.reason
+    const cancelAt = dayjs().toDate()
+
+    const p = await updateContractStatusService({
+        cancelAt,
+        cancelBy,
+        reason,
+        contractStatus,
+        contractId
     })
     if (!p) {
         return res.json({

@@ -82,7 +82,8 @@ export const responseData = async (data: any) => {
             : data.map((item) => ({
                   ...item,
                   createdAt: dateFormatter(item.createdAt),
-                  updatedAt: dateFormatter(item.updatedAt)
+                  updatedAt: dateFormatter(item.updatedAt),
+                  cancelAt: dateFormatter(item.cancelAt)
               }))
 
     return newData
