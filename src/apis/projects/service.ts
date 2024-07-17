@@ -52,6 +52,8 @@ export const createProjectService = async (data: ProjectModel) => {
     } catch (err) {
         logger.error(err)
         return null
+    } finally {
+        await prismaClient.$disconnect()
     }
 }
 
@@ -75,5 +77,7 @@ export const updateProjectService = async (projectId: number, data: ProjectModel
     } catch (err) {
         logger.error(err)
         return null
+    } finally {
+        await prismaClient.$disconnect()
     }
 }

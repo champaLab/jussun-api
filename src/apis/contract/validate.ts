@@ -53,5 +53,6 @@ export const valContractUpdate = [
     body('paidDate').not().isEmpty().withMessage('ກະລຸນາປ້ອນ ວັນທີນັດຊຳລະ'),
     body('price').not().isEmpty().withMessage('ກະລຸນາປ້ອນ ຍອດເງິນ'),
     body('projectId').not().isEmpty().withMessage('ກະລຸນາເລືອກ ໂຄງການ'),
-    body('customerIdOne').not().isEmpty().withMessage('ກະລຸນາເລືອກ ລູກຄ້າ')
+    body('customerIdOne').not().isEmpty().withMessage('ກະລຸນາເລືອກ ລູກຄ້າ'),
+    body('invoiceId').not().isEmpty().withMessage('ກະລຸນາເລືອກ ໃບແຈ້ງໜີ້')
 ]

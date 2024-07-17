@@ -6,7 +6,7 @@ import { createProjectController, projectsController, updateProjectController } 
 import { verify } from './utils/jwt'
 import { createUserController, findOneUserController, loginController, meController, updateUserController, userController } from './apis/user/controller'
 import { valLogin, valUserCreate, valUserFind, valUserUpdate } from './apis/user/validate'
-import { ContractController, createContractController, updateContractController, updateContractStatusController } from './apis/contract/controller'
+import { contractController, createContractController, updateContractController, updateContractStatusController } from './apis/contract/controller'
 import { valCompany, valCompanyCreate, valCompanyUpdate } from './apis/company/validate'
 import { valContract, valContractCreate, valContractUpdate } from './apis/contract/validate'
 import { valProjectCreate, valProjectUpdate } from './apis/projects/validate'
@@ -31,7 +31,7 @@ router.post('/projects', verify, projectsController)
 router.post('/projects/create', verify, valProjectCreate, valResult, createProjectController)
 router.post('/projects/update', verify, valProjectUpdate, valResult, updateProjectController)
 
-router.post('/contracts', verify, valContract, valResult, ContractController)
+router.post('/contracts', verify, valContract, valResult, contractController)
 router.post('/contracts/create', verify, valContractCreate, valResult, createContractController)
 router.post('/contracts/update', verify, valContractUpdate, valResult, updateContractController)
 router.post('/contracts/update/status', verify, updateContractStatusController)

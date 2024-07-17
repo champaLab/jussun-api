@@ -9,6 +9,8 @@ export const findOneCompanyService = async (data: { companyId: number }) => {
     } catch (err) {
         logger.error(err)
         return null
+    } finally {
+        await prismaClient.$disconnect()
     }
 }
 export const companiesService = async (data: { companyId: number }) => {
@@ -18,6 +20,8 @@ export const companiesService = async (data: { companyId: number }) => {
     } catch (err) {
         logger.error(err)
         return []
+    } finally {
+        await prismaClient.$disconnect()
     }
 }
 
@@ -42,6 +46,8 @@ export const createCompanyService = async (data: CompanyModel) => {
     } catch (err) {
         logger.error(err)
         return null
+    } finally {
+        await prismaClient.$disconnect()
     }
 }
 
@@ -70,5 +76,7 @@ export const updateCompanyService = async (data: CompanyModel) => {
         logger.error(err)
         console.log(err)
         return null
+    } finally {
+        await prismaClient.$disconnect()
     }
 }

@@ -49,6 +49,8 @@ export const findOneUserService = async (data: { tel: string }) => {
     } catch (err) {
         logger.error(err)
         return null
+    } finally {
+        await prismaClient.$disconnect()
     }
 }
 
@@ -71,6 +73,8 @@ export const createUserService = async (data: TUserCreateModel) => {
         logger.error(err)
         console.error(err)
         return null
+    } finally {
+        await prismaClient.$disconnect()
     }
 }
 
@@ -116,6 +120,8 @@ export const updateUserService = async (userId: number, data: TUserCreateModel) 
     } catch (err) {
         logger.error(err)
         return null
+    } finally {
+        await prismaClient.$disconnect()
     }
 }
 

@@ -7,12 +7,14 @@ import {
     updateContractService,
     finOneProjectService,
     updateProjectAreaService,
-    updateContractStatusService
+    updateContractStatusService,
+    createInvoiceService,
+    updateInvoiceService
 } from './service'
 import dayjs from 'dayjs'
 import { responseData } from '../../utils/functions'
 
-export const ContractController = async (req: Request, res: Response) => {
+export const contractController = async (req: Request, res: Response) => {
     const payload = tokenPayloadService(req)
     const projectId = req.body.projectId ? Number(req.body.projectId) : null
     let companyId = payload.companyId
@@ -41,7 +43,6 @@ export const createContractController = async (req: Request, res: Response) => {
     const currency = req.body.currency
     const docId = req.body.docId
     const modeOfPayment = req.body.modeOfPayment
-    const numberOfInstallment = Number(req.body.numberOfInstallment)
     const payInAdvance = Number(req.body.payInAdvance)
     const paidDate = Number(req.body.paidDate)
     const price = Number(req.body.price)
@@ -49,9 +50,16 @@ export const createContractController = async (req: Request, res: Response) => {
     const customerIdOne = Number(req.body.customerIdOne)
     const customerIdTwo = req.body.customerIdTwo ? Number(req.body.customerIdTwo) : null
     const totalPrice = price * area
-    const updatedAt = dayjs().toDate()
+    const updatedAt = null
     const createdAt = dayjs().toDate()
-    const contractStatus = 'ACTIVE'
+
+    const debt = totalPrice - payInAdvance
+    let numberOfInstallment = debt === 0 ? 1 : Number(req.body.numberOfInstallment)
+    const contractStatus = debt === 0 ? 'CLOSED' : 'ACTIVE'
+
+    const amount = Math.ceil((area * price) / numberOfInstallment)
+    const invoiceStatus = amount == totalPrice ? 'PAID' : 'PENDING'
+    const paidNow = amount == totalPrice ? dayjs().toDate() : null
 
     const project = await finOneProjectService({ projectId })
 
@@ -109,6 +117,26 @@ export const createContractController = async (req: Request, res: Response) => {
         })
     }
 
+    const createInv = await createInvoiceService({
+        amount,
+        debt,
+        contractId: p.contractId,
+        createdAt,
+        currency: p.currency,
+        fines: 0,
+        invoiceId: 1,
+        invoiceStatus,
+        paidDate: paidNow,
+        updatedAt: paidNow
+    })
+
+    if (!createInv) {
+        return res.json({
+            status: 'error',
+            message: 'ສ້າງໃບແຈ້ງໜີ້ ຜິດພາດ ລອງໃໝ່ໃນພາຍຫຼັງ'
+        })
+    }
+
     return res.json({
         status: 'success',
         message: 'ສ້າງໂຄງການ ສຳເລັດແລ້ວ'
@@ -124,7 +152,6 @@ export const updateContractController = async (req: Request, res: Response) => {
     const currency = req.body.currency
     const docId = req.body.docId
     const modeOfPayment = req.body.modeOfPayment
-    const numberOfInstallment = Number(req.body.numberOfInstallment)
     const payInAdvance = Number(req.body.payInAdvance)
     const paidDate = Number(req.body.paidDate)
     const price = Number(req.body.price)
@@ -138,11 +165,9 @@ export const updateContractController = async (req: Request, res: Response) => {
     const customerIdOne = Number(req.body.customerIdOne)
     const customerIdTwo = req.body.customerIdTwo ? Number(req.body.customerIdTwo) : null
 
-    const contractStatus = req.body.contractStatus
     const cancelAt = req.body.cancelAt
     const cancelBy = req.body.cancelBy
     const reason = req.body.reason
-    const updateStatus = req.body.updateStatus
 
     if (oldArea != area || oldProjectId != projectId) {
         const projectOld = await finOneProjectService({ projectId: oldProjectId })
@@ -182,6 +207,19 @@ export const updateContractController = async (req: Request, res: Response) => {
         }
     }
 
+    const debt = totalPrice - payInAdvance
+    const numberOfInstallment = debt === 0 ? 1 : Number(req.body.numberOfInstallment)
+    const contractStatus = debt === 0 ? 'CLOSED' : 'ACTIVE'
+
+    const amount = Math.ceil((area * price - payInAdvance) / numberOfInstallment)
+    const invoiceStatus = debt === 0 ? 'PAID' : 'PENDING'
+    const paidNow = dayjs().toDate()
+    const invoiceId = Number(req.body.invoiceId)
+    const fines = req.body.fines ? Number(req.body.fines) : 0
+
+    console.log('-'.repeat(150))
+    console.error({ debt, numberOfInstallment, contractStatus, amount, invoiceStatus, paidNow, invoiceId })
+
     const p = await updateContractService({
         area,
         companyId,
@@ -210,6 +248,26 @@ export const updateContractController = async (req: Request, res: Response) => {
         return res.json({
             status: 'error',
             message: 'ແກ້ໄຂຂໍ້ມູນສັນຍາ ຜິດພາດ ລອງໃໝ່ໃນພາຍຫຼັງ'
+        })
+    }
+
+    const createInv = await updateInvoiceService({
+        amount,
+        debt,
+        contractId: p.contractId,
+        createdAt,
+        currency: p.currency,
+        fines,
+        invoiceId,
+        invoiceStatus,
+        paidDate: paidNow,
+        updatedAt: paidNow
+    })
+
+    if (!createInv) {
+        return res.json({
+            status: 'error',
+            message: 'ສ້າງໃບແຈ້ງໜີ້ ຜິດພາດ ລອງໃໝ່ໃນພາຍຫຼັງ'
         })
     }
 

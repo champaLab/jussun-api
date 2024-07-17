@@ -1,4 +1,4 @@
-import { contracts, projects } from '@prisma/client'
+import { contracts, invoice, projects } from '@prisma/client'
 import logger from '../../configs/winston'
 import prismaClient from '../../prisma'
 import env from '../../env'
@@ -36,6 +36,8 @@ export const updateProjectAreaService = async (data: { projectId: number; area: 
     } catch (err) {
         logger.error(err)
         return null
+    } finally {
+        await prismaClient.$disconnect()
     }
 }
 
@@ -50,13 +52,15 @@ export const contractService = async (data: { projectId: number | null; companyI
             const p: any[] = await prismaClient.$queryRaw`
                 SELECT c.*, p.projectName, 
                 u.fullName fullNameOne,  u.lastName lastNameOne,
-                u2.fullName fullNameTwo,  u2.lastName lastNameTwo
+                u2.fullName fullNameTwo,  u2.lastName lastNameTwo,
+                inv.debt,
+                inv.invoiceId
                 FROM contracts c
-                        LEFT JOIN projects p ON p.projectId = c.projectId
-                        LEFT JOIN users u ON c.customerIdOne = u.userId
-                        LEFT JOIN users u2 ON c.customerIdOne = u2.userId
-
-                WHERE   c.companyId = ${companyId}
+                    LEFT JOIN projects p ON p.projectId = c.projectId
+                    LEFT JOIN users u ON c.customerIdOne = u.userId
+                    LEFT JOIN users u2 ON c.customerIdOne = u2.userId
+                LEFT JOIN invoice inv ON c.contractId = inv.contractId
+                WHERE c.companyId = ${companyId}
                 ORDER BY createdAt DESC
                 LIMIT ${take} OFFSET ${skip}
             `
@@ -64,22 +68,25 @@ export const contractService = async (data: { projectId: number | null; companyI
         } else if (!projectId && key) {
             const p: any[] = await prismaClient.$queryRaw`
                 SELECT c.*, p.projectName, 
-              u.fullName fullNameOne,  u.lastName lastNameOne,
-                u2.fullName fullNameTwo,  u2.lastName lastNameTwo
+                    u.fullName fullNameOne,  u.lastName lastNameOne,
+                    u2.fullName fullNameTwo,  u2.lastName lastNameTwo,
+                    inv.debt,
+                    inv.invoiceId
                 FROM contracts c
-                        LEFT JOIN projects p ON p.projectId = c.projectId
-                        LEFT JOIN users u ON c.customerIdOne = u.userId
-                        LEFT JOIN users u2 ON c.customerIdOne = u2.userId
-
+                    LEFT JOIN projects p ON p.projectId = c.projectId
+                    LEFT JOIN users u ON c.customerIdOne = u.userId
+                    LEFT JOIN users u2 ON c.customerIdOne = u2.userId
+                LEFT JOIN invoice inv ON c.contractId = inv.contractId
                 WHERE c.companyId = ${companyId}
                 AND (c.docId LIKE ${_key} OR
                     p.projectName LIKE ${_key} OR
                     u.fullName LIKE ${_key} OR
                     u.lastName LIKE ${_key} OR
-                    u.tel = ${_key} OR
+                    u.tel = ${key} OR
                     u2.fullName LIKE ${_key} OR
                     u2.lastName LIKE ${_key} OR
-                    u2.tel = ${_key}
+                    u2.tel = ${_key} OR 
+                    inv.invoiceId = ${key}
                     )
                 ORDER BY createdAt DESC
                 LIMIT ${take} OFFSET ${skip}
@@ -89,13 +96,15 @@ export const contractService = async (data: { projectId: number | null; companyI
 
         const p: any[] = await prismaClient.$queryRaw`
                 SELECT c.*, p.projectName, 
-                u.fullName fullNameOne,  u.lastName lastNameOne,
-                u2.fullName fullNameTwo,  u2.lastName lastNameTwo
+                    u.fullName fullNameOne,  u.lastName lastNameOne,
+                    u2.fullName fullNameTwo,  u2.lastName lastNameTwo,
+                    inv.debt,
+                    inv.invoiceId
                 FROM contracts c
-                        LEFT JOIN projects p ON p.projectId = c.projectId
-                        LEFT JOIN users u ON c.customerIdOne = u.userId
-                        LEFT JOIN users u2 ON c.customerIdOne = u2.userId
-
+                    LEFT JOIN projects p ON p.projectId = c.projectId
+                    LEFT JOIN users u ON c.customerIdOne = u.userId
+                    LEFT JOIN users u2 ON c.customerIdOne = u2.userId
+                LEFT JOIN invoice inv ON c.contractId = inv.contractId
                 WHERE c.projectId = ${projectId}
                 AND c.companyId = ${companyId}
                 AND (c.docId LIKE ${_key} OR
@@ -105,7 +114,8 @@ export const contractService = async (data: { projectId: number | null; companyI
                     u.tel = ${_key} OR
                     u2.fullName LIKE ${_key} OR
                     u2.lastName LIKE ${_key} OR
-                    u2.tel = ${_key}
+                    u2.tel = ${_key} OR
+                    inv.invoiceId = ${key}
                     )
                 ORDER BY createdAt DESC
                 LIMIT ${take} OFFSET ${skip}
@@ -114,29 +124,17 @@ export const contractService = async (data: { projectId: number | null; companyI
     } catch (err) {
         logger.error(err)
         return []
+    } finally {
+        await prismaClient.$disconnect()
     }
 }
 
 export const createContractService = async (data: contracts) => {
+    const { contractId, ...newData } = data
     console.log(data)
     try {
         const p = await prismaClient.contracts.create({
-            data: {
-                area: data.area,
-                companyId: data.companyId,
-                createdBy: data.createdBy,
-                docId: data.docId,
-                paidDate: data.paidDate,
-                price: data.price,
-                projectId: data.projectId,
-                totalPrice: data.totalPrice,
-                currency: data.currency,
-                modeOfPayment: data.modeOfPayment,
-                numberOfInstallment: data.numberOfInstallment,
-                payInAdvance: data.payInAdvance,
-                customerIdOne: data.customerIdOne,
-                customerIdTwo: data.customerIdTwo
-            }
+            data: newData
         })
         return p
     } catch (err) {
@@ -164,6 +162,43 @@ export const updateContractService = async (data: contracts) => {
     }
 }
 
+export const createInvoiceService = async (data: invoice) => {
+    const { invoiceId, ...newData } = data
+
+    try {
+        const p = await prismaClient.invoice.create({
+            data: newData
+        })
+        return p
+    } catch (err) {
+        logger.error(err)
+        console.log(err)
+        return null
+    } finally {
+        await prismaClient.$disconnect()
+    }
+}
+
+export const updateInvoiceService = async (data: invoice) => {
+    let { invoiceId, paidDate, ...dataCreate } = data
+    let { createdAt, ...dataUpdate } = dataCreate
+
+    try {
+        const p = await prismaClient.invoice.upsert({
+            where: { invoiceId: invoiceId },
+            create: dataCreate,
+            update: dataUpdate
+        })
+        return p
+    } catch (err) {
+        logger.error(err)
+        console.log(err)
+        return null
+    } finally {
+        await prismaClient.$disconnect()
+    }
+}
+
 export const updateContractStatusService = async (data: {
     cancelAt: Date | null
     cancelBy: number
@@ -188,5 +223,7 @@ export const updateContractStatusService = async (data: {
         logger.error(err)
         console.log(err)
         return null
+    } finally {
+        await prismaClient.$disconnect()
     }
 }
