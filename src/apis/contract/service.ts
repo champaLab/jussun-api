@@ -43,29 +43,12 @@ export const updateProjectAreaService = async (data: { projectId: number; area: 
 
 export const contractService = async (data: { projectId: number | null; companyId: number | null; key: string | null; page: number }) => {
     const { projectId, companyId, key } = data
-    const _key = key ? `%${key}%` : null
+    const _key = key ? `${key}%` : null
     const skip = data.key ? 0 : (data.page - 1) * env.ROW_PER_PAGE
     const take = env.ROW_PER_PAGE
-
+    console.log({ projectId, key })
     try {
-        if (!projectId && !key) {
-            const p: any[] = await prismaClient.$queryRaw`
-                SELECT c.*, p.projectName, 
-                u.fullName fullNameOne,  u.lastName lastNameOne,
-                u2.fullName fullNameTwo,  u2.lastName lastNameTwo,
-                inv.debt,
-                inv.invoiceId
-                FROM contracts c
-                    LEFT JOIN projects p ON p.projectId = c.projectId
-                    LEFT JOIN users u ON c.customerIdOne = u.userId
-                    LEFT JOIN users u2 ON c.customerIdOne = u2.userId
-                LEFT JOIN invoice inv ON c.contractId = inv.contractId
-                WHERE c.companyId = ${companyId}
-                ORDER BY createdAt DESC
-                LIMIT ${take} OFFSET ${skip}
-            `
-            return p
-        } else if (!projectId && key) {
+        if (!projectId && key) {
             const p: any[] = await prismaClient.$queryRaw`
                 SELECT c.*, p.projectName, 
                     u.fullName fullNameOne,  u.lastName lastNameOne,
@@ -85,16 +68,16 @@ export const contractService = async (data: { projectId: number | null; companyI
                     u.tel = ${key} OR
                     u2.fullName LIKE ${_key} OR
                     u2.lastName LIKE ${_key} OR
-                    u2.tel = ${_key} OR 
+                    u2.tel = ${key} OR 
                     inv.invoiceId = ${key}
                     )
                 ORDER BY createdAt DESC
                 LIMIT ${take} OFFSET ${skip}
             `
+            console.log('Conditions 1')
             return p
-        }
-
-        const p: any[] = await prismaClient.$queryRaw`
+        } else if (projectId && key) {
+            const p: any[] = await prismaClient.$queryRaw`
                 SELECT c.*, p.projectName, 
                     u.fullName fullNameOne,  u.lastName lastNameOne,
                     u2.fullName fullNameTwo,  u2.lastName lastNameTwo,
@@ -105,21 +88,59 @@ export const contractService = async (data: { projectId: number | null; companyI
                     LEFT JOIN users u ON c.customerIdOne = u.userId
                     LEFT JOIN users u2 ON c.customerIdOne = u2.userId
                 LEFT JOIN invoice inv ON c.contractId = inv.contractId
-                WHERE c.projectId = ${projectId}
-                AND c.companyId = ${companyId}
-                AND (c.docId LIKE ${_key} OR
+                WHERE c.companyId = ${companyId} AND
+                    c.projectId = ${projectId} AND 
+                    (c.docId LIKE ${_key} OR
                     p.projectName LIKE ${_key} OR
                     u.fullName LIKE ${_key} OR
                     u.lastName LIKE ${_key} OR
-                    u.tel = ${_key} OR
+                    u.tel = ${key} OR
                     u2.fullName LIKE ${_key} OR
                     u2.lastName LIKE ${_key} OR
-                    u2.tel = ${_key} OR
+                    u2.tel = ${key} OR 
                     inv.invoiceId = ${key}
                     )
                 ORDER BY createdAt DESC
                 LIMIT ${take} OFFSET ${skip}
-        `
+            `
+            console.log('Conditions 2')
+            return p
+        } else if (projectId && !key) {
+            const p: any[] = await prismaClient.$queryRaw`
+                SELECT c.*, p.projectName, 
+                    u.fullName fullNameOne,  u.lastName lastNameOne,
+                    u2.fullName fullNameTwo,  u2.lastName lastNameTwo,
+                    inv.debt,
+                    inv.invoiceId
+                FROM contracts c
+                    LEFT JOIN projects p ON p.projectId = c.projectId
+                    LEFT JOIN users u ON c.customerIdOne = u.userId
+                    LEFT JOIN users u2 ON c.customerIdOne = u2.userId
+                LEFT JOIN invoice inv ON c.contractId = inv.contractId
+                WHERE c.companyId = ${companyId} AND
+                    c.projectId = ${projectId}  
+                ORDER BY createdAt DESC
+                LIMIT ${take} OFFSET ${skip}
+            `
+            console.log('Conditions 3')
+            return p
+        }
+
+        const p: any[] = await prismaClient.$queryRaw`
+                SELECT c.*, p.projectName, 
+                u.fullName fullNameOne,  u.lastName lastNameOne,
+                u2.fullName fullNameTwo,  u2.lastName lastNameTwo,
+                inv.debt,
+                inv.invoiceId
+                FROM contracts c
+                    LEFT JOIN projects p ON p.projectId = c.projectId
+                    LEFT JOIN users u ON c.customerIdOne = u.userId
+                    LEFT JOIN users u2 ON c.customerIdOne = u2.userId
+                LEFT JOIN invoice inv ON c.contractId = inv.contractId
+                WHERE c.companyId = ${companyId}
+                ORDER BY createdAt DESC
+                LIMIT ${take} OFFSET ${skip}
+            `
         return p
     } catch (err) {
         logger.error(err)

@@ -13,6 +13,7 @@ import { valProjectCreate, valProjectUpdate } from './apis/projects/validate'
 import { valResult } from './utils/validateResult'
 import { findManyPaidToDayController } from './apis/payment/controller'
 import { valInvoicePaidToday } from './apis/payment/validate'
+import { invoicePaydayController } from './apis/invoice/controller'
 
 const router = Router()
 
@@ -37,6 +38,6 @@ router.post('/contracts/update', verify, valContractUpdate, valResult, updateCon
 router.post('/contracts/update/status', verify, updateContractStatusController)
 
 // TODO: PAYMENT
-router.post('/invoice/today', verify, valInvoicePaidToday, valResult, findManyPaidToDayController)
+router.post('/invoices/payday', verify, invoicePaydayController)
 
 export default router
