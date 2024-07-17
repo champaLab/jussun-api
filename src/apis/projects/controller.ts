@@ -16,7 +16,7 @@ export const projectsController = async (req: Request, res: Response) => {
     }
 
     const p = await projectsService({ companyId, key, page })
-    const projects = await responseData(p)
+    const projects = await responseData(p, page)
 
     return res.json({
         status: 'success',

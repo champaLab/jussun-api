@@ -140,7 +140,7 @@ export const userController = async (req: Request, res: Response) => {
     }
 
     const u = await findManyUserService({ companyId, key, page })
-    const users = await responseData(u)
+    const users = await responseData(u, page)
 
     return res.json({
         status: 'success',

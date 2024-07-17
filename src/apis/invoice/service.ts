@@ -21,15 +21,24 @@ export const findInvoicePaydayService = async (data: { companyId: number; key: s
                 inv.currency,
                 inv.fines,
                 inv.invoiceStatus,
-                inv.invoiceId
-                FROM contracts c
-                        LEFT JOIN projects p ON p.projectId = c.projectId
-                        LEFT JOIN users u ON c.customerIdOne = u.userId
-                        LEFT JOIN users u2 ON c.customerIdOne = u2.userId
-                 LEFT JOIN invoice inv ON c.contractId = inv.contractId
-                WHERE inv.invoiceStatus = ${data.invoiceStatus} AND
-                      c.companyId = ${data.companyId}
-                ORDER BY createdAt DESC
+                inv.invoiceId,
+                com.companyName,
+                com.logoPath,
+                com.address,
+                com.abbreviatedLetters,
+                com.tel companyContact,
+                com.email,
+                com.fax,
+                com.whatsapp
+            FROM contracts c
+                LEFT JOIN projects p ON p.projectId = c.projectId
+                LEFT JOIN users u ON c.customerIdOne = u.userId
+                LEFT JOIN users u2 ON c.customerIdOne = u2.userId
+                LEFT JOIN company com ON com.companyId = c.companyId
+                LEFT JOIN invoice inv ON c.contractId = inv.contractId
+            WHERE inv.invoiceStatus = ${data.invoiceStatus} AND
+                    c.companyId = ${data.companyId}
+            ORDER BY createdAt DESC
              LIMIT ${take} OFFSET ${skip}        
         `
         return user

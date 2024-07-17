@@ -1,6 +1,9 @@
 import { Request, Response } from 'express'
 import { findInvoicePaydayService } from './service'
 import { tokenPayloadService } from '../user/service'
+import { responseData } from '../../utils/functions'
+import { dateFormatter } from '../../utils/dateFormat'
+import env from '../../env'
 
 export const invoicePaydayController = async (req: Request, res: Response) => {
     const payload = tokenPayloadService(req)
@@ -15,9 +18,17 @@ export const invoicePaydayController = async (req: Request, res: Response) => {
         companyId = payload.companyId
     }
 
-    const invoice = await findInvoicePaydayService({ invoiceStatus, companyId, key, page })
+    const inv = await findInvoicePaydayService({ invoiceStatus, companyId, key, page })
+    const invoices = inv.map((item, i) => ({
+        ...item,
+        index: (i + 1) * page,
+        logoPath: item.logoPath ? `${env.HOST_IMAGE}${env.BASE_PATH}${item.logoPath}` : null,
+        paidDate: dateFormatter(item.paidDate),
+        createdAt: dateFormatter(item.createdAt),
+        updatedAt: dateFormatter(item.updatedAt)
+    }))
     return res.json({
         status: 'success',
-        invoice
+        invoices
     })
 }

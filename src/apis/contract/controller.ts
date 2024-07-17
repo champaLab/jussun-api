@@ -26,7 +26,7 @@ export const contractController = async (req: Request, res: Response) => {
     }
 
     const contract = await contractService({ projectId, companyId, key, page })
-    const contracts = await responseData(contract)
+    const contracts = await responseData(contract, page)
     return res.json({
         status: 'success',
         contracts

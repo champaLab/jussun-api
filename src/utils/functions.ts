@@ -75,12 +75,14 @@ export function getThumbnailUrl(req: Request, file: string) {
     return `${req.protocol}://${req.headers.host}/article/${date}/${file}`
 }
 
-export const responseData = async (data: any) => {
+export const responseData = async (data: any, page: number) => {
+    const rowsPerPage = Number(env.ROW_PER_PAGE)
     const newData =
         data.length == 0
             ? []
-            : data.map((item) => ({
+            : data.map((item, i) => ({
                   ...item,
+                  indexNo: (page - 1) * rowsPerPage + (i + 1),
                   createdAt: dateFormatter(item.createdAt),
                   updatedAt: dateFormatter(item.updatedAt),
                   cancelAt: dateFormatter(item.cancelAt)
