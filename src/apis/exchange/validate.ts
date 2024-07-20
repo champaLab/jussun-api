@@ -6,9 +6,22 @@ export const valCreateExchange = [
     body('usd').not().isEmpty().withMessage('ກະລຸນາປ້ອນ ອັດຕາແລກປ່ຽນ ໂດລາ')
 ]
 
-export const valCompanyUpdate = [
-    body('companyId').not().isEmpty().withMessage('ກະລຸນາເລືອກ ບໍລິສັດ'),
-    body('companyName').not().isEmpty().withMessage('ກະລຸນາປ້ອນຊື່ບໍລິສັດ'),
-    body('tel').not().isEmpty().withMessage('ກະລຸນາປ້ອນ ໝາຍເລກໂທລະສັບ'),
-    body('address').not().isEmpty().withMessage('ກະລຸນາປ້ອນ ທີ່ຢູ່ ບໍລິສັດ')
+export const valUpdateExchange = [
+    body('exchangeId').not().isEmpty().withMessage(' '),
+    body('lak').not().isEmpty().withMessage('ກະລຸນາປ້ອນ ອັດຕາແລກປ່ຽນ ກີບ'),
+    body('thb').not().isEmpty().withMessage('ກະລຸນາປ້ອນ ອັດຕາແລກປ່ຽນ ບາດ'),
+    body('usd').not().isEmpty().withMessage('ກະລຸນາປ້ອນ ອັດຕາແລກປ່ຽນ ໂດລາ')
 ]
+export const valReadExchange = [
+    body('dateStart')
+        .not().isEmpty().withMessage('ກະລຸນາປ້ອນ ວັນທີ່ເລີ່ມຕົ້ນ')
+        .isISO8601().withMessage('ວັນທີ່ຕ້ອງເປັນຮູບແບບ ISO8601'),
+    body('dateEnd')
+        .not().isEmpty().withMessage('ກະລຸນາປ້ອນ ວັນທີ່ສິ້ນສຸດ')
+        .isISO8601().withMessage('ວັນທີ່ຕ້ອງເປັນຮູບແບບ ISO8601'),
+    body('page')
+        .not().isEmpty().withMessage('ກະລຸນາປ້ອນ ໜ້າ')
+];
+
+
+

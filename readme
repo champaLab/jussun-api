@@ -1,9 +1,18 @@
 # pull data from github
 git pull --no-rebase
 
+
 #Create new branch
 git checkout -b feat/...
 
+
 #Merge data from another branch
 git merge  Branch-name --no-ff
+
+
+#step create API 
+1 create Service 
+2 create controller
+3 validater
+4 add router 
 
