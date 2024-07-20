@@ -19,7 +19,7 @@ export const invoicePaydayController = async (req: Request, res: Response) => {
     }
 
     const inv = await findInvoicePaydayService({ invoiceStatus, companyId, key, page })
-    const invoices = inv.map((item, i) => ({
+    const invoices = inv.invoice.map((item, i) => ({
         ...item,
         index: (i + 1) * page,
         logoPath: item.logoPath ? `${env.HOST_IMAGE}${env.BASE_PATH}${item.logoPath}` : null,
@@ -29,6 +29,9 @@ export const invoicePaydayController = async (req: Request, res: Response) => {
     }))
     return res.json({
         status: 'success',
-        invoices
+        reports: {
+            invoices,
+            count: inv.count
+        }
     })
 }

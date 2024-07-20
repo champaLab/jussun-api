@@ -1,17 +1,36 @@
 import logger from '../../configs/winston'
 import prismaClient from '../../prisma'
-import { company, users } from '@prisma/client'
+import { company, invoice, users } from '@prisma/client'
 import { TUserCreateModel, TUserPayloadModel } from './type'
 import { Request } from 'express'
 import env from '../../env'
 
-export const findInvoicePaydayService = async (data: { companyId: number; key: string | null; page: number; invoiceStatus: string }) => {
+export const findInvoicePaydayService = async (data: {
+    companyId: number
+    key: string | null
+    page: number
+    invoiceStatus: string
+}): Promise<{ invoice: any[]; count: number }> => {
     const skip = data.key ? 0 : (data.page - 1) * env.ROW_PER_PAGE
     const take = env.ROW_PER_PAGE
 
-    console.log('findManyUserService', { data })
     try {
-        const user: any[] = await prismaClient.$queryRaw`
+        const totalCountResult: any[] = await prismaClient.$queryRaw`
+            SELECT COUNT(*) AS totalCount
+            FROM contracts c
+                LEFT JOIN projects p ON p.projectId = c.projectId
+                LEFT JOIN users u ON c.customerIdOne = u.userId
+                LEFT JOIN users u2 ON c.customerIdOne = u2.userId
+                LEFT JOIN company com ON com.companyId = c.companyId
+                LEFT JOIN invoice inv ON c.contractId = inv.contractId
+            WHERE inv.invoiceStatus = ${data.invoiceStatus} AND
+                    c.companyId = ${data.companyId}
+        `
+
+        const totalCount = Number(totalCountResult[0]?.totalCount ?? 0)
+        const count = Math.ceil(totalCount / take)
+
+        const invoice: any[] = await prismaClient.$queryRaw`
            SELECT c.*, p.projectName,
                 u.fullName fullNameOne,  u.lastName lastNameOne,
                 u2.fullName fullNameTwo,  u2.lastName lastNameTwo,
@@ -22,6 +41,7 @@ export const findInvoicePaydayService = async (data: { companyId: number; key: s
                 inv.fines,
                 inv.invoiceStatus,
                 inv.invoiceId,
+                inv.paidDate,
                 com.companyName,
                 com.logoPath,
                 com.address,
@@ -41,10 +61,12 @@ export const findInvoicePaydayService = async (data: { companyId: number; key: s
             ORDER BY createdAt DESC
              LIMIT ${take} OFFSET ${skip}        
         `
-        return user
+
+        return { invoice, count }
     } catch (err) {
         logger.error(err)
-        return []
+        console.error(err)
+        return { invoice: [], count: 0 }
     } finally {
         prismaClient.$disconnect()
     }

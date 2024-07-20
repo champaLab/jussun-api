@@ -7,20 +7,6 @@ datasource db {
   url      = env("PRISMA_DB_CONN")
 }
 
-/// This model or at least one of its fields has comments in the database, and requires an additional setup for migrations: Read more: https://pris.ly/d/database-comments
-model users {
-  userId     Int       @id @unique(map: "users_pk2") @default(autoincrement())
-  companyId  Int?
-  fullName   String    @db.VarChar(80)
-  lastName   String    @db.VarChar(80)
-  tel        String    @unique(map: "tel") @db.VarChar(8)
-  password   String    @db.VarChar(255)
-  role       String    @default("CUSTOMER") @db.VarChar(10)
-  userStatus Boolean   @default(true)
-  createdAt  DateTime? @default(now()) @db.DateTime(0)
-  updatedAt  DateTime? @db.DateTime(0)
-}
-
 model company {
   companyId          Int       @id @unique(map: "company_pk2") @default(autoincrement())
   companyName        String    @unique(map: "company_pk3") @db.VarChar(255)
@@ -52,7 +38,7 @@ model contracts {
   contractStatus      String    @default("ACTIVE") @db.VarChar(20)
   area                Float
   numberOfInstallment Int       @default(1)
-  paidDate            Int
+  payDay              Int
   modeOfPayment       String    @default("monthly") @db.VarChar(20)
   payInAdvance        Float?    @default(0)
   customerIdOne       Int
@@ -62,18 +48,6 @@ model contracts {
   cancelAt            DateTime? @db.DateTime(0)
   cancelBy            Int?
   reason              String?   @db.VarChar(255)
-}
-
-model projects {
-  projectId   Int       @id @unique(map: "projects_pk2") @default(autoincrement())
-  companyId   Int
-  area        Float
-  projectName String    @db.VarChar(200)
-  address     String?   @db.VarChar(100)
-  createdBy   Int
-  updatedBy   Int?
-  createdAt   DateTime? @default(now()) @db.DateTime(0)
-  updatedAt   DateTime? @db.DateTime(0)
 }
 
 model exchange {
@@ -103,6 +77,18 @@ model invoice {
   updatedAt     DateTime? @db.DateTime(0)
 }
 
+model projects {
+  projectId   Int       @id @unique(map: "projects_pk2") @default(autoincrement())
+  companyId   Int
+  area        Float
+  projectName String    @db.VarChar(200)
+  address     String?   @db.VarChar(100)
+  createdBy   Int
+  updatedBy   Int?
+  createdAt   DateTime? @default(now()) @db.DateTime(0)
+  updatedAt   DateTime? @db.DateTime(0)
+}
+
 /// This model or at least one of its fields has comments in the database, and requires an additional setup for migrations: Read more: https://pris.ly/d/database-comments
 model transaction {
   transactionId   Int       @id @unique(map: "transaction_pk2")
@@ -121,4 +107,18 @@ model transaction {
   createdAt       DateTime? @default(now()) @db.DateTime(0)
   updatedAt       DateTime? @db.DateTime(0)
   deletedAt       DateTime? @db.DateTime(0)
+}
+
+/// This model or at least one of its fields has comments in the database, and requires an additional setup for migrations: Read more: https://pris.ly/d/database-comments
+model users {
+  userId     Int       @id @unique(map: "users_pk2") @default(autoincrement())
+  companyId  Int?
+  fullName   String    @db.VarChar(80)
+  lastName   String    @db.VarChar(80)
+  tel        String    @unique(map: "tel") @db.VarChar(8)
+  password   String    @db.VarChar(255)
+  role       String    @default("CUSTOMER") @db.VarChar(10)
+  userStatus Boolean   @default(true)
+  createdAt  DateTime? @default(now()) @db.DateTime(0)
+  updatedAt  DateTime? @db.DateTime(0)
 }

@@ -22,7 +22,8 @@ export const today = (date = new Date()) => {
     return dayjs(dayjs(date).add(7, 'hours').format()).toISOString()
 }
 
-export const dateFormatter = (date: Date | null) => {
-    if (date) return dayjs(date).locale('lo').format('DD MMM YYYY HH:mm')
+export const dateFormatter = (date: any | null) => {
+    console.log({ date })
+    if (date && date != null && date != '') return dayjs(date).locale('lo').format('DD MMM YYYY HH:mm')
     return null
 }

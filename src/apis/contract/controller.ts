@@ -44,7 +44,7 @@ export const createContractController = async (req: Request, res: Response) => {
     const docId = req.body.docId
     const modeOfPayment = req.body.modeOfPayment
     const payInAdvance = Number(req.body.payInAdvance)
-    const paidDate = Number(req.body.paidDate)
+    const payDay = Number(req.body.payDay)
     const price = Number(req.body.price)
     const projectId = Number(req.body.projectId)
     const customerIdOne = Number(req.body.customerIdOne)
@@ -97,7 +97,7 @@ export const createContractController = async (req: Request, res: Response) => {
         modeOfPayment,
         numberOfInstallment,
         payInAdvance,
-        paidDate,
+        payDay,
         price,
         projectId,
         totalPrice,
@@ -153,7 +153,7 @@ export const updateContractController = async (req: Request, res: Response) => {
     const docId = req.body.docId
     const modeOfPayment = req.body.modeOfPayment
     const payInAdvance = Number(req.body.payInAdvance)
-    const paidDate = Number(req.body.paidDate)
+    const payDay = Number(req.body.payDay)
     const price = Number(req.body.price)
     const projectId = Number(req.body.projectId)
     const area = Number(req.body.area)
@@ -231,7 +231,7 @@ export const updateContractController = async (req: Request, res: Response) => {
         modeOfPayment,
         numberOfInstallment,
         payInAdvance,
-        paidDate,
+        payDay,
         price,
         projectId,
         totalPrice,
