@@ -19,7 +19,7 @@ export function dateTimeFormat(date: Date | string | any): string {
 }
 
 export const today = (date = new Date()) => {
-    return dayjs(dayjs(date).add(7, 'hours').format()).toISOString()
+    return dayjs(dayjs(date).add(7, 'hours').format()).toDate()
 }
 
 export const dateFormatter = (date: any | null) => {

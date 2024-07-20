@@ -14,6 +14,8 @@ import { valResult } from './utils/validateResult'
 import { findManyPaidToDayController } from './apis/payment/controller'
 import { valInvoicePaidToday } from './apis/payment/validate'
 import { invoicePaydayController } from './apis/invoice/controller'
+import { createExchangeController, readExchangeController, updateExchangeController } from './apis/exchange/controller'
+import { valCreateExchange, valReadExchange, valUpdateExchange } from './apis/exchange/validate'
 
 const router = Router()
 
@@ -39,5 +41,10 @@ router.post('/contracts/update/status', verify, updateContractStatusController)
 
 // TODO: PAYMENT
 router.post('/invoices/payday', verify, invoicePaydayController)
+
+// TODO:Exchange endpoint
+router.get('/exchanges', verify, valReadExchange, valResult, readExchangeController)
+router.post('/exchanges/create', verify, valCreateExchange, valResult, createExchangeController)
+router.post('/exchanges/update', verify, valUpdateExchange, valResult, updateExchangeController)
 
 export default router
