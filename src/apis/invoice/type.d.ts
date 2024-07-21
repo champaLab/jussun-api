@@ -34,4 +34,5 @@ export interface TPaidInvoice {
     invoiceId: number
     exchangeRate: number | null
     currencyExchange: string | null
+    createdBy: number | null
 }

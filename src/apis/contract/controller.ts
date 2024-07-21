@@ -140,7 +140,8 @@ export const createContractController = async (req: Request, res: Response) => {
         updatedAt: paidNow,
         paymentMethod,
         currencyExchange: null,
-        exchangeRate: null
+        exchangeRate: null,
+        createdBy: null
     })
 
     if (!createInv) {
@@ -280,7 +281,8 @@ export const updateContractController = async (req: Request, res: Response) => {
         updatedAt: paidNow,
         paymentMethod,
         currencyExchange,
-        exchangeRate
+        exchangeRate,
+        createdBy: null
     })
 
     if (!createInv) {

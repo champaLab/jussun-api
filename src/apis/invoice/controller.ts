@@ -92,7 +92,8 @@ export const invoicePaidController = async (req: Request, res: Response) => {
         updatedAt: paidDate,
         currencyExchange,
         exchangeRate,
-        invoiceStatus
+        invoiceStatus,
+        createdBy: payload.userId
     })
 
     if (!paid) {
@@ -116,7 +117,8 @@ export const invoicePaidController = async (req: Request, res: Response) => {
             updatedAt: null,
             paymentMethod: null,
             currencyExchange: null,
-            exchangeRate: null
+            exchangeRate: null,
+            createdBy: null
         })
         if (!createInv) {
             return res.json({
