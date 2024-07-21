@@ -75,6 +75,7 @@ model invoice {
   currencyExchange String?   @db.VarChar(5)
   invoiceStatus    String    @default("PENDING") @db.VarChar(20)
   paidDate         DateTime? @db.DateTime(0)
+  createdBy        Int?
   createdAt        DateTime? @default(now()) @db.DateTime(0)
   updatedAt        DateTime? @db.DateTime(0)
 }

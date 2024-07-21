@@ -219,7 +219,7 @@ export const createInvoiceService = async (data: invoice) => {
 
 export const updateInvoiceService = async (data: invoice) => {
     let { invoiceId, paidDate, ...dataCreate } = data
-    let { createdAt, ...dataUpdate } = dataCreate
+    let { createdAt, createdBy, ...dataUpdate } = dataCreate
 
     try {
         const p = await prismaClient.invoice.upsert({
