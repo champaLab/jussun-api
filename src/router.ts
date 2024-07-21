@@ -17,6 +17,7 @@ import { invoicePaidController, invoicePaydayController } from './apis/invoice/c
 import { createExchangeController, readExchangeController, updateExchangeController } from './apis/exchange/controller'
 import { valCreateExchange, valReadExchange, valUpdateExchange } from './apis/exchange/validate'
 import { valUpdateInvoice } from './apis/invoice/validate'
+import { readReportController } from './apis/reports/controller'
 
 const router = Router()
 
@@ -48,5 +49,8 @@ router.post('/invoices/paid', verify, upload('bills', true).single('file'), veri
 router.post('/exchanges', verify, valReadExchange, valResult, readExchangeController)
 router.post('/exchanges/create', verify, valCreateExchange, valResult, createExchangeController)
 router.post('/exchanges/update', verify, valUpdateExchange, valResult, updateExchangeController)
+
+//TODO: Report endpoint
+router.post('/report', verify, readReportController)
 
 export default router

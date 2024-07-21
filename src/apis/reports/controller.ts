@@ -1,105 +1,21 @@
 import { Request, Response } from 'express'
-import { createExchangeService, readExchangeService, updateExchangeService } from './service'
+import { readReportService } from './service'
 import { tokenPayloadService } from '../user/service'
-import { dateFormatter, today } from '../../utils/dateFormat'
-import dayjs from 'dayjs'
+import { param } from 'express-validator'
 
-export const readExchangeController = async (req: Request, res: Response) => {
+export const readReportController = async (req: Request, res: Response) => {
     const payload = tokenPayloadService(req)
-    const companyId = Number(payload.companyId)
-    const dateStart = dayjs(req.body.dateStart).format('YYYY-MM-DD')
-    const dateEnd = dayjs(req.body.dateEnd).format('YYYY-MM-DD') + ' 23:59:59'
-    const page = Number(req.body.page ?? 0)
+    const userId = Number(payload.userId)
 
-    const exc = await readExchangeService({
-        companyId,
-        dateStart,
-        dateEnd,
-        page
-    })
-    const exchanges = exc.exchange.map((item, i) => ({
+    const rp = await readReportService({ userId })
+
+    const reports = rp.map((item, i) => ({
         ...item,
-        indexNo: (i + 1) * page,
-        createdAt: dateFormatter(item.createdAt),
-        updatedAt: dateFormatter(item.updatedAt)
+        indexNo: (i + 1),
     }))
+
     return res.json({
         status: 'success',
-        reports: {
-            exchanges,
-            count: exc.count
-        }
-    })
-}
-
-export const createExchangeController = async (req: Request, res: Response) => {
-    const payload = tokenPayloadService(req)
-    const companyId = Number(payload.companyId)
-    const createdAt = today()
-    const createdBy = payload.userId
-    const deletedAt = null
-    const exchangeId = Number(req.body.exchangeId)
-    const updatedAt = today()
-    const updatedBy = payload.userId
-    const thb = parseFloat(req.body.thb)
-    const usd = parseFloat(req.body.usd)
-
-    const create = await createExchangeService({
-        companyId,
-        createdAt,
-        createdBy,
-        deletedAt,
-        exchangeId,
-        thb,
-        updatedAt,
-        updatedBy,
-        usd
-    })
-
-    if (!create) {
-        return res.json({
-            status: 'error',
-            message: 'ການສ້າງ ອັດຕາແລກປ່ຽນ ຜິດພາດ ລອງໃໝ່ໃນພາຍຫຼັງ'
-        })
-    }
-    return res.json({
-        status: 'success',
-        message: 'ບັນທຶກ ຂໍ້ມູນສຳເລັດ'
-    })
-}
-
-export const updateExchangeController = async (req: Request, res: Response) => {
-    const payload = tokenPayloadService(req)
-    console.log({ payload })
-    const companyId = Number(payload.companyId)
-    const createdAt = today()
-    const createdBy = payload.userId
-    const deletedAt = null
-    const exchangeId = Number(req.body.exchangeId)
-    const updatedAt = today()
-    const updatedBy = payload.userId
-    const thb = parseFloat(req.body.thb)
-    const usd = parseFloat(req.body.usd)
-
-    const update = await updateExchangeService({
-        companyId,
-        createdAt,
-        createdBy,
-        deletedAt,
-        exchangeId,
-        thb,
-        updatedAt,
-        updatedBy,
-        usd
-    })
-    if (!update) {
-        return res.json({
-            status: 'error',
-            message: 'ອັບເດດ ອັດຕາແລກປ່ຽນ ຜິດພາດ ກະລຸນາ ລອງໃໝ່ໃນພາຍຫຼັງ'
-        })
-    }
-    return res.json({
-        status: 'success',
-        message: 'ອັບເດດ ຂໍ້ມູນສຳເລັດ'
+        reports
     })
 }
