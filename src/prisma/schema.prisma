@@ -53,7 +53,6 @@ model contracts {
 model exchange {
   exchangeId Int       @id @unique(map: "exchange_pk2") @default(autoincrement())
   companyId  Int
-  lak        Float
   thb        Float
   usd        Float
   createdBy  Int
@@ -71,6 +70,7 @@ model invoice {
   debt          Float     @default(0)
   contractId    Int
   currency      String    @db.VarChar(30)
+  paymentMethod String?   @db.VarChar(50)
   invoiceStatus String    @default("PENDING") @db.VarChar(20)
   paidDate      DateTime? @db.DateTime(0)
   createdAt     DateTime? @default(now()) @db.DateTime(0)

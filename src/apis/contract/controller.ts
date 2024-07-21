@@ -127,7 +127,9 @@ export const createContractController = async (req: Request, res: Response) => {
         invoiceId: 1,
         invoiceStatus,
         paidDate: paidNow,
-        updatedAt: paidNow
+        updatedAt: paidNow,
+        paymentMethod: null
+
     })
 
     if (!createInv) {
@@ -168,6 +170,8 @@ export const updateContractController = async (req: Request, res: Response) => {
     const cancelAt = req.body.cancelAt
     const cancelBy = req.body.cancelBy
     const reason = req.body.reason
+    const paymentMethod = req.body.paymentMethod
+
 
     if (oldArea != area || oldProjectId != projectId) {
         const projectOld = await finOneProjectService({ projectId: oldProjectId })
@@ -261,7 +265,9 @@ export const updateContractController = async (req: Request, res: Response) => {
         invoiceId,
         invoiceStatus,
         paidDate: paidNow,
-        updatedAt: paidNow
+        updatedAt: paidNow,
+        paymentMethod
+
     })
 
     if (!createInv) {

@@ -43,7 +43,7 @@ router.post('/contracts/update/status', verify, updateContractStatusController)
 router.post('/invoices/payday', verify, invoicePaydayController)
 
 // TODO:Exchange endpoint
-router.get('/exchanges', verify, valReadExchange, valResult, readExchangeController)
+router.post('/exchanges', verify, valReadExchange, valResult, readExchangeController)
 router.post('/exchanges/create', verify, valCreateExchange, valResult, createExchangeController)
 router.post('/exchanges/update', verify, valUpdateExchange, valResult, updateExchangeController)
 
