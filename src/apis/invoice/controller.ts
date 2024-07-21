@@ -1,5 +1,5 @@
 import { Request, Response } from 'express'
-import { findInvoicePaydayService, findLastExchangeService, findOneInvoiceService, paidInvoiceService } from './service'
+import { closeContractService, findInvoicePaydayService, findLastExchangeService, findOneInvoiceService, paidInvoiceService } from './service'
 import { tokenPayloadService } from '../user/service'
 import { responseData } from '../../utils/functions'
 import { dateFormatter, today } from '../../utils/dateFormat'
@@ -122,6 +122,20 @@ export const invoicePaidController = async (req: Request, res: Response) => {
             return res.json({
                 status: 'error',
                 message: 'ສ້າງໃບແຈ້ງໜີ້ ຜິດພາດ ລອງໃໝ່ໃນພາຍຫຼັງ'
+            })
+        }
+    } else {
+        const closeContract = await closeContractService({
+            contractId: inv.contractId,
+            contractStatus: 'CLOSED',
+            updatedAt: paidDate,
+            updatedBy: payload.userId
+        })
+
+        if (!closeContract) {
+            return res.json({
+                status: 'error',
+                message: 'ປິດສັນຍາ ຜິດພາດ ລອງໃໝ່ໃນພາຍຫຼັງ'
             })
         }
     }

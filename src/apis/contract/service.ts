@@ -21,6 +21,23 @@ export const finOneProjectService = async (data: { projectId: number }) => {
     }
 }
 
+export const finOneContractService = async (data: { docId: string }) => {
+    try {
+        const p = await prismaClient.contracts.findFirst({
+            where: {
+                docId: data.docId
+            },
+            select: {
+                contractId: true
+            }
+        })
+        return p
+    } catch (err) {
+        logger.error(err)
+        return null
+    }
+}
+
 export const updateProjectAreaService = async (data: { projectId: number; area: number }) => {
     console.log('updateProjectAreaService == ', data)
     try {

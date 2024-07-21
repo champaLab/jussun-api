@@ -9,7 +9,8 @@ import {
     updateProjectAreaService,
     updateContractStatusService,
     createInvoiceService,
-    updateInvoiceService
+    updateInvoiceService,
+    finOneContractService
 } from './service'
 import dayjs from 'dayjs'
 import { responseData } from '../../utils/functions'
@@ -61,6 +62,14 @@ export const createContractController = async (req: Request, res: Response) => {
     const amount = Math.ceil((area * price) / numberOfInstallment)
     const invoiceStatus = amount == totalPrice ? 'PAID' : 'PENDING'
     const paidNow = amount == totalPrice ? dayjs().toDate() : null
+
+    const contract = await finOneContractService({ docId })
+    if (contract) {
+        return res.json({
+            status: 'error',
+            message: 'ເລກທີເອກະສານນີ້ ມີໃນລະບົບແລ້ວ'
+        })
+    }
 
     const project = await finOneProjectService({ projectId })
 

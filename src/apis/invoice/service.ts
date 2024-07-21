@@ -121,3 +121,25 @@ export const paidInvoiceService = async (data: TPaidInvoice) => {
         prismaClient.$disconnect()
     }
 }
+
+export const closeContractService = async (data: { contractId: number; contractStatus: string; updatedAt: Date; updatedBy: number }) => {
+    try {
+        const result = await prismaClient.contracts.update({
+            where: { contractId: data.contractId },
+            data: {
+                ...data,
+                reason: null,
+                cancelAt: null,
+                cancelBy: null
+            }
+        })
+
+        return result
+    } catch (err) {
+        logger.error(err)
+        console.error(err)
+        return null
+    } finally {
+        prismaClient.$disconnect()
+    }
+}
