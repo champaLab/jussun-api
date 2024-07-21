@@ -6,6 +6,7 @@ import env from '../../env'
 
 
 export const readExchangeService = async (data: { companyId: number, dateStart: string, dateEnd: string, page: number }) => {
+    console.log("readExchangeService", data)
     const skip = (data.page - 1) * env.ROW_PER_PAGE
     const take = env.ROW_PER_PAGE
     const { companyId, dateStart, dateEnd } = data

@@ -45,7 +45,7 @@ router.post('/invoices/payday', verify, invoicePaydayController)
 router.post('/invoices/paid', verify, upload('bills', true).single('file'), verify, valUpdateInvoice, valResult, invoicePaidController)
 
 // TODO:Exchange endpoint
-router.get('/exchanges', verify, valReadExchange, valResult, readExchangeController)
+router.post('/exchanges', verify, valReadExchange, valResult, readExchangeController)
 router.post('/exchanges/create', verify, valCreateExchange, valResult, createExchangeController)
 router.post('/exchanges/update', verify, valUpdateExchange, valResult, updateExchangeController)
 

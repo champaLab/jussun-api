@@ -19,7 +19,7 @@ export const readExchangeController = async (req: Request, res: Response) => {
     })
     const exchanges = exc.exchange.map((item, i) => ({
         ...item,
-        index: (i + 1) * page,
+        indexNo: (i + 1) * page,
         createdAt: dateFormatter(item.createdAt),
         updatedAt: dateFormatter(item.updatedAt)
     }))
@@ -39,11 +39,10 @@ export const createExchangeController = async (req: Request, res: Response) => {
     const createdBy = payload.userId
     const deletedAt = null
     const exchangeId = Number(req.body.exchangeId)
-    const lak = req.body.lak
-    const thb = req.body.thb
     const updatedAt = today()
     const updatedBy = payload.userId
-    const usd = req.body.usd
+    const thb = parseFloat(req.body.thb)
+    const usd = parseFloat(req.body.usd)
 
     const create = await createExchangeService({
         companyId,
@@ -77,10 +76,10 @@ export const updateExchangeController = async (req: Request, res: Response) => {
     const createdBy = payload.userId
     const deletedAt = null
     const exchangeId = Number(req.body.exchangeId)
-    const thb = req.body.thb
     const updatedAt = today()
     const updatedBy = payload.userId
-    const usd = req.body.usd
+    const thb = parseFloat(req.body.thb)
+    const usd = parseFloat(req.body.usd)
 
     const update = await updateExchangeService({
         companyId,
