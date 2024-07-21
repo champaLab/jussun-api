@@ -52,6 +52,7 @@ export const createContractController = async (req: Request, res: Response) => {
     const totalPrice = price * area
     const updatedAt = null
     const createdAt = dayjs().toDate()
+    const paymentMethod = req.body.paymentMethod ?? null
 
     const debt = totalPrice - payInAdvance
     let numberOfInstallment = debt === 0 ? 1 : Number(req.body.numberOfInstallment)
@@ -127,7 +128,10 @@ export const createContractController = async (req: Request, res: Response) => {
         invoiceId: 1,
         invoiceStatus,
         paidDate: paidNow,
-        updatedAt: paidNow
+        updatedAt: paidNow,
+        paymentMethod,
+        currencyExchange: null,
+        exchangeRate: null
     })
 
     if (!createInv) {
@@ -168,6 +172,9 @@ export const updateContractController = async (req: Request, res: Response) => {
     const cancelAt = req.body.cancelAt
     const cancelBy = req.body.cancelBy
     const reason = req.body.reason
+    const paymentMethod = req.body.paymentMethod
+    const currencyExchange = req.body.currencyExchange
+    const exchangeRate = req.body.exchangeRate
 
     if (oldArea != area || oldProjectId != projectId) {
         const projectOld = await finOneProjectService({ projectId: oldProjectId })
@@ -211,11 +218,11 @@ export const updateContractController = async (req: Request, res: Response) => {
     const numberOfInstallment = debt === 0 ? 1 : Number(req.body.numberOfInstallment)
     const contractStatus = debt === 0 ? 'CLOSED' : 'ACTIVE'
 
-    const amount = Math.ceil((area * price - payInAdvance) / numberOfInstallment)
+    const amount: number = Math.ceil((area * price - payInAdvance) / numberOfInstallment)
     const invoiceStatus = debt === 0 ? 'PAID' : 'PENDING'
     const paidNow = dayjs().toDate()
     const invoiceId = Number(req.body.invoiceId)
-    const fines = req.body.fines ? Number(req.body.fines) : 0
+    const fines = req.body.fines ? parseFloat(req.body.fines) : 0
 
     console.log('-'.repeat(150))
     console.error({ debt, numberOfInstallment, contractStatus, amount, invoiceStatus, paidNow, invoiceId })
@@ -261,7 +268,10 @@ export const updateContractController = async (req: Request, res: Response) => {
         invoiceId,
         invoiceStatus,
         paidDate: paidNow,
-        updatedAt: paidNow
+        updatedAt: paidNow,
+        paymentMethod,
+        currencyExchange,
+        exchangeRate
     })
 
     if (!createInv) {

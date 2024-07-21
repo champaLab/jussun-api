@@ -53,7 +53,6 @@ model contracts {
 model exchange {
   exchangeId Int       @id @unique(map: "exchange_pk2") @default(autoincrement())
   companyId  Int
-  lak        Float
   thb        Float
   usd        Float
   createdBy  Int
@@ -65,16 +64,19 @@ model exchange {
 
 /// This model or at least one of its fields has comments in the database, and requires an additional setup for migrations: Read more: https://pris.ly/d/database-comments
 model invoice {
-  invoiceId     Int       @id @unique(map: "invoice_pk2") @default(autoincrement())
-  amount        Float
-  fines         Float?    @default(0)
-  debt          Float     @default(0)
-  contractId    Int
-  currency      String    @db.VarChar(30)
-  invoiceStatus String    @default("PENDING") @db.VarChar(20)
-  paidDate      DateTime? @db.DateTime(0)
-  createdAt     DateTime? @default(now()) @db.DateTime(0)
-  updatedAt     DateTime? @db.DateTime(0)
+  invoiceId        Int       @id @unique(map: "invoice_pk2") @default(autoincrement())
+  amount           Float
+  fines            Float?    @default(0)
+  debt             Float     @default(0)
+  contractId       Int
+  currency         String    @db.VarChar(30)
+  paymentMethod    String?   @db.VarChar(50)
+  invoiceStatus    String    @default("PENDING") @db.VarChar(20)
+  exchangeRate     Float?
+  currencyExchange String?   @db.VarChar(5)
+  paidDate         DateTime? @db.DateTime(0)
+  createdAt        DateTime? @default(now()) @db.DateTime(0)
+  updatedAt        DateTime? @db.DateTime(0)
 }
 
 model projects {

@@ -13,9 +13,10 @@ import { valProjectCreate, valProjectUpdate } from './apis/projects/validate'
 import { valResult } from './utils/validateResult'
 import { findManyPaidToDayController } from './apis/payment/controller'
 import { valInvoicePaidToday } from './apis/payment/validate'
-import { invoicePaydayController } from './apis/invoice/controller'
+import { invoicePaidController, invoicePaydayController } from './apis/invoice/controller'
 import { createExchangeController, readExchangeController, updateExchangeController } from './apis/exchange/controller'
 import { valCreateExchange, valReadExchange, valUpdateExchange } from './apis/exchange/validate'
+import { valUpdateInvoice } from './apis/invoice/validate'
 
 const router = Router()
 
@@ -41,6 +42,7 @@ router.post('/contracts/update/status', verify, updateContractStatusController)
 
 // TODO: PAYMENT
 router.post('/invoices/payday', verify, invoicePaydayController)
+router.post('/invoices/paid', verify, upload('bills', true).single('file'), verify, valUpdateInvoice, valResult, invoicePaidController)
 
 // TODO:Exchange endpoint
 router.get('/exchanges', verify, valReadExchange, valResult, readExchangeController)

@@ -4,14 +4,12 @@ import { tokenPayloadService } from '../user/service'
 import { dateFormatter, today } from '../../utils/dateFormat'
 import dayjs from 'dayjs'
 
-
 export const readExchangeController = async (req: Request, res: Response) => {
     const payload = tokenPayloadService(req)
     const companyId = Number(payload.companyId)
     const dateStart = dayjs(req.body.dateStart).format('YYYY-MM-DD')
     const dateEnd = dayjs(req.body.dateEnd).format('YYYY-MM-DD') + ' 23:59:59'
     const page = Number(req.body.page ?? 0)
-
 
     const exc = await readExchangeService({
         companyId,
@@ -31,11 +29,8 @@ export const readExchangeController = async (req: Request, res: Response) => {
             exchanges,
             count: exc.count
         }
-    }
-    )
+    })
 }
-
-
 
 export const createExchangeController = async (req: Request, res: Response) => {
     const payload = tokenPayloadService(req)
@@ -56,7 +51,6 @@ export const createExchangeController = async (req: Request, res: Response) => {
         createdBy,
         deletedAt,
         exchangeId,
-        lak,
         thb,
         updatedAt,
         updatedBy,
@@ -83,7 +77,6 @@ export const updateExchangeController = async (req: Request, res: Response) => {
     const createdBy = payload.userId
     const deletedAt = null
     const exchangeId = Number(req.body.exchangeId)
-    const lak = req.body.lak
     const thb = req.body.thb
     const updatedAt = today()
     const updatedBy = payload.userId
@@ -95,7 +88,6 @@ export const updateExchangeController = async (req: Request, res: Response) => {
         createdBy,
         deletedAt,
         exchangeId,
-        lak,
         thb,
         updatedAt,
         updatedBy,

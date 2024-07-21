@@ -22,3 +22,16 @@ export interface TUserCreateModel {
     role: string
     userStatus: boolean
 }
+export interface TPaidInvoice {
+    invoiceStatus: string
+    amount: number
+    currency: string
+    debt: number
+    fines: number
+    paidDate: Date
+    updatedAt: Date
+    paymentMethod: string
+    invoiceId: number
+    exchangeRate: number | null
+    currencyExchange: string | null
+}

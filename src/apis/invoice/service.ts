@@ -1,7 +1,7 @@
 import logger from '../../configs/winston'
 import prismaClient from '../../prisma'
 import { company, invoice, users } from '@prisma/client'
-import { TUserCreateModel, TUserPayloadModel } from './type'
+import { TPaidInvoice, TUserCreateModel, TUserPayloadModel } from './type'
 import { Request } from 'express'
 import env from '../../env'
 
@@ -58,7 +58,6 @@ export const findInvoicePaydayService = async (data: {
                 LEFT JOIN invoice inv ON c.contractId = inv.contractId
             WHERE inv.invoiceStatus = ${data.invoiceStatus} AND
                     c.companyId = ${data.companyId}
-            ORDER BY createdAt DESC
              LIMIT ${take} OFFSET ${skip}        
         `
 
@@ -67,6 +66,57 @@ export const findInvoicePaydayService = async (data: {
         logger.error(err)
         console.error(err)
         return { invoice: [], count: 0 }
+    } finally {
+        prismaClient.$disconnect()
+    }
+}
+
+export const findLastExchangeService = async (data: { companyId: number }) => {
+    try {
+        const exchange = await prismaClient.exchange.findFirst({
+            orderBy: {
+                createdAt: 'desc'
+            }
+        })
+
+        return exchange
+    } catch (err) {
+        logger.error(err)
+        console.error(err)
+        return null
+    } finally {
+        prismaClient.$disconnect()
+    }
+}
+
+export const findOneInvoiceService = async (data: { invoiceId: number }) => {
+    try {
+        const result = await prismaClient.invoice.findFirst({
+            where: { invoiceId: data.invoiceId }
+        })
+
+        return result
+    } catch (err) {
+        logger.error(err)
+        console.error(err)
+        return null
+    } finally {
+        prismaClient.$disconnect()
+    }
+}
+
+export const paidInvoiceService = async (data: TPaidInvoice) => {
+    try {
+        const result = await prismaClient.invoice.update({
+            where: { invoiceId: data.invoiceId },
+            data: data
+        })
+
+        return result
+    } catch (err) {
+        logger.error(err)
+        console.error(err)
+        return null
     } finally {
         prismaClient.$disconnect()
     }
