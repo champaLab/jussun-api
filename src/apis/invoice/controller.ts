@@ -5,6 +5,7 @@ import { responseData } from '../../utils/functions'
 import { dateFormatter, today } from '../../utils/dateFormat'
 import env from '../../env'
 import { createInvoiceService } from '../contract/service'
+import { TResponseModel } from './type'
 
 export const invoicePaydayController = async (req: Request, res: Response) => {
     const payload = tokenPayloadService(req)
@@ -12,6 +13,7 @@ export const invoicePaydayController = async (req: Request, res: Response) => {
     const key = req.body.key
     const page = req.body.page ? Number(req.body.page) : 1
     const invoiceStatus = req.body.invoiceStatus
+    const projectId = req.body.projectId ? parseInt(req.body.projectId) : null
 
     if ((payload.role === 'ADMIN' || payload.role === 'SUPERADMIN') && companyId) {
         companyId = Number(companyId)
@@ -19,10 +21,10 @@ export const invoicePaydayController = async (req: Request, res: Response) => {
         companyId = payload.companyId
     }
 
-    const inv = await findInvoicePaydayService({ invoiceStatus, companyId, key, page })
-    const invoices = inv.invoice.map((item, i) => ({
+    const inv = await findInvoicePaydayService({ invoiceStatus, companyId, key, page, projectId })
+    const invoices = inv.invoices.map((item, i) => ({
         ...item,
-        index: (i + 1) * page,
+        indexNo: (i + 1) * page,
         logoPath: item.logoPath ? `${env.HOST_IMAGE}${env.BASE_PATH}${item.logoPath}` : null,
         paidDate: dateFormatter(item.paidDate),
         createdAt: dateFormatter(item.createdAt),
