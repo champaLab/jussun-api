@@ -67,13 +67,13 @@ export const invoicePaidController = async (req: Request, res: Response) => {
         })
     }
 
-    let debt = inv.debt
+    let debt: number = inv.debt ?? 0
     if (inv.currency == invCurrency) {
-        debt = inv.debt - invAmount
+        debt = inv.debt ?? 0 - invAmount
         currencyExchange = null
         exchangeRate = null
     } else if (inv.currency != invCurrency) {
-        debt = inv.debt - invAmount / exchangeRate
+        debt = inv.debt ?? 0 - invAmount / exchangeRate
     }
 
     // if (debt > inv.debt) {
