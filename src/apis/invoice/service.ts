@@ -10,6 +10,8 @@ export const findInvoicePaydayService = async (data: {
     key: string | null
     projectId: number | null
     invoiceStatus: string | null
+    dayStart: string
+    dayEnd: string
 }): Promise<TResponseModel> => {
     const skip = (data.page - 1) * env.ROW_PER_PAGE
     const take = env.ROW_PER_PAGE
@@ -19,7 +21,8 @@ export const findInvoicePaydayService = async (data: {
     if (invoiceStatus) {
         condition = Prisma.sql`${condition} AND inv.invoiceStatus = ${invoiceStatus}`
     }
-    if (key) {
+    console.log({ key })
+    if (key && key != '') {
         condition = Prisma.sql`${condition} AND (
             u.fullName LIKE ${'%' + key + '%'} 
             OR p.projectName LIKE ${'%' + key + '%'}
@@ -27,7 +30,13 @@ export const findInvoicePaydayService = async (data: {
             OR inv.invoiceId = ${key}
         )
         `
+    } else {
+        condition = Prisma.sql`${condition} AND (
+            c.payDay BETWEEN ${data.dayStart} AND ${data.dayEnd}
+        )
+        `
     }
+
     if (projectId) {
         condition = Prisma.sql`${condition} AND p.projectId = ${projectId}`
     }

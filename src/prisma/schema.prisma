@@ -48,6 +48,7 @@ model contracts {
   cancelAt            DateTime? @db.DateTime(0)
   cancelBy            Int?
   reason              String?   @db.VarChar(255)
+  lastInvoice         Int?
 }
 
 model exchange {
@@ -120,8 +121,8 @@ model users {
   lastName   String    @db.VarChar(80)
   tel        String    @unique(map: "tel") @db.VarChar(8)
   password   String    @db.VarChar(255)
-  role       String?   @default("CUSTOMER") @db.VarChar(10)
-  userStatus Boolean?  @default(true)
+  role       String    @default("CUSTOMER") @db.VarChar(10)
+  userStatus Boolean   @default(true)
   createdAt  DateTime? @default(now()) @db.DateTime(0)
   updatedAt  DateTime? @default(now()) @db.DateTime(0)
 }

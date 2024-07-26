@@ -10,7 +10,8 @@ import {
     updateContractStatusService,
     createInvoiceService,
     updateInvoiceService,
-    finOneContractService
+    finOneContractService,
+    updateContractInvoiceIdService
 } from './service'
 import dayjs from 'dayjs'
 import { responseData } from '../../utils/functions'
@@ -118,7 +119,8 @@ export const createContractController = async (req: Request, res: Response) => {
         contractStatus,
         cancelAt: null,
         cancelBy: null,
-        reason: null
+        reason: null,
+        lastInvoice: null
     })
     if (!p) {
         return res.json({
@@ -150,6 +152,8 @@ export const createContractController = async (req: Request, res: Response) => {
             message: 'ສ້າງໃບແຈ້ງໜີ້ ຜິດພາດ ລອງໃໝ່ໃນພາຍຫຼັງ'
         })
     }
+
+    await updateContractInvoiceIdService(p.contractId, createInv.invoiceId)
 
     return res.json({
         status: 'success',
@@ -185,6 +189,7 @@ export const updateContractController = async (req: Request, res: Response) => {
     const paymentMethod = req.body.paymentMethod
     const currencyExchange = req.body.currencyExchange
     const exchangeRate = req.body.exchangeRate
+    const lastInvoice = Number(req.body.lastInvoice)
 
     if (oldArea != area || oldProjectId != projectId) {
         const projectOld = await finOneProjectService({ projectId: oldProjectId })
@@ -259,7 +264,8 @@ export const updateContractController = async (req: Request, res: Response) => {
         cancelAt,
         cancelBy,
         reason,
-        contractStatus
+        contractStatus,
+        lastInvoice
     })
     if (!p) {
         return res.json({

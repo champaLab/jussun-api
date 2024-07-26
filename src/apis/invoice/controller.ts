@@ -4,8 +4,9 @@ import { tokenPayloadService } from '../user/service'
 import { responseData } from '../../utils/functions'
 import { dateFormatter, today } from '../../utils/dateFormat'
 import env from '../../env'
-import { createInvoiceService } from '../contract/service'
+import { createInvoiceService, updateContractInvoiceIdService } from '../contract/service'
 import { TResponseModel } from './type'
+import dayjs from 'dayjs'
 
 export const invoicePaydayController = async (req: Request, res: Response) => {
     const payload = tokenPayloadService(req)
@@ -13,6 +14,9 @@ export const invoicePaydayController = async (req: Request, res: Response) => {
     const key = req.body.key
     const page = req.body.page ? Number(req.body.page) : 1
     const invoiceStatus = req.body.invoiceStatus
+    const date = req.body.date ? req.body.date.split('-') : [dayjs().format('DD'), dayjs().add(5, 'days').format('DD')]
+    const dayStart = date[0]
+    const dayEnd = date[1]
     const projectId = req.body.projectId ? parseInt(req.body.projectId) : null
 
     if ((payload.role === 'ADMIN' || payload.role === 'SUPERADMIN') && companyId) {
@@ -21,7 +25,7 @@ export const invoicePaydayController = async (req: Request, res: Response) => {
         companyId = payload.companyId
     }
 
-    const inv = await findInvoicePaydayService({ invoiceStatus, companyId, key, page, projectId })
+    const inv = await findInvoicePaydayService({ invoiceStatus, companyId, key, page, projectId, dayEnd, dayStart })
     const invoices = inv.invoices.map((item, i) => ({
         ...item,
         indexNo: (i + 1) * page,
@@ -37,7 +41,7 @@ export const invoicePaydayController = async (req: Request, res: Response) => {
         reports: {
             invoices,
             count: inv.count,
-            exchange
+            exchange: { ...exchange, updatedAt: dateFormatter(exchange?.updatedAt) }
         }
     })
 }
@@ -128,6 +132,8 @@ export const invoicePaidController = async (req: Request, res: Response) => {
                 message: 'ສ້າງໃບແຈ້ງໜີ້ ຜິດພາດ ລອງໃໝ່ໃນພາຍຫຼັງ'
             })
         }
+
+        await updateContractInvoiceIdService(inv.contractId, createInv.invoiceId)
     } else {
         const closeContract = await closeContractService({
             contractId: inv.contractId,
