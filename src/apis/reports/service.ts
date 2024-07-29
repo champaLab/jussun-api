@@ -4,13 +4,13 @@ import prismaClient from '../../prisma'
 
 
 
-export const readReportService = async (data: { userId: number }) => {
+export const readReportService = async (data: { userId: number, dateStart: string, dateEnd: string }) => {
     console.log("", data)
-    const { userId } = data
+    const { userId, dateStart, dateEnd } = data
     try {
         const report: any[] = await prismaClient.$queryRaw` SELECT paymentMethod, SUM(amount) as totalAmount, currency
         FROM invoice
-        WHERE createdBy = ${userId}
+        WHERE createdBy = ${userId} AND DATE(paidDate) BETWEEN ${dateStart} AND ${dateEnd}
         GROUP BY paymentMethod, currency;`
         return report
 
@@ -22,23 +22,3 @@ export const readReportService = async (data: { userId: number }) => {
         await prismaClient.$disconnect()
     }
 }
-
-// export const createReportService = async (data: exchange) => {
-//     const { exchangeId, updatedBy, updatedAt, ...newData } = data
-//     console.log(newData)
-//     try {
-//         const p = await prismaClient.exchange.create({
-//             data: newData
-//         })
-//         return p
-//     } catch (err) {
-//         logger.error(err)
-//         console.log(err)
-//         return null
-//     } finally {
-//         await prismaClient.$disconnect()
-//     }
-// }
-
-
-
