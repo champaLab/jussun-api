@@ -18,6 +18,7 @@ import { createExchangeController, readExchangeController, updateExchangeControl
 import { valCreateExchange, valReadExchange, valUpdateExchange } from './apis/exchange/validate'
 import { valUpdateInvoice } from './apis/invoice/validate'
 import { readReportController } from './apis/reports/controller'
+import { readReceiveController } from './apis/receive/controller'
 
 const router = Router()
 
@@ -52,5 +53,6 @@ router.post('/exchanges/update', verify, valUpdateExchange, valResult, updateExc
 
 //TODO: Report endpoint
 router.post('/report', verify, readReportController)
+router.post("/receive" , verify , readReceiveController)
 
 export default router

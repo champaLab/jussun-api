@@ -1,19 +1,19 @@
 import { Request, Response } from 'express'
-import { readReportService } from './service'
 import { tokenPayloadService } from '../user/service'
 import dayjs from 'dayjs'
 import { dateFormatter } from '../../utils/dateFormat'
+import { readReceiveService } from './service'
 
-export const readReportController = async (req: Request, res: Response) => {
+export const readReceiveController = async (req: Request, res: Response) => {
     const payload = tokenPayloadService(req)
-    const userId = Number(payload.userId)
+    const companyId = Number(payload.userId)
     const dateStart = dayjs(req.body.dateStart).format('YYYY-MM-DD')
     const dateEnd = dayjs(req.body.dateEnd).format('YYYY-MM-DD') + ' 23:59:59'
 
-    const rp = await readReportService({ userId, dateEnd, dateStart })
+    const rp = await readReceiveService({ companyId, dateEnd, dateStart })
     console.log(rp)
 
-    const reports = rp.map((item, i) => ({
+    const receives = rp.map((item, i) => ({
         ...item,
         indexNo: (i + 1),
         createdAt: dateFormatter(item.createdAt),
@@ -21,6 +21,6 @@ export const readReportController = async (req: Request, res: Response) => {
 
     return res.json({
         status: 'success',
-        reports
+        receives
     })
 }
