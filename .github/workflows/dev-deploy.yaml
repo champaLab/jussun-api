@@ -33,16 +33,16 @@ jobs:
                   yarn
                   yarn db
                   yarn build
-            - name: Manage PM2 Process
-              run: |
-                  cd servers/actions-runner/JUTSUN-API/jutsun-node/jutsun-node/
-                  if pm2 list | grep -q JUTSUN-API; then
-                    echo "Process JUTSUN-API already running. Restarting..."
-                    pm2 restart JUTSUN-API
-                  else
-                    echo "Starting JUTSUN-API..."
-                    pm2 start ./dist/index.js --name JUTSUN-API
-                  fi
+            # - name: Manage PM2 Process
+            #   run: |
+            #       cd servers/actions-runner/JUTSUN-API/jutsun-node/jutsun-node/
+            #       if pm2 list | grep -q JUTSUN-API; then
+            #         echo "Process JUTSUN-API already running. Restarting..."
+            #         pm2 restart JUTSUN-API
+            #       else
+            #         echo "Starting JUTSUN-API..."
+            #         pm2 start ./dist/index.js --name JUTSUN-API
+            #       fi
             - run: pm2 save
             - run: pm2 startup
             - run: pm2 save
