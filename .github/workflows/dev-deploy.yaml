@@ -24,6 +24,7 @@ jobs:
             - run: rm -rf .env
             - run: cp -rp .env.dev .env
             - run: yarn
+            - run: yarn db
             - run: yarn build
             - name: Manage PM2 Process
               run: |
