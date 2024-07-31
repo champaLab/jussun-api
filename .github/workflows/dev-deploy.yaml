@@ -45,7 +45,7 @@ jobs:
               uses: actions/upload-artifact@v4
               with:
                   name: my-artifact # Change this name if needed
-                  path: /root/uploads # Replace with the temporary directory path from filter_files.sh
+                  path: /tmp/filtered_files # Replace with the temporary directory path from filter_files.sh
 
             - name: Manage PM2 Process
               run: |
