@@ -8,7 +8,7 @@ on:
     pull_request:
         branches: ['develop', 'dev']
         paths-ignore:
-            - 'servers/actions-runner/JUTSUN-API/jutsun-node/jutsun-node/uploads/**'
+            - 'servers/actions-runner/JUTSUN-API/jutsun-node/jutsun-  dev/uploads/**'
 
 jobs:
     build:
@@ -25,20 +25,28 @@ jobs:
               with:
                   node-version: ${{ matrix.node-version }}
                   cache: 'yarn'
-            # - run: rm -rf .env
-            # - run: cp -rp .env.dev .env
+            # - run: rm -rf .env  # Keep these lines commented out
+            # - run: cp -rp .env.dev .env  # Keep these lines commented out
             # - run: yarn
             # - run: yarn db
             # - run: yarn build
 
             - name: Change Directory and Run Commands
               run: |
-                  cd /servers/actions-runner/JUTSUN-API/jutsun-node/jutsun-node/
                   rm -rf .env
                   cp -rp .env.dev .env
                   yarn
                   yarn db
                   yarn build
+            - name: Filter files (excluding uploads folder)
+              run: |
+                  bash filter_files.sh  # Assuming filter_files.sh exists
+            - name: Upload filtered artifacts
+              uses: actions/upload-artifact@v4
+              with:
+                  name: my-artifact # Change this name if needed
+                  path: /path/to/temp # Replace with the temporary directory path from filter_files.sh
+
             - name: Manage PM2 Process
               run: |
                   if pm2 list | grep -q JUTSUN-API; then
