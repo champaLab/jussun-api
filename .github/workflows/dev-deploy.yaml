@@ -27,7 +27,7 @@ jobs:
             - run: yarn
             - run: yarn build
             - run: pm2 start ./dist/index.js --name JUTSUN-API
-            - run: pm2 restart m-parking-node
+            - run: pm2 restart JUTSUN-API
             - run: sudo pm2 save
             - run: sudo pm2 startup
             - run: sudo pm2 save
