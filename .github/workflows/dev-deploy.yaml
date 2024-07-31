@@ -2,11 +2,11 @@ name: Node.js CI
 
 on:
     push:
-        branches: ['develop', 'dev']
+        branches: ['develop']
         paths-ignore:
             - 'servers/actions-runner/JUTSUN-API/jutsun-node/jutsun-node/uploads/**'
     pull_request:
-        branches: ['develop', 'dev']
+        branches: ['develop']
         paths-ignore:
             - 'servers/actions-runner/JUTSUN-API/jutsun-node/jutsun-  dev/uploads/**'
 
