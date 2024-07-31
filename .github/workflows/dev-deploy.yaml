@@ -1,14 +1,10 @@
-name: Node.ts CI
+name: Node.js CI
 
 on:
     push:
         branches: ['develop']
-        paths-ignore:
-            - 'servers/actions-runner/JUTSUN-API/jutsun-node/jutsun-node/uploads/**'
     pull_request:
         branches: ['develop']
-        paths-ignore:
-            - 'servers/actions-runner/JUTSUN-API/jutsun-node/jutsun-node/uploads/**'
 
 jobs:
     build:
@@ -25,26 +21,21 @@ jobs:
               with:
                   node-version: ${{ matrix.node-version }}
                   cache: 'yarn'
-            - name: Change Directory and Run Commands
+            - run: rm -rf .env
+            - run: cp -rp .env.dev .env
+            - run: yarn
+            - run: yarn db
+            - run: yarn build
+            - name: Manage PM2 Process
               run: |
-                  cd servers/actions-runner/JUTSUN-API/jutsun-node/jutsun-node/
-                  rm -rf .env
-                  cp -rp .env.dev .env
-                  yarn
-                  yarn db
-                  yarn build
-            # - name: Manage PM2 Process
-            #   run: |
-            #       cd servers/actions-runner/JUTSUN-API/jutsun-node/jutsun-node/
-            #       if pm2 list | grep -q JUTSUN-API; then
-            #         echo "Process JUTSUN-API already running. Restarting..."
-            #         pm2 restart JUTSUN-API
-            #       else
-            #         echo "Starting JUTSUN-API..."
-            #         pm2 start ./dist/index.js --name JUTSUN-API
-            #       fi
+                  if pm2 list | grep -q JUTSUN-API; then
+                    echo "Process JUTSUN-API already running. Restarting..."
+                    pm2 restart JUTSUN-API
+                  else
+                    echo "Starting JUTSUN-API..."
+                    pm2 start ./dist/index.js --name JUTSUN-API
+                  fi
             - run: pm2 save
             - run: pm2 startup
             - run: pm2 save
-            - name: Reload NGINX
-              run: sudo service nginx reload
+            - run: service nginx reload
