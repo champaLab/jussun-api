@@ -13,7 +13,6 @@ jobs:
         strategy:
             matrix:
                 node-version: [18.x]
-        # See supported Node.js release schedule at https://nodejs.org/en/about/releases/
 
         steps:
             - uses: actions/checkout@v3
@@ -26,9 +25,16 @@ jobs:
             - run: cp -rp .env.dev .env
             - run: yarn
             - run: yarn build
-            - run: pm2 start ./dist/index.js --name JUTSUN-API
-            - run: pm2 restart JUTSUN-API
-            - run: sudo pm2 save
-            - run: sudo pm2 startup
+            - name: Manage PM2 Process
+              run: |
+                  if pm2 list | grep -q JUTSUN-API; then
+                    echo "Process JUTSUN-API already running. Restarting..."
+                    pm2 restart JUTSUN-API
+                  else
+                    echo "Starting JUTSUN-API..."
+                    pm2 start ./dist/index.js --name JUTSUN-API
+                  fi
+            - run: pm2 save
+            - run: pm2 startup
             - run: sudo pm2 save
             - run: sudo service nginx reload
