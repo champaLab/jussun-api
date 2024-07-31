@@ -1,6 +1,6 @@
 #!/bin/bash
 source_dir="/root/servers/actions-runner/JUTSUN-API/jutsun-node/jutsun-node"
-dest_dir="/root/servers"  # Create a temporary directory outside the project
+dest_dir="/root"  # Create a temporary directory outside the project
 exclude_dirs=("uploads")
 
 mkdir -p "$dest_dir"
