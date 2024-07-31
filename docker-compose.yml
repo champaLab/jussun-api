@@ -1,0 +1,9 @@
+version: '3'
+services:
+    node-ts-app:
+        build: .
+        ports:
+            - '1144:1144'
+        volumes:
+            - /path/on/host/uploads:/app/uploads
+        container_name: node-ts-app-container
