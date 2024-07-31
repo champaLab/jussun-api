@@ -2,9 +2,9 @@ name: Node.js CI
 
 on:
     push:
-        branches: ['main']
+        branches: ['develop']
     pull_request:
-        branches: ['main']
+        branches: ['develop']
 
 jobs:
     build:
@@ -22,7 +22,7 @@ jobs:
                   node-version: ${{ matrix.node-version }}
                   cache: 'yarn'
             - run: rm -rf .env
-            - run: cp -rp .env.prod .env
+            - run: cp -rp .env.dev .env
             - run: yarn
             - run: yarn db
             - run: yarn build
