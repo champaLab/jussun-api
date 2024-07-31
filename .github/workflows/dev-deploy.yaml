@@ -25,11 +25,19 @@ jobs:
               with:
                   node-version: ${{ matrix.node-version }}
                   cache: 'yarn'
-            - run: rm -rf .env
-            - run: cp -rp .env.dev .env
-            - run: yarn
-            - run: yarn db
-            - run: yarn build
+            # - run: rm -rf .env
+            # - run: cp -rp .env.dev .env
+            # - run: yarn
+            # - run: yarn db
+            # - run: yarn build
+
+            - name: Change Directory and Run Commands
+              run: |
+                  rm -rf .env
+                  cp -rp .env.dev .env
+                  yarn
+                  yarn db
+                  yarn build
             - name: Manage PM2 Process
               run: |
                   if pm2 list | grep -q JUTSUN-API; then
