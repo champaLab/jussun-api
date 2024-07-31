@@ -27,7 +27,7 @@ jobs:
                   cache: 'yarn'
             - name: Change Directory and Run Commands
               run: |
-                  cd servers/actions-runner/JUTSUN-API/jutsun-node/jutsun-node/
+                  cd github/workspace/servers/actions-runner/JUTSUN-API/jutsun-node/jutsun-node/
                   rm -rf .env
                   cp -rp .env.prod .env
                   yarn
@@ -35,7 +35,7 @@ jobs:
                   yarn build
             - name: Manage PM2 Process
               run: |
-                  cd servers/actions-runner/JUTSUN-API/jutsun-node/jutsun-node/
+                  cd github/workspace/servers/actions-runner/JUTSUN-API/jutsun-node/jutsun-node/
                   if pm2 list | grep -q JUTSUN-API; then
                     echo "Process JUTSUN-API already running. Restarting..."
                     pm2 restart JUTSUN-API
