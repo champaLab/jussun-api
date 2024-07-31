@@ -2,9 +2,13 @@ name: Node.js CI
 
 on:
     push:
-        branches: ['develop']
+        branches: ['main']
+        paths-ignore:
+            - 'servers/actions-runner/JUTSUN-API/jutsun-node/jutsun-node/uploads/**'
     pull_request:
-        branches: ['develop']
+        branches: ['main']
+        paths-ignore:
+            - 'servers/actions-runner/JUTSUN-API/jutsun-node/jutsun-node/uploads/**'
 
 jobs:
     build:
@@ -21,13 +25,17 @@ jobs:
               with:
                   node-version: ${{ matrix.node-version }}
                   cache: 'yarn'
-            - run: rm -rf .env
-            - run: cp -rp .env.dev .env
-            - run: yarn
-            - run: yarn db
-            - run: yarn build
+            - name: Change Directory and Run Commands
+              run: |
+                  cd servers/actions-runner/JUTSUN-API/jutsun-node/jutsun-node/
+                  rm -rf .env
+                  cp -rp .env.prod .env
+                  yarn
+                  yarn db
+                  yarn build
             - name: Manage PM2 Process
               run: |
+                  cd servers/actions-runner/JUTSUN-API/jutsun-node/jutsun-node/
                   if pm2 list | grep -q JUTSUN-API; then
                     echo "Process JUTSUN-API already running. Restarting..."
                     pm2 restart JUTSUN-API
@@ -38,4 +46,5 @@ jobs:
             - run: pm2 save
             - run: pm2 startup
             - run: pm2 save
-            - run: service nginx reload
+            - name: Reload NGINX
+              run: sudo service nginx reload
