@@ -22,7 +22,7 @@ RUN yarn global add pm2
 COPY . .
 
 # Copy environment file
-COPY .env.dev .env
+COPY .env.prod .env
 
 # Generate Prisma client
 RUN yarn db
