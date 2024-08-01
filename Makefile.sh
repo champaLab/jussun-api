@@ -20,13 +20,13 @@ compose-down:
 
 # Stop Containers and Bring Them Up Again
 compose-up:
-	docker compose down
-	docker compose up -d
+	docker-compose down
+	docker-compose up -d
 
 # Restart Containers with Cleanup and Port Check
 restart-containers:
 	@echo "Stopping and removing existing containers..."
-	docker compose down --remove-orphans || exit 1
+	docker-compose down --remove-orphans || exit 1
 
 	@echo "Checking if port 1144 is in use..."
 	if sudo lsof -i :1144; then \
@@ -36,6 +36,6 @@ restart-containers:
 	fi
 
 	@echo "Rebuilding and starting containers..."
-	docker compose up -d --build || exit 1
+	docker-compose up -d --build || exit 1
 
 	@echo "Containers have been restarted."
