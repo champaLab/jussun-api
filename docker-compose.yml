@@ -1,9 +1,28 @@
-version: '3'
+# version: '3.8'
+
+# services:
+#     app:
+#         image: jutsun-api
+#         build: .
+#         ports:
+#             - '1144:1144'
+#         volumes:
+#             - .:/app
+#             - ./uploads:/app/uploads
+
+version: '3.8'
+
 services:
-    node-ts-app:
+    app:
         build: .
+        container_name: jutsun-nodets-app
         ports:
             - '1144:1144'
+        environment:
+            - PRISMA_DB_CONN=${PRISMA_DB_CONN}
         volumes:
-            - /path/on/host/uploads:/app/uploads
-        container_name: node-ts-app-container
+            - .:/app
+            - /app/node_modules
+            - /app/uploads
+        restart: always
+        command: ['yarn', 'serv']
