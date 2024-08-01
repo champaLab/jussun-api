@@ -10,7 +10,21 @@ handle_error() {
   exit 1
 }
 
-# Step 1: Stop and remove existing containers (including orphans)
+# Step 1: Check if there are uncommitted changes and commit if necessary
+echo "Checking for uncommitted changes..."
+if git diff --quiet && git diff --cached --quiet; then
+  echo "No changes detected."
+else
+  echo "Uncommitted changes detected. Adding and committing changes..."
+  git add .
+  git commit -m 'Auto commit before restarting containers'
+  if [ $? -ne 0 ]; then
+    echo "Failed to commit changes. Exiting."
+    exit 1
+  fi
+fi
+
+# Step 2: Stop and remove existing containers (including orphans)
 echo "Stopping and removing existing containers..."
 docker-compose down --remove-orphans || handle_error
 
@@ -24,7 +38,7 @@ else
   echo "Port $PORT is not in use."
 fi
 
-# Step 2: Rebuild and start containers
+# Step 3: Rebuild and start containers
 echo "Rebuilding and starting containers..."
 docker-compose up -d --build || handle_error
 
