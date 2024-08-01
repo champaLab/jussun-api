@@ -15,7 +15,7 @@ version: '3.8'
 services:
     app:
         build: .
-        container_name: jutsun-nodets-app
+        container_name: jutsun-api
         ports:
             - '1144:1144'
         environment:

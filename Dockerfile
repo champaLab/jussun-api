@@ -33,4 +33,4 @@ RUN yarn build
 EXPOSE 1144
 
 # Command to run the application with PM2 using yarn serv
-CMD ["yarn", "serv"]
+CMD ["yarn", "serve"]
