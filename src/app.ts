@@ -45,7 +45,6 @@ app.get('/metrics', async (req, res) => {
 })
 
 app.get('/', helpCheck)
-
 app.get(env.BASE_PATH, helpCheck)
 
 export default app
