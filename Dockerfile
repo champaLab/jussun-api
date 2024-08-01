@@ -4,15 +4,16 @@ FROM node:18-bullseye-slim
 # Set the working directory in the container
 WORKDIR /app
 
-RUN apt update -y
-RUN apt install -y iputils-ping telnet
+# Install necessary packages
+RUN apt update -y && \
+    apt install -y iputils-ping telnet && \
+    rm -rf /var/lib/apt/lists/*
 
 # Copy package.json and yarn.lock
-COPY package.json  .
-COPY yarn.lock .
+COPY package.json yarn.lock ./
 
 # Install dependencies
-RUN yarn 
+RUN yarn install --frozen-lockfile
 
 # Install PM2 globally
 RUN yarn global add pm2
@@ -20,10 +21,13 @@ RUN yarn global add pm2
 # Copy the rest of the application code
 COPY . .
 
+# Copy environment file
 COPY .env.dev .env
 
-RUN yarn prisma generate
+# Generate Prisma client
+RUN yarn db
 
+# Remove environment files
 RUN rm -rf .env*
 
 # Build the TypeScript code

@@ -1,7 +1,7 @@
 {
-    "name": "jutsun",
+    "name": "jutsun-api",
     "version": "1.0.0",
-    "description": "jutsun",
+    "description": "jutsun-api",
     "main": "index.js",
     "license": "MIT",
     "scripts": {
@@ -11,7 +11,8 @@
         "git:pull": "git fetch --all && git merge --no-edit origin/master",
         "git:reset": "git reset --hard origin/master",
         "git:commit": "git add . && git commit -m 'pull'",
-        "prod": "yarn git:pull && rm -rf .env && cp -rp .env.prod .env && yarn && yarn db && docker-compose up -d --build && yarn git:commit",
+        "start:container": "chmod +x Makefile.sh && ./Makefile.sh",
+        "prod": "yarn git:pull && rm -rf .env && cp -rp .env.prod .env && yarn && yarn db && yarn start:container && yarn git:commit",
         "build": "tsc",
         "test:watch": "jest --watch",
         "db": "yarn db:pull && yarn db:generate",
