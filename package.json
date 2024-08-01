@@ -11,7 +11,7 @@
         "git:pull": "git fetch --all && git merge --no-edit origin/master",
         "git:reset": "git reset --hard origin/master",
         "start:container": "chmod +x Makefile.sh && ./Makefile.sh",
-        "prod": "yarn git:pull && rm -rf .env && cp -rp .env.prod .env && yarn && yarn db && yarn start:container",
+        "prod": "yarn git:pull && yarn start:container",
         "build": "tsc",
         "test:watch": "jest --watch",
         "db": "yarn db:pull && yarn db:generate",
