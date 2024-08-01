@@ -1,36 +1,41 @@
-#!/bin/bash
+# VERSION = v1.0.1
 
-# Function to handle errors
-handle_error() {
-  echo "An error occurred. Exiting."
-  exit 1
-}
+# # Test End-to-End with
+# test:
+# 	docker compose -f docker-compose.yml down
+# 	docker compose -f docker-compose.yml up --build --force-recreate --abort-on-container-exit --exit-code-from_tester
 
-# Define container name
-CONTAINER_NAME="jutsun-api"
-PORT=1144
+# # Test End-to-End Locally
+# test-local:
+# 	docker compose down
+# 	docker compose up --build --force-recreate --abort-on-container-exit --exit-code-from_tester
 
-# Step 1: Stop and remove existing containers (including orphans)
-echo "Stopping and removing existing containers..."
-docker compose down --remove-orphans || handle_error
+# # Bring Down Services
+# test-down:
+# 	docker compose -f docker-compose.yml down
 
-# Check if the container is still running and stop/remove if needed
-if [ "$(docker ps -q -f name=$CONTAINER_NAME)" ]; then
-    echo "Stopping and removing existing container $CONTAINER_NAME..."
-    docker stop $CONTAINER_NAME || handle_error
-    docker rm $CONTAINER_NAME || handle_error
-fi
+# Stop and Remove Containers
+compose-down:
+	docker compose down
 
-# Optional: Check if the port is in use and print a message
-echo "Checking if port $PORT is in use..."
-if sudo lsof -i :$PORT; then
-  echo "Port $PORT is in use. Please check for conflicts."
-else
-  echo "Port $PORT is not in use."
-fi
+# Stop Containers and Bring Them Up Again
+compose-up:
+	docker compose down
+	docker compose up -d
 
-# Step 2: Rebuild and start containers
-echo "Rebuilding and starting containers..."
-docker compose up -d --build || handle_error
+# Restart Containers with Cleanup and Port Check
+restart-containers:
+	@echo "Stopping and removing existing containers..."
+	docker compose down --remove-orphans || exit 1
 
-echo "Containers have been restarted."
+	@echo "Checking if port 1144 is in use..."
+	if sudo lsof -i :1144; then \
+	  echo "Port 1144 is in use. Please check for conflicts.";\
+	else \
+	  echo "Port 1144 is not in use.";\
+	fi
+
+	@echo "Rebuilding and starting containers..."
+	docker compose up -d --build || exit 1
+
+	@echo "Containers have been restarted."
