@@ -6,7 +6,7 @@ export default {
     SERVICE_NAME: process.env.SERVICE_NAME,
     NODE_ENV: process.env.NODE_ENV,
     NODE_HOST: process.env.NODE_HOST || '0.0.0.0',
-    NODE_PORT: parseInt(`${process.env.NODE_PORT}`) || 9000,
+    NODE_PORT: parseInt(`${process.env.NODE_PORT}`) || 8080,
     TZ: process.env.TZ || 'Aisa/Bangkok',
     DB_HOST: process.env.DB_HOST,
     DB_PORT: parseInt(process.env.DB_PORT || '3306'),
@@ -22,7 +22,7 @@ export default {
 
     PRISMA_DB_CONN: process.env.PRISMA_DB_CONN,
     BASE_PATH: `${process.env.BASE_PATH}`,
-    HOST_IMAGE: process.env.HOST_IMAGE || 'http://localhost:9000',
+    HOST_IMAGE: process.env.HOST_IMAGE || 'http://127.0.0.1:9000',
     DISCORD_WEBHOOK_IMAGE: `${process.env.DISCORD_WEBHOOK_IMAGE}`,
     DISCORD_MONITORING_CHANNEL_HOOK: `${process.env.DISCORD_MONITORING_CHANNEL_HOOK}`,
     DISCORD_WEBHOOK_TEXT: `${process.env.DISCORD_WEBHOOK_TEXT}`,
