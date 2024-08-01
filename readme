@@ -18,9 +18,21 @@ git merge  Branch-name --no-ff
 
 
 docker-compose build 
-docker-compose up -d
+docker-compose up -d --build
 docker-compose logs -f
 docker ps
 docker-compose down
 
+
+
+
+sudo systemctl daemon-reload
+sudo systemctl start nodejs1
+sudo systemctl enable nodejs1
+
+sudo systemctl start nodejs2
+sudo systemctl enable nodejs2
+
+sudo systemctl start nodejs3
+sudo systemctl enable nodejs3
 
