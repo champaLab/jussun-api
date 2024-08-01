@@ -10,7 +10,8 @@ RUN apt update -y && \
     rm -rf /var/lib/apt/lists/*
 
 # Copy package.json and yarn.lock
-COPY package.json yarn.lock ./
+COPY package.json .
+COPY yarn.lock .
 
 # Install dependencies
 RUN yarn install  
