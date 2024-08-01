@@ -5,7 +5,7 @@ services:
         build: .
         container_name: jutsun-api
         ports:
-            - '1144:1144'
+            - '1101:1101'
         environment:
             - PRISMA_DB_CONN=${PRISMA_DB_CONN}
         volumes:

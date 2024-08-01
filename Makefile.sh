@@ -2,7 +2,7 @@
 
 # Define container name and port
 CONTAINER_NAME="jutsun-api"
-PORT=1144
+PORT=1101
 
 # Function to handle errors
 handle_error() {

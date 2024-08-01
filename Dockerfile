@@ -34,7 +34,7 @@ RUN yarn db
 RUN yarn build
 
 # Expose the port the app runs on
-EXPOSE 1144
+EXPOSE 1101
 
 # Command to run the application with PM2 using yarn serv
 CMD ["yarn", "serve"]
