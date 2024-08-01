@@ -11,7 +11,7 @@
         "serve": "pm2 start ./dist/index.js --name jutsun && pm2 save",
         "git:pull": "git fetch --all && git merge --no-edit origin/master",
         "git:reset": "git reset --hard origin/master",
-        "prod": "yarn git:pull && rm -rf .env && cp -rp .env.prod .env && yarn && yarn db && yarn build && pm2 restart jutsun && pm2 save && pm2 logs && git add . && git commit -m 'pull'",
+        "prod": "yarn git:pull && rm -rf .env && cp -rp .env.prod .env && yarn && yarn db && docker-compose up -d --build",
         "build": "tsc",
         "test:watch": "jest --watch",
         "db": "yarn db:pull && yarn db:generate",
