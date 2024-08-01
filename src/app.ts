@@ -7,6 +7,7 @@ import env from './env'
 import { join } from 'path'
 import { limiter } from './utils/limiter'
 import requestIp from 'request-ip'
+import { helpCheck } from './utils/helpCheck'
 const app = express()
 
 const register = new prom.Registry()
@@ -43,22 +44,8 @@ app.get('/metrics', async (req, res) => {
     return res.send(await register.metrics())
 })
 
-app.get('/', (req, res) => {
-    return res.json({
-        status: 'OK',
-        upTime: process.uptime(),
-        timestamp: Date.now(),
-        instance: process.env.NODE_APP_INSTANCE
-    })
-})
+app.get('/', helpCheck)
 
-app.get(env.BASE_PATH, (req, res) => {
-    return res.json({
-        status: 'OK',
-        upTime: process.uptime(),
-        timestamp: Date.now(),
-        instance: process.env.NODE_APP_INSTANCE
-    })
-})
+app.get(env.BASE_PATH, helpCheck)
 
 export default app
