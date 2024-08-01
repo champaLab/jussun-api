@@ -13,7 +13,8 @@ RUN apt update -y && \
 COPY package.json yarn.lock ./
 
 # Install dependencies
-RUN yarn install --frozen-lockfile
+RUN yarn install  
+#--frozen-lockfile
 
 # Install PM2 globally
 RUN yarn global add pm2
