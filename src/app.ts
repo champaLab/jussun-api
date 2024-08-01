@@ -20,8 +20,6 @@ collectDefaultMetrics({
     register
 })
 
-const corsOptions = {}
-
 app.use(cors())
 app.use(express.json())
 app.use(express.urlencoded({ extended: true }))
@@ -32,12 +30,9 @@ app.use(limiter)
 app.use(requestIp.mw())
 
 app.use((req, res, next) => logRequestResponse(req, res, next, ['excel', 'users', 'metrics']))
-// app.use(express.static(path.join(__dirname, './uploads')))
 
 app.use(`${env.BASE_PATH}/v1`, router)
 app.use(`${env.BASE_PATH}`, express.static(join(env.PWD, 'uploads')))
-app.use(`${env.BASE_PATH}`, express.static(join(env.PWD, 'images')))
-app.use(`${env.BASE_PATH}`, express.static(join(env.PWD, 'images')))
 
 app.get('/metrics', async (req, res) => {
     res.set('Content-Type', register.contentType)
@@ -45,6 +40,7 @@ app.get('/metrics', async (req, res) => {
 })
 
 app.get('/', helpCheck)
+app.get('/test', helpCheck)
 app.get(env.BASE_PATH, helpCheck)
 
 export default app
