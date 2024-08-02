@@ -23,6 +23,8 @@ RUN yarn global add pm2
 # Copy the rest of the application code
 COPY . .
 
+RUN rm -rf .env*
+
 # Copy environment file
 COPY .env.prod .env
 
@@ -30,7 +32,6 @@ COPY .env.prod .env
 RUN yarn db
 
 # Remove environment files
-# RUN rm -rf .env*
 
 # Build the TypeScript code
 RUN yarn build
