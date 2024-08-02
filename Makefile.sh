@@ -41,5 +41,5 @@ fi
 # Step 3: Rebuild and start containers
 echo "Rebuilding and starting containers..."
 docker-compose up -d --build || handle_error
-
+docker-compose logs -f
 echo "Containers have been restarted."
