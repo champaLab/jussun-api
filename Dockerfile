@@ -26,7 +26,7 @@ COPY . .
 RUN rm -rf .env*
 
 # Copy environment file
-COPY .env.prod .env
+COPY .env.dev .env
 
 # Generate Prisma client
 RUN yarn db

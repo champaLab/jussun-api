@@ -13,7 +13,6 @@
         "start:container": "chmod +x Makefile.sh && ./Makefile.sh",
         "prod": "yarn git:pull && yarn start:container",
         "build": "tsc",
-        "build:prod": "cp -rp .env.prod .env && tsc",
         "test:watch": "jest --watch",
         "db": "yarn db:pull && yarn db:generate",
         "db:pull": "yarn prisma db pull",
