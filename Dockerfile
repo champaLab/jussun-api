@@ -23,7 +23,7 @@ RUN yarn global add pm2
 # Copy the rest of the application code
 COPY . .
 
-RUN rm -rf .env*
+# RUN rm -rf .env*
 
 # Copy environment file
 COPY .env.dev .env
