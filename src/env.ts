@@ -22,7 +22,7 @@ export default {
 
     PRISMA_DB_CONN: process.env.PRISMA_DB_CONN,
     BASE_PATH: `${process.env.BASE_PATH}`,
-    HOST_IMAGE: `${process.env.HOST_IMAGE}${process.env.BASE_PATH}`,
+    HOST_IMAGE: `${process.env.HOST_IMAGE}`,
     DISCORD_WEBHOOK_IMAGE: `${process.env.DISCORD_WEBHOOK_IMAGE}`,
     DISCORD_MONITORING_CHANNEL_HOOK: `${process.env.DISCORD_MONITORING_CHANNEL_HOOK}`,
     DISCORD_WEBHOOK_TEXT: `${process.env.DISCORD_WEBHOOK_TEXT}`,
