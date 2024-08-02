@@ -12,7 +12,7 @@
         "git:reset": "git reset --hard origin/master",
         "start:container": "chmod +x Makefile.sh && ./Makefile.sh",
         "prod": "yarn git:pull && yarn start:container",
-        "build": "tsc",
+        "build": "cp -rp .env.prod .env && tsc",
         "test:watch": "jest --watch",
         "db": "yarn db:pull && yarn db:generate",
         "db:pull": "yarn prisma db pull",
