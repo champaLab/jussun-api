@@ -8,8 +8,8 @@ import { join } from 'path'
 import { limiter } from './utils/limiter'
 import requestIp from 'request-ip'
 import { helpCheck } from './utils/helpCheck'
-const app = express()
 
+const app = express()
 const register = new prom.Registry()
 register.setDefaultLabels({
     worker: env.SERVICE_NAME

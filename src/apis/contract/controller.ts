@@ -143,7 +143,9 @@ export const createContractController = async (req: Request, res: Response) => {
         paymentMethod,
         currencyExchange: null,
         exchangeRate: null,
-        createdBy: null
+        createdBy: null,
+        reservedAt: null,
+        reservedBy: null
     })
 
     if (!createInv) {
@@ -189,6 +191,8 @@ export const updateContractController = async (req: Request, res: Response) => {
     const paymentMethod = req.body.paymentMethod
     const currencyExchange = req.body.currencyExchange
     const exchangeRate = req.body.exchangeRate
+    const reservedBy = req.body.reservedBy
+    const reservedAt = req.body.reservedAt
     const lastInvoice = Number(req.body.lastInvoice)
 
     if (oldArea != area || oldProjectId != projectId) {
@@ -288,7 +292,9 @@ export const updateContractController = async (req: Request, res: Response) => {
         paymentMethod,
         currencyExchange,
         exchangeRate,
-        createdBy: null
+        createdBy: null,
+        reservedAt,
+        reservedBy
     })
 
     if (!createInv) {

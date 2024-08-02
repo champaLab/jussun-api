@@ -1,5 +1,12 @@
 import { Request, Response } from 'express'
-import { closeContractService, findInvoicePaydayService, findLastExchangeService, findOneInvoiceService, paidInvoiceService } from './service'
+import {
+    actionInvoiceService,
+    closeContractService,
+    findInvoicePaydayService,
+    findLastExchangeService,
+    findOneInvoiceService,
+    paidInvoiceService
+} from './service'
 import { tokenPayloadService } from '../user/service'
 import { responseData } from '../../utils/functions'
 import { dateFormatter, today } from '../../utils/dateFormat'
@@ -7,6 +14,7 @@ import env from '../../env'
 import { createInvoiceService, updateContractInvoiceIdService } from '../contract/service'
 import { TResponseModel } from './type'
 import dayjs from 'dayjs'
+import { publishRealtime } from '../../utils/firebaseReeltime'
 
 export const invoicePaydayController = async (req: Request, res: Response) => {
     const payload = tokenPayloadService(req)
@@ -124,7 +132,9 @@ export const invoicePaidController = async (req: Request, res: Response) => {
             paymentMethod: null,
             currencyExchange: null,
             exchangeRate: null,
-            createdBy: null
+            createdBy: null,
+            reservedAt: null,
+            reservedBy: null
         })
         if (!createInv) {
             return res.json({
@@ -153,5 +163,34 @@ export const invoicePaidController = async (req: Request, res: Response) => {
     return res.json({
         status: 'success',
         message: 'ແຈ້ງຊຳລະ ສຳເລັດແລ້ວ'
+    })
+}
+
+export const actionInvoiceController = async (req: Request, res: Response) => {
+    const payload = tokenPayloadService(req)
+    const invoiceId = Number(req.body.invoiceId)
+    const action = req.body.action
+
+    const reservedBy = action == 'RESERVE' ? payload.userId : null
+    const reservedAt = action == 'RESERVE' ? today() : null
+    const result = await actionInvoiceService({ invoiceId, reservedBy, reservedAt })
+
+    if (result) {
+        await publishRealtime({
+            action: 'RELOAD',
+            companyId: payload.companyId,
+            invoiceId: invoiceId,
+            userId: payload.userId
+        })
+
+        return res.json({
+            status: 'error',
+            message: ''
+        })
+    }
+
+    return res.json({
+        status: 'success',
+        message: ''
     })
 }
