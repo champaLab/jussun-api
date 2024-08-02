@@ -65,7 +65,7 @@ export const findInvoicePaydayService = async (data: {
                 inv.invoiceId, inv.paidDate, com.companyName, com.logoPath,
                 com.address, com.abbreviatedLetters, com.tel AS companyContact,
                 com.email, com.fax, com.whatsapp,
-                u3.fullName AS reservedByName
+                CONCAT(u3.fullName, ' ', u3.lastName) AS reservedByName
             FROM contracts c
                 LEFT JOIN projects p ON p.projectId = c.projectId
                 LEFT JOIN users u ON c.customerIdOne = u.userId
@@ -160,14 +160,21 @@ export const closeContractService = async (data: { contractId: number; contractS
     }
 }
 
-export const actionInvoiceService = async (data: { invoiceId: number; reservedBy: number | null; reservedAt: Date | null }) => {
-    const { invoiceId, reservedBy, reservedAt } = data
+export const actionInvoiceService = async (data: { invoiceId: number; reservedBy: number | null; reservedAt: Date | null; action: string }) => {
+    const { invoiceId, reservedBy, reservedAt, action } = data
     try {
-        const result = await prismaClient.invoice.update({
-            where: { invoiceId, reservedBy: null },
-            data: { reservedBy, reservedAt }
-        })
+        if (action === 'RESERVE') {
+            const result = await prismaClient.invoice.update({
+                where: { invoiceId, reservedBy: null },
+                data: { reservedBy, reservedAt }
+            })
+            return result
+        }
 
+        const result = await prismaClient.invoice.update({
+            where: { invoiceId },
+            data: { reservedBy: null, reservedAt: null }
+        })
         return result
     } catch (err) {
         logger.error(err)

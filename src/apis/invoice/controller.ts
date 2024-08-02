@@ -40,7 +40,8 @@ export const invoicePaydayController = async (req: Request, res: Response) => {
         logoPath: item.logoPath ? `${env.HOST_IMAGE}${env.BASE_PATH}${item.logoPath}` : null,
         paidDate: dateFormatter(item.paidDate),
         createdAt: dateFormatter(item.createdAt),
-        updatedAt: dateFormatter(item.updatedAt)
+        updatedAt: dateFormatter(item.updatedAt),
+        reservedAt: dateFormatter(item.reservedAt)
     }))
 
     const exchange = await findLastExchangeService({ companyId })
@@ -171,9 +172,9 @@ export const actionInvoiceController = async (req: Request, res: Response) => {
     const invoiceId = Number(req.body.invoiceId)
     const action = req.body.action
 
-    const reservedBy = action == 'RESERVE' ? payload.userId : null
-    const reservedAt = action == 'RESERVE' ? today() : null
-    const result = await actionInvoiceService({ invoiceId, reservedBy, reservedAt })
+    const reservedBy = payload.userId
+    const reservedAt = today()
+    const result = await actionInvoiceService({ invoiceId, reservedBy, reservedAt, action })
 
     if (result) {
         await publishRealtime({
