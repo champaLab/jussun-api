@@ -30,7 +30,7 @@ COPY .env.prod .env
 RUN yarn db
 
 # Remove environment files
-RUN rm -rf .env*
+# RUN rm -rf .env*
 
 # Build the TypeScript code
 RUN yarn build
