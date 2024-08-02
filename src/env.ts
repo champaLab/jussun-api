@@ -33,5 +33,12 @@ export default {
     QR_ENCRYPTION_KEY: `${process.env.QR_ENCRYPTION_KEY}`,
     CONTACT_NUMBER: `${process.env.CONTACT_NUMBER}`,
     ROW_PER_PAGE: Number(`${process.env.ROW_PER_PAGE ?? 0}`),
-    EXCEL_PASSCODE: `${process.env.EXCEL_PASSCODE}`
+    EXCEL_PASSCODE: `${process.env.EXCEL_PASSCODE}`,
+    FIREBASE_API_KEY: `${process.env.FIREBASE_API_KEY}`,
+    FIREBASE_AUTH_DOMAIN: `${process.env.FIREBASE_API_KEY}`,
+    FIREBASE_PROJECT_ID: `${process.env.FIREBASE_API_KEY}`,
+    FIREBASE_STORAGE_BUCKET: `${process.env.FIREBASE_API_KEY}`,
+    FIREBASE_MESSAGING_SENDER_ID: `${process.env.FIREBASE_API_KEY}`,
+    FIREBASE_APP_ID: `${process.env.FIREBASE_API_KEY}`,
+    FIREBASE_MEASUREMENT_ID: `${process.env.FIREBASE_API_KEY}`
 }
