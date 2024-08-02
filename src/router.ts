@@ -17,7 +17,7 @@ import { invoicePaidController, invoicePaydayController } from './apis/invoice/c
 import { createExchangeController, readExchangeController, updateExchangeController } from './apis/exchange/controller'
 import { valCreateExchange, valReadExchange, valUpdateExchange } from './apis/exchange/validate'
 import { valUpdateInvoice } from './apis/invoice/validate'
-import { readReportController } from './apis/reports/controller'
+import { getReportsController, readReportController } from './apis/reports/controller'
 import { readReceiveController } from './apis/receive/controller'
 
 const router = Router()
@@ -52,7 +52,8 @@ router.post('/exchanges/create', verify, valCreateExchange, valResult, createExc
 router.post('/exchanges/update', verify, valUpdateExchange, valResult, updateExchangeController)
 
 //TODO: Report endpoint
-router.post('/report', verify, readReportController)
-router.post("/receive" , verify , readReceiveController)
+router.post('/money/me', verify, readReportController)
+router.post('/receive', verify, readReceiveController)
+router.get('/reports', verify, getReportsController)
 
 export default router
