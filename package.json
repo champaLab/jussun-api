@@ -11,7 +11,7 @@
         "git:pull": "git fetch --all && git merge --no-edit origin/master",
         "git:reset": "git reset --hard origin/master",
         "start:container": "chmod +x Makefile.sh && ./Makefile.sh",
-        "prod": "yarn git:pull && yarn start:container",
+        "prod": "yarn git:pull && cp -rp .env.dev .env && yarn start:container",
         "build": "tsc",
         "build:dev": "cp -rp .env.dev .env && tsc && yarn prod",
         "build:prod": "cp -rp .env.prod .env && tsc && yarn prod",

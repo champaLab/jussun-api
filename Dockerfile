@@ -34,7 +34,7 @@ RUN yarn db
 # Remove environment files
 
 # Build the TypeScript code
-RUN yarn build:dev
+RUN yarn build
 
 # Expose the port the app runs on
 EXPOSE 1101
