@@ -27,12 +27,14 @@
 
 {
   "compilerOptions": {
-    "target": "ES2020",
     "module": "NodeNext",
+    // "moduleResolution": "node",
+    "esModuleInterop": true,
+    "resolveJsonModule": true,
+    "target": "ES2020",
     "rootDir": "./src",
     "outDir": "./dist",
     "strict": true,
-    "esModuleInterop": true,
     "noImplicitUseStrict": false,
     "noImplicitAny": false,
   },

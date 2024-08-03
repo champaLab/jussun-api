@@ -1,26 +1,14 @@
-import { initializeApp } from 'firebase/app'
-import { getDatabase, ref, onValue, set } from 'firebase/database'
-import { actionInvoiceService } from '../apis/invoice/service'
+import * as admin from 'firebase-admin'
+import * as serviceAccount from './jutsun-a5d81-firebase-adminsdk-mo29l-a856c863cd.json'
 import dayjs from 'dayjs'
 import env from '../env'
 
-// Your Firebase configuration object
-const firebaseConfig = {
-    apiKey: env.FIREBASE_API_KEY,
-    authDomain: env.FIREBASE_AUTH_DOMAIN,
-    projectId: env.FIREBASE_PROJECT_ID,
-    storageBucket: env.FIREBASE_STORAGE_BUCKET,
-    messagingSenderId: env.FIREBASE_MESSAGING_SENDER_ID,
-    appId: env.FIREBASE_APP_ID,
-    measurementId: env.FIREBASE_MEASUREMENT_ID
-}
+admin.initializeApp({
+    credential: admin.credential.cert(serviceAccount as admin.ServiceAccount),
+    databaseURL: env.FIREBASE_DATABASE_URL
+})
 
-// Initialize Firebase
-const app = initializeApp(firebaseConfig)
-const database = getDatabase(app)
-
-// Reference to your specific path
-const companyId = 'some-company-id' // Replace with actual company ID
+const database = admin.database()
 
 export type DataFirebaseRealtime = {
     companyId: number | null
@@ -29,15 +17,23 @@ export type DataFirebaseRealtime = {
     action: 'RESERVE' | 'RELOAD' | 'CANCEL'
 }
 
-// Set up a listener to receive data
+//  Set up a listener to receive data
 export const publishRealtime = async (data: DataFirebaseRealtime) => {
-    const { companyId, invoiceId, userId, action } = data
-    const invoiceRef = ref(database, `/invoice/${companyId}`)
-    await set(invoiceRef, {
-        id: dayjs().unix(),
-        companyId: companyId,
-        invoiceId,
-        userId,
-        action
-    })
+    try {
+        const { companyId, invoiceId, userId, action } = data
+        const path = `/invoice/${companyId}`
+
+        const invoiceRef = database.ref(path)
+        await invoiceRef.set({
+            id: dayjs().unix(),
+            companyId: companyId,
+            invoiceId,
+            userId,
+            action
+        })
+        console.log('publishRealtime', data)
+        return true
+    } catch (error) {
+        return null
+    }
 }

@@ -176,6 +176,13 @@ export const actionInvoiceController = async (req: Request, res: Response) => {
     const reservedAt = today()
     const result = await actionInvoiceService({ invoiceId, reservedBy, reservedAt, action })
 
+    await publishRealtime({
+        action: 'RELOAD',
+        companyId: payload.companyId,
+        invoiceId: invoiceId,
+        userId: payload.userId
+    })
+
     if (result) {
         await publishRealtime({
             action: 'RELOAD',
