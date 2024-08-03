@@ -8,8 +8,8 @@ datasource db {
 }
 
 model company {
-  companyId          Int       @id @unique(map: "company_pk2") @default(autoincrement())
-  companyName        String    @unique(map: "company_pk3") @db.VarChar(255)
+  companyId          Int       @id @default(autoincrement())
+  companyName        String    @unique(map: "companyName") @db.VarChar(255)
   logoPath           String    @db.VarChar(255)
   fax                String?   @db.VarChar(20)
   tel                String    @db.VarChar(8)
@@ -19,102 +19,105 @@ model company {
   abbreviatedLetters String?   @db.VarChar(20)
   createdBy          Int
   updatedBy          Int?
-  companyStatus      Boolean   @default(true)
+  companyStatus      Boolean?  @default(true)
   createdAt          DateTime? @default(now()) @db.DateTime(0)
-  updatedAt          DateTime? @unique(map: "company_pk4") @db.DateTime(0)
+  updatedAt          DateTime? @unique(map: "updatedAt") @db.DateTime(0)
 }
 
 /// This model or at least one of its fields has comments in the database, and requires an additional setup for migrations: Read more: https://pris.ly/d/database-comments
 model contracts {
-  contractId          Int       @id @unique(map: "contracts_pk2") @default(autoincrement())
+  contractId          Int       @id @default(autoincrement())
   companyId           Int
   docId               String    @db.VarChar(15)
   createdBy           Int
   updatedBy           Int?
   projectId           Int
-  price               Float
-  totalPrice          Float
-  currency            String    @default("LAK") @db.VarChar(10)
-  contractStatus      String    @default("ACTIVE") @db.VarChar(20)
-  area                Float
-  numberOfInstallment Int       @default(1)
+  price               Float     @db.Float
+  totalPrice          Float     @db.Float
+  currency            String?   @default("LAK") @db.VarChar(10)
+  contractStatus      String?   @default("ACTIVE") @db.VarChar(20)
+  area                Float     @db.Float
+  numberOfInstallment Int?      @default(1)
   payDay              Int
-  modeOfPayment       String    @default("monthly") @db.VarChar(20)
-  payInAdvance        Float?    @default(0)
+  modeOfPayment       String?   @default("monthly") @db.VarChar(20)
+  payInAdvance        Float?    @default(0) @db.Float
   customerIdOne       Int
   customerIdTwo       Int?
   createdAt           DateTime? @default(now()) @db.DateTime(0)
-  updatedAt           DateTime? @db.DateTime(0)
+  updatedAt           DateTime? @default(now()) @db.DateTime(0)
   cancelAt            DateTime? @db.DateTime(0)
   cancelBy            Int?
   reason              String?   @db.VarChar(255)
+  lastInvoice         Int?
 }
 
 model exchange {
-  exchangeId Int       @id @unique(map: "exchange_pk2") @default(autoincrement())
+  exchangeId Int       @id @default(autoincrement())
   companyId  Int
-  thb        Float
-  usd        Float
+  thb        Float     @db.Float
+  usd        Float     @db.Float
   createdBy  Int
   updatedBy  Int?
   createdAt  DateTime? @default(now()) @db.DateTime(0)
-  updatedAt  DateTime? @db.DateTime(0)
+  updatedAt  DateTime? @default(now()) @db.DateTime(0)
   deletedAt  DateTime? @db.DateTime(0)
 }
 
 /// This model or at least one of its fields has comments in the database, and requires an additional setup for migrations: Read more: https://pris.ly/d/database-comments
 model invoice {
-  invoiceId        Int       @id @unique(map: "invoice_pk2") @default(autoincrement())
-  fines            Float?    @default(0)
-  amount           Float
-  debt             Float     @default(0)
+  invoiceId        Int       @id @default(autoincrement())
+  fines            Float?    @default(0) @db.Float
+  amount           Float     @db.Float
+  debt             Float?    @default(0) @db.Float
   contractId       Int
   currency         String    @db.VarChar(30)
   paymentMethod    String?   @db.VarChar(50)
-  exchangeRate     Float?
+  exchangeRate     Float?    @db.Float
   currencyExchange String?   @db.VarChar(5)
-  invoiceStatus    String    @default("PENDING") @db.VarChar(20)
+  invoiceStatus    String?   @default("PENDING") @db.VarChar(20)
   paidDate         DateTime? @db.DateTime(0)
   createdBy        Int?
   createdAt        DateTime? @default(now()) @db.DateTime(0)
-  updatedAt        DateTime? @db.DateTime(0)
+  updatedAt        DateTime? @default(now()) @db.DateTime(0)
+  reservedBy       Int?
+  reservedAt       DateTime? @db.DateTime(0)
 }
 
 model projects {
-  projectId   Int       @id @unique(map: "projects_pk2") @default(autoincrement())
+  projectId   Int       @id @default(autoincrement())
   companyId   Int
-  area        Float
+  area        Float     @db.Float
   projectName String    @db.VarChar(200)
   address     String?   @db.VarChar(100)
   createdBy   Int
   updatedBy   Int?
   createdAt   DateTime? @default(now()) @db.DateTime(0)
-  updatedAt   DateTime? @db.DateTime(0)
+  updatedAt   DateTime? @default(now()) @db.DateTime(0)
 }
 
 /// This model or at least one of its fields has comments in the database, and requires an additional setup for migrations: Read more: https://pris.ly/d/database-comments
 model transaction {
-  transactionId   Int       @id @unique(map: "transaction_pk2")
+  transactionId   Int       @id @default(autoincrement())
   ip              String    @db.VarChar(200)
-  amount          Float
+  amount          Float     @db.Float
   remark          String?   @db.VarChar(255)
   currency        String    @db.VarChar(5)
   pamentMethod    String    @db.VarChar(50)
   transactionUUID String?   @db.VarChar(50)
   contractId      Int
-  currencyLAK     Float
-  currencyTHB     Float
-  currencyUSD     Float
+  currencyLAK     Float     @db.Float
+  currencyTHB     Float     @db.Float
+  currencyUSD     Float     @db.Float
   createdBy       Int?
   updatedBy       Int?
   createdAt       DateTime? @default(now()) @db.DateTime(0)
-  updatedAt       DateTime? @db.DateTime(0)
+  updatedAt       DateTime? @default(now()) @db.DateTime(0)
   deletedAt       DateTime? @db.DateTime(0)
 }
 
 /// This model or at least one of its fields has comments in the database, and requires an additional setup for migrations: Read more: https://pris.ly/d/database-comments
 model users {
-  userId     Int       @id @unique(map: "users_pk2") @default(autoincrement())
+  userId     Int       @id @default(autoincrement())
   companyId  Int?
   fullName   String    @db.VarChar(80)
   lastName   String    @db.VarChar(80)
@@ -123,5 +126,5 @@ model users {
   role       String    @default("CUSTOMER") @db.VarChar(10)
   userStatus Boolean   @default(true)
   createdAt  DateTime? @default(now()) @db.DateTime(0)
-  updatedAt  DateTime? @db.DateTime(0)
+  updatedAt  DateTime? @default(now()) @db.DateTime(0)
 }

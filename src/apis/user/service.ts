@@ -1,6 +1,6 @@
 import logger from '../../configs/winston'
 import prismaClient from '../../prisma'
-import { company, users } from '@prisma/client'
+import { company, Prisma, users } from '@prisma/client'
 import { TUserCreateModel, TUserPayloadModel } from './type'
 import { Request } from 'express'
 import env from '../../env'
@@ -168,3 +168,43 @@ export const findUserService = async (data: { key: string }) => {
         prismaClient.$disconnect()
     }
 }
+
+
+export const findRoleService = async (data: { role: string, tel: string, key: string | null, fullName: string }) => {
+    const { role, tel, key, fullName } = data;
+
+    let condition = Prisma.sql``;
+    let conditions:any = [];
+
+    if (fullName) {
+        conditions.push(Prisma.sql`u.fullName = ${fullName}`);
+    }
+    if (role) {
+        conditions.push(Prisma.sql`u.role = ${role}`);
+    }
+    if (tel) {
+        conditions.push(Prisma.sql`u.tel = ${tel}`);
+    }
+    if (key) {
+        conditions.push(Prisma.sql`(u.tel = ${key} OR u.role = ${key} OR com.companyName = ${key})`);
+    }
+
+    if (conditions.length > 0) {
+        condition = Prisma.sql`WHERE ${Prisma.join(conditions, ' AND ')}`;
+    }
+
+    try {
+        const findRoleUser: any[] = await prismaClient.$queryRaw`
+      SELECT u.*, com.companyName
+      FROM users u
+      LEFT JOIN company com ON com.companyId = u.companyId
+      ${condition}
+    `;
+        return findRoleUser;
+    } catch (err) {
+        console.error(err);
+        return null;
+    } finally {
+        await prismaClient.$disconnect();
+    }
+};
