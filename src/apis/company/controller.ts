@@ -11,7 +11,7 @@ export const companyController = async (req: Request, res: Response) => {
     let companyId = req.body.companyId
     if ((payload.role === 'ADMIN' || payload.role === 'SUPERADMIN') && companyId) {
         companyId = req.body.companyId
-    } else {
+    } else if (payload.role != 'ADMIN' && payload.role != 'SUPERADMIN') {
         companyId = payload.companyId
     }
 

@@ -13,11 +13,26 @@ export const findOneCompanyService = async (data: { companyId: number }) => {
         await prismaClient.$disconnect()
     }
 }
-
 export const companiesService = async (data: { companyId: number; key: string | null }) => {
     try {
-        const p = await prismaClient.company.findMany({ where: { companyId: data.companyId } })
-        return p
+        const { companyId, key } = data
+
+        // Start with a base condition
+        let condition: any = { where: {} }
+
+        // Add companyId filter if provided
+        if (companyId) {
+            condition.where.companyId = companyId
+        }
+
+        // Add companyName filter if key is provided
+        if (key) {
+            condition.where.companyName = { contains: key }
+        }
+
+        // Execute the query with the built condition
+        const companies = await prismaClient.company.findMany(condition)
+        return companies
     } catch (err) {
         logger.error(err)
         return []
