@@ -1,5 +1,5 @@
 export interface TUserPayloadModel {
-     userId: number
+    userId: number
     tel: string
     role: string
     fullName: string
@@ -21,4 +21,9 @@ export interface TUserCreateModel {
     password: string
     role: string
     userStatus: boolean
+}
+
+export interface TResponseUserModel {
+    users: any[]
+    count: number
 }

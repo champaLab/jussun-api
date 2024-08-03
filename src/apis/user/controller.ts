@@ -1,4 +1,3 @@
-import { body } from 'express-validator';
 import { Request, Response } from 'express'
 
 import { decrypt, encrypt } from '../../utils/crypt'
@@ -7,7 +6,6 @@ import {
     createUserService,
     findManyUserService,
     findOneUserService,
-    findRoleService,
     findUserService,
     mergePayloadUserService,
     tokenPayloadService,
@@ -18,6 +16,7 @@ import { findOneCompanyService } from '../company/service'
 import { company } from '@prisma/client'
 import { dateFormatter } from '../../utils/dateFormat'
 import { responseData } from '../../utils/functions'
+import { count } from 'console'
 
 export const loginController = async (req: Request, res: Response) => {
     const tel = req.body.tel
@@ -133,20 +132,30 @@ export const userController = async (req: Request, res: Response) => {
     const payload = tokenPayloadService(req)
     const key = req.body.key
     const page = req.body.page ? Number(req.body.page) : 1
+    const role = req.body.role
+    let companyId: number | null = Number(req.body.companyId)
+    console.log(payload)
 
-    let companyId = req.body.companyId
-    if ((payload.role === 'ADMIN' || payload.role === 'SUPERADMIN') && companyId) {
-        companyId = Number(companyId)
+    if ((role && role === 'CUSTOMER') || !role) {
+        companyId = null
+    } else if (payload.role === 'OWNER' || (payload.role === 'EMPLOYEE' && role != 'CUSTOMER')) {
+        companyId = payload.companyId
     } else {
         companyId = payload.companyId
     }
 
-    const u = await findManyUserService({ companyId, key, page })
-    const users = await responseData(u, page)
+    const u = await findManyUserService({ companyId, key, page, role })
+    const users = u.users.map((item, i) => ({
+        ...item,
+        indexNo: (i + 1) * page,
+        createdAt: dateFormatter(item.createdAt),
+        updatedAt: dateFormatter(item.updatedAt)
+    }))
 
     return res.json({
         status: 'success',
-        users
+        users,
+        count: u.count
     })
 }
 
@@ -246,37 +255,10 @@ export const updateUserController = async (req: Request, res: Response) => {
 }
 
 export const findOneUserController = async (req: Request, res: Response) => {
-    const key = req.body.key;
-    const role = req.body.role;
-    const tel  = req.body.tel;
-    const fullName = req.body.fullName;
+    const key = req.body.key
+
     const user = await findUserService({ key })
-    const findUser = await findRoleService({role , tel , fullName , key})
-
-    if (!user || tel) {
-        return res.json({
-            status: 'success',
-            message: 'ພົບຂໍ້ມູນ 1 ລາຍການ',
-            findUser
-        })
-    }
-    if(user || !tel){
-        return res.json({
-            status: 'success',
-            message: 'ພົບຂໍ້ມູນ 1 ລາຍການ',
-            findUser
-        })
-    }
-
-    if (!user || !findUser) {
-        return res.json({
-            status: 'error',
-            message: 'ບໍ່ພົບຂໍ້ມູນທີ່ຄົ້ນຫາ',
-            user: null
-        })
-    }
-    
-    if (!user ) {
+    if (!user) {
         return res.json({
             status: 'error',
             message: 'ບໍ່ພົບຂໍ້ມູນທີ່ຄົ້ນຫາ',
@@ -290,4 +272,3 @@ export const findOneUserController = async (req: Request, res: Response) => {
         user
     })
 }
-
