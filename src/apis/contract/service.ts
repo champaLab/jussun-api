@@ -182,6 +182,20 @@ export const createContractService = async (data: contracts) => {
     }
 }
 
+export const updateContractInvoiceIdService = async (contract: number, invoiceId: number) => {
+    try {
+        const p = await prismaClient.contracts.update({
+            where: { contractId: contract },
+            data: { lastInvoice: invoiceId }
+        })
+        return p
+    } catch (err) {
+        logger.error(err)
+        console.error(err)
+        return null
+    }
+}
+
 export const updateContractService = async (data: contracts) => {
     const { cancelAt, createdAt, ...newData } = data
 

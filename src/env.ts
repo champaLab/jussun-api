@@ -6,7 +6,7 @@ export default {
     SERVICE_NAME: process.env.SERVICE_NAME,
     NODE_ENV: process.env.NODE_ENV,
     NODE_HOST: process.env.NODE_HOST || '0.0.0.0',
-    NODE_PORT: parseInt(`${process.env.NODE_PORT}`) || 9000,
+    NODE_PORT: parseInt(`${process.env.NODE_PORT}`) || 8080,
     TZ: process.env.TZ || 'Aisa/Bangkok',
     DB_HOST: process.env.DB_HOST,
     DB_PORT: parseInt(process.env.DB_PORT || '3306'),
@@ -22,7 +22,7 @@ export default {
 
     PRISMA_DB_CONN: process.env.PRISMA_DB_CONN,
     BASE_PATH: `${process.env.BASE_PATH}`,
-    HOST_IMAGE: process.env.HOST_IMAGE || 'http://localhost:9000',
+    HOST_IMAGE: `${process.env.HOST_IMAGE}`,
     DISCORD_WEBHOOK_IMAGE: `${process.env.DISCORD_WEBHOOK_IMAGE}`,
     DISCORD_MONITORING_CHANNEL_HOOK: `${process.env.DISCORD_MONITORING_CHANNEL_HOOK}`,
     DISCORD_WEBHOOK_TEXT: `${process.env.DISCORD_WEBHOOK_TEXT}`,
@@ -33,5 +33,12 @@ export default {
     QR_ENCRYPTION_KEY: `${process.env.QR_ENCRYPTION_KEY}`,
     CONTACT_NUMBER: `${process.env.CONTACT_NUMBER}`,
     ROW_PER_PAGE: Number(`${process.env.ROW_PER_PAGE ?? 0}`),
-    EXCEL_PASSCODE: `${process.env.EXCEL_PASSCODE}`
+    EXCEL_PASSCODE: `${process.env.EXCEL_PASSCODE}`,
+    FIREBASE_API_KEY: `${process.env.FIREBASE_API_KEY}`,
+    FIREBASE_AUTH_DOMAIN: `${process.env.FIREBASE_API_KEY}`,
+    FIREBASE_PROJECT_ID: `${process.env.FIREBASE_API_KEY}`,
+    FIREBASE_STORAGE_BUCKET: `${process.env.FIREBASE_API_KEY}`,
+    FIREBASE_MESSAGING_SENDER_ID: `${process.env.FIREBASE_API_KEY}`,
+    FIREBASE_APP_ID: `${process.env.FIREBASE_API_KEY}`,
+    FIREBASE_MEASUREMENT_ID: `${process.env.FIREBASE_API_KEY}`
 }

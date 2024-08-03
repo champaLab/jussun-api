@@ -10,7 +10,8 @@ import {
     updateContractStatusService,
     createInvoiceService,
     updateInvoiceService,
-    finOneContractService
+    finOneContractService,
+    updateContractInvoiceIdService
 } from './service'
 import dayjs from 'dayjs'
 import { responseData } from '../../utils/functions'
@@ -118,7 +119,8 @@ export const createContractController = async (req: Request, res: Response) => {
         contractStatus,
         cancelAt: null,
         cancelBy: null,
-        reason: null
+        reason: null,
+        lastInvoice: null
     })
     if (!p) {
         return res.json({
@@ -132,7 +134,7 @@ export const createContractController = async (req: Request, res: Response) => {
         debt,
         contractId: p.contractId,
         createdAt,
-        currency: p.currency,
+        currency: p.currency ?? 'LAK',
         fines: 0,
         invoiceId: 1,
         invoiceStatus,
@@ -141,7 +143,9 @@ export const createContractController = async (req: Request, res: Response) => {
         paymentMethod,
         currencyExchange: null,
         exchangeRate: null,
-        createdBy: null
+        createdBy: null,
+        reservedAt: null,
+        reservedBy: null
     })
 
     if (!createInv) {
@@ -150,6 +154,8 @@ export const createContractController = async (req: Request, res: Response) => {
             message: 'ສ້າງໃບແຈ້ງໜີ້ ຜິດພາດ ລອງໃໝ່ໃນພາຍຫຼັງ'
         })
     }
+
+    await updateContractInvoiceIdService(p.contractId, createInv.invoiceId)
 
     return res.json({
         status: 'success',
@@ -185,6 +191,9 @@ export const updateContractController = async (req: Request, res: Response) => {
     const paymentMethod = req.body.paymentMethod
     const currencyExchange = req.body.currencyExchange
     const exchangeRate = req.body.exchangeRate
+    const reservedBy = req.body.reservedBy
+    const reservedAt = req.body.reservedAt
+    const lastInvoice = Number(req.body.lastInvoice)
 
     if (oldArea != area || oldProjectId != projectId) {
         const projectOld = await finOneProjectService({ projectId: oldProjectId })
@@ -259,7 +268,8 @@ export const updateContractController = async (req: Request, res: Response) => {
         cancelAt,
         cancelBy,
         reason,
-        contractStatus
+        contractStatus,
+        lastInvoice
     })
     if (!p) {
         return res.json({
@@ -273,7 +283,7 @@ export const updateContractController = async (req: Request, res: Response) => {
         debt,
         contractId: p.contractId,
         createdAt,
-        currency: p.currency,
+        currency: p.currency ?? 'LAK',
         fines,
         invoiceId,
         invoiceStatus,
@@ -282,7 +292,9 @@ export const updateContractController = async (req: Request, res: Response) => {
         paymentMethod,
         currencyExchange,
         exchangeRate,
-        createdBy: null
+        createdBy: null,
+        reservedAt,
+        reservedBy
     })
 
     if (!createInv) {

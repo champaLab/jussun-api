@@ -10,6 +10,8 @@ export const findInvoicePaydayService = async (data: {
     key: string | null
     projectId: number | null
     invoiceStatus: string | null
+    dayStart: string
+    dayEnd: string
 }): Promise<TResponseModel> => {
     const skip = (data.page - 1) * env.ROW_PER_PAGE
     const take = env.ROW_PER_PAGE
@@ -19,7 +21,8 @@ export const findInvoicePaydayService = async (data: {
     if (invoiceStatus) {
         condition = Prisma.sql`${condition} AND inv.invoiceStatus = ${invoiceStatus}`
     }
-    if (key) {
+
+    if (key && key != '') {
         condition = Prisma.sql`${condition} AND (
             u.fullName LIKE ${'%' + key + '%'} 
             OR p.projectName LIKE ${'%' + key + '%'}
@@ -27,7 +30,13 @@ export const findInvoicePaydayService = async (data: {
             OR inv.invoiceId = ${key}
         )
         `
+    } else {
+        condition = Prisma.sql`${condition} AND (
+            c.payDay BETWEEN ${data.dayStart} AND ${data.dayEnd}
+        )
+        `
     }
+
     if (projectId) {
         condition = Prisma.sql`${condition} AND p.projectId = ${projectId}`
     }
@@ -52,15 +61,18 @@ export const findInvoicePaydayService = async (data: {
                 u.fullName AS fullNameOne, u.lastName AS lastNameOne,
                 u2.fullName AS fullNameTwo, u2.lastName AS lastNameTwo,
                 inv.debt, inv.amount, inv.currency, inv.fines, inv.invoiceStatus,
+                inv.reservedBy, inv.reservedAt, inv.paymentMethod,
                 inv.invoiceId, inv.paidDate, com.companyName, com.logoPath,
                 com.address, com.abbreviatedLetters, com.tel AS companyContact,
-                com.email, com.fax, com.whatsapp
+                com.email, com.fax, com.whatsapp,
+                CONCAT(u3.fullName, ' ', u3.lastName) AS reservedByName
             FROM contracts c
                 LEFT JOIN projects p ON p.projectId = c.projectId
                 LEFT JOIN users u ON c.customerIdOne = u.userId
                 LEFT JOIN users u2 ON c.customerIdTwo = u2.userId
                 LEFT JOIN company com ON com.companyId = c.companyId
                 LEFT JOIN invoice inv ON c.contractId = inv.contractId
+                LEFT JOIN users u3 ON inv.reservedBy  = u3.userId
             WHERE ${condition}
             LIMIT ${take} OFFSET ${skip}
         `
@@ -138,6 +150,31 @@ export const closeContractService = async (data: { contractId: number; contractS
             }
         })
 
+        return result
+    } catch (err) {
+        logger.error(err)
+        console.error(err)
+        return null
+    } finally {
+        prismaClient.$disconnect()
+    }
+}
+
+export const actionInvoiceService = async (data: { invoiceId: number; reservedBy: number | null; reservedAt: Date | null; action: string }) => {
+    const { invoiceId, reservedBy, reservedAt, action } = data
+    try {
+        if (action === 'RESERVE') {
+            const result = await prismaClient.invoice.update({
+                where: { invoiceId, reservedBy: null },
+                data: { reservedBy, reservedAt }
+            })
+            return result
+        }
+
+        const result = await prismaClient.invoice.update({
+            where: { invoiceId },
+            data: { reservedBy: null, reservedAt: null }
+        })
         return result
     } catch (err) {
         logger.error(err)

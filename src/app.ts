@@ -7,8 +7,9 @@ import env from './env'
 import { join } from 'path'
 import { limiter } from './utils/limiter'
 import requestIp from 'request-ip'
-const app = express()
+import { helpCheck } from './utils/helpCheck'
 
+const app = express()
 const register = new prom.Registry()
 register.setDefaultLabels({
     worker: env.SERVICE_NAME
@@ -18,8 +19,6 @@ collectDefaultMetrics({
     labels: { NODE_APP_INSTANCE: process.env.NODE_APP_INSTANCE },
     register
 })
-
-const corsOptions = {}
 
 app.use(cors())
 app.use(express.json())
@@ -31,34 +30,17 @@ app.use(limiter)
 app.use(requestIp.mw())
 
 app.use((req, res, next) => logRequestResponse(req, res, next, ['excel', 'users', 'metrics']))
-// app.use(express.static(path.join(__dirname, './uploads')))
 
 app.use(`${env.BASE_PATH}/v1`, router)
 app.use(`${env.BASE_PATH}`, express.static(join(env.PWD, 'uploads')))
-app.use(`${env.BASE_PATH}`, express.static(join(env.PWD, 'images')))
-app.use(`${env.BASE_PATH}`, express.static(join(env.PWD, 'images')))
 
 app.get('/metrics', async (req, res) => {
     res.set('Content-Type', register.contentType)
     return res.send(await register.metrics())
 })
 
-app.get('/', (req, res) => {
-    return res.json({
-        status: 'OK',
-        upTime: process.uptime(),
-        timestamp: Date.now(),
-        instance: process.env.NODE_APP_INSTANCE
-    })
-})
-
-app.get(env.BASE_PATH, (req, res) => {
-    return res.json({
-        status: 'OK',
-        upTime: process.uptime(),
-        timestamp: Date.now(),
-        instance: process.env.NODE_APP_INSTANCE
-    })
-})
+app.get('/', helpCheck)
+app.get('/test', helpCheck)
+app.get(env.BASE_PATH, helpCheck)
 
 export default app
