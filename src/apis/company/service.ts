@@ -13,9 +13,10 @@ export const findOneCompanyService = async (data: { companyId: number }) => {
         await prismaClient.$disconnect()
     }
 }
-export const companiesService = async (data: { companyId: number }) => {
+
+export const companiesService = async (data: { companyId: number; key: string | null }) => {
     try {
-        const p = await prismaClient.company.findMany({})
+        const p = await prismaClient.company.findMany({ where: { companyId: data.companyId } })
         return p
     } catch (err) {
         logger.error(err)

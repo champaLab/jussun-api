@@ -7,6 +7,7 @@ import env from '../../env'
 
 export const companyController = async (req: Request, res: Response) => {
     const payload = tokenPayloadService(req)
+    const key = req.body.key
     let companyId = req.body.companyId
     if ((payload.role === 'ADMIN' || payload.role === 'SUPERADMIN') && companyId) {
         companyId = req.body.companyId
@@ -14,7 +15,7 @@ export const companyController = async (req: Request, res: Response) => {
         companyId = payload.companyId
     }
 
-    const company = await companiesService({ companyId })
+    const company = await companiesService({ companyId, key })
 
     const companyRes = company.map((item) => ({
         ...item,
