@@ -1,15 +1,14 @@
-import * as admin from 'firebase-admin'
-// @ts-ignore
-import * as serviceAccount from './jutsun-a5d81-firebase-adminsdk-mo29l-a856c863cd.json'
+import { initializeApp, database, credential, ServiceAccount } from 'firebase-admin'
 import dayjs from 'dayjs'
 import env from '../env'
+const serviceAccount = require('./jutsun-a5d81-firebase-adminsdk-mo29l-a856c863cd.json')
 
-admin.initializeApp({
-    credential: admin.credential.cert(serviceAccount as admin.ServiceAccount),
+initializeApp({
+    credential: credential.cert(serviceAccount as ServiceAccount),
     databaseURL: env.FIREBASE_DATABASE_URL
 })
 
-const database = admin.database()
+const databaseClient = database()
 
 export type DataFirebaseRealtime = {
     companyId: number | null
@@ -19,12 +18,12 @@ export type DataFirebaseRealtime = {
 }
 
 //  Set up a listener to receive data
-export const publishRealtime = async (data: DataFirebaseRealtime) => {
+export const publishRealtime = async (data: any) => {
     try {
         const { companyId, invoiceId, userId, action } = data
         const path = `/invoice/${companyId}`
 
-        const invoiceRef = database.ref(path)
+        const invoiceRef = databaseClient.ref(path)
         await invoiceRef.set({
             id: dayjs().unix(),
             companyId: companyId,
