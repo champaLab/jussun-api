@@ -29,6 +29,7 @@ import { valCreateExchange, valReadExchange, valUpdateExchange } from './apis/ex
 import { valUpdateInvoice } from './apis/invoice/validate'
 import { getReportsController, readReportController } from './apis/reports/controller'
 import { readReceiveController } from './apis/receive/controller'
+import { findManyHistoryController } from './apis/log/controller'
 
 const router = Router()
 
@@ -70,5 +71,8 @@ router.post('/exchanges/update', verify, valUpdateExchange, valResult, updateExc
 router.post('/money/me', verify, readReportController)
 router.post('/receive', verify, readReceiveController)
 router.get('/reports', verify, getReportsController)
+
+//TODO: History endpoint
+router.post('/history', verify, findManyHistoryController)
 
 export default router
