@@ -57,6 +57,8 @@ export const createExchangeController = async (req: Request, res: Response) => {
         usd
     })
 
+    console.log({ createdAt })
+
     if (!create) {
         return res.json({
             status: 'error',

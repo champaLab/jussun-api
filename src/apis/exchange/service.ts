@@ -3,10 +3,8 @@ import logger from '../../configs/winston'
 import prismaClient from '../../prisma'
 import env from '../../env'
 
-
-
-export const readExchangeService = async (data: { companyId: number, dateStart: string, dateEnd: string, page: number }) => {
-    console.log("readExchangeService", data)
+export const readExchangeService = async (data: { companyId: number; dateStart: string; dateEnd: string; page: number }) => {
+    console.log('readExchangeService', data)
     const skip = (data.page - 1) * env.ROW_PER_PAGE
     const take = env.ROW_PER_PAGE
     const { companyId, dateStart, dateEnd } = data
@@ -21,7 +19,6 @@ export const readExchangeService = async (data: { companyId: number, dateStart: 
         SELECT * FROM exchange WHERE DATE(createdAt) BETWEEN ${dateStart} AND ${dateEnd} AND ${companyId}
           ORDER BY createdAt DESC LIMIT ${take} OFFSET ${skip}    ;`
         return { count, exchange }
-
     } catch (err) {
         logger.error(err)
         console.log(err)
@@ -32,7 +29,7 @@ export const readExchangeService = async (data: { companyId: number, dateStart: 
 }
 
 export const createExchangeService = async (data: exchange) => {
-    const { exchangeId, updatedBy, updatedAt, ...newData } = data
+    const { exchangeId, updatedBy, updatedAt, createdAt, ...newData } = data
     console.log(newData)
     try {
         const p = await prismaClient.exchange.create({
@@ -48,7 +45,6 @@ export const createExchangeService = async (data: exchange) => {
     }
 }
 
-
 export const updateExchangeService = async (data: exchange) => {
     const { exchangeId, createdBy, createdAt, ...newData } = data
 
@@ -59,7 +55,6 @@ export const updateExchangeService = async (data: exchange) => {
             data: newData
         })
         return res
-
     } catch (err) {
         logger.error(err)
         console.log(err)
