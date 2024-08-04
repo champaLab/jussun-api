@@ -1,4 +1,4 @@
-import { contracts, invoice, projects } from '@prisma/client'
+import { contracts, invoice, Prisma, projects } from '@prisma/client'
 import logger from '../../configs/winston'
 import prismaClient from '../../prisma'
 import env from '../../env'
@@ -64,180 +64,63 @@ export const contractService = async (data: {
     key: string | null
     page: number
 }): Promise<{ contracts: any[]; count: number }> => {
-    const { projectId, companyId, key } = data
+    const { projectId, companyId, key, page } = data
     const _key = key ? `${key}%` : null
-    const skip = data.key ? 0 : (data.page - 1) * env.ROW_PER_PAGE
+    const skip = key ? 0 : (page - 1) * env.ROW_PER_PAGE
     const take = env.ROW_PER_PAGE
 
+    let whereConditions = `WHERE c.companyId = ${companyId}`
+    if (key) {
+        whereConditions += Prisma.sql`
+            AND (c.docId LIKE ${_key}
+            OR p.projectName LIKE ${_key}
+            OR u.fullName LIKE ${_key}
+            OR u.lastName LIKE ${_key}
+            OR u.tel = ${key}
+            OR u2.fullName LIKE ${_key}
+            OR u2.lastName LIKE ${_key}
+            OR u2.tel = ${key}
+            OR inv.invoiceId = ${key})`
+    }
+    if (projectId) {
+        whereConditions += Prisma.sql` AND c.projectId = ${projectId}`
+    }
+
+    const query = Prisma.sql`
+        SELECT c.*, p.projectName, 
+            u.fullName AS fullNameOne, u.lastName AS lastNameOne,
+            u2.fullName AS fullNameTwo, u2.lastName AS lastNameTwo,
+            inv.debt, inv.invoiceId
+        FROM contracts c
+        LEFT JOIN projects p ON p.projectId = c.projectId
+        LEFT JOIN users u ON c.customerIdOne = u.userId
+        LEFT JOIN users u2 ON c.customerIdTwo = u2.userId
+        LEFT JOIN invoice inv ON c.contractId = inv.contractId
+        ${whereConditions}
+        ORDER BY createdAt DESC
+        LIMIT ${take} OFFSET ${skip}
+    `
+
+    const countQuery = Prisma.sql`
+        SELECT COUNT(*) AS totalCount
+        FROM contracts c
+        LEFT JOIN projects p ON p.projectId = c.projectId
+        LEFT JOIN users u ON c.customerIdOne = u.userId
+        LEFT JOIN users u2 ON c.customerIdTwo = u2.userId
+        LEFT JOIN invoice inv ON c.contractId = inv.contractId
+        ${whereConditions}
+    `
+
     try {
-        if (!projectId && key) {
-            const contracts: any[] = await prismaClient.$queryRaw`
-                SELECT c.*, p.projectName, 
-                    u.fullName fullNameOne,  u.lastName lastNameOne,
-                    u2.fullName fullNameTwo,  u2.lastName lastNameTwo,
-                    inv.debt,
-                    inv.invoiceId
-                FROM contracts c
-                    LEFT JOIN projects p ON p.projectId = c.projectId
-                    LEFT JOIN users u ON c.customerIdOne = u.userId
-                    LEFT JOIN users u2 ON c.customerIdOne = u2.userId
-                LEFT JOIN invoice inv ON c.contractId = inv.contractId
-                WHERE c.companyId = ${companyId}
-                AND (c.docId LIKE ${_key} OR
-                    p.projectName LIKE ${_key} OR
-                    u.fullName LIKE ${_key} OR
-                    u.lastName LIKE ${_key} OR
-                    u.tel = ${key} OR
-                    u2.fullName LIKE ${_key} OR
-                    u2.lastName LIKE ${_key} OR
-                    u2.tel = ${key} OR 
-                    inv.invoiceId = ${key}
-                    )
-                ORDER BY createdAt DESC
-                LIMIT ${take} OFFSET ${skip}
-            `
-
-            const totalCountResult: any[] = await prismaClient.$queryRaw`
-           SELECT  COUNT(*) totalCount
-                FROM contracts c
-                    LEFT JOIN projects p ON p.projectId = c.projectId
-                    LEFT JOIN users u ON c.customerIdOne = u.userId
-                    LEFT JOIN users u2 ON c.customerIdOne = u2.userId
-                LEFT JOIN invoice inv ON c.contractId = inv.contractId
-                WHERE c.companyId = ${companyId}
-                AND (c.docId LIKE ${_key} OR
-                    p.projectName LIKE ${_key} OR
-                    u.fullName LIKE ${_key} OR
-                    u.lastName LIKE ${_key} OR
-                    u.tel = ${key} OR
-                    u2.fullName LIKE ${_key} OR
-                    u2.lastName LIKE ${_key} OR
-                    u2.tel = ${key} OR 
-                    inv.invoiceId = ${key}
-                    )
-                ORDER BY createdAt DESC
-                `
-            const totalCount = Number(totalCountResult[0]?.totalCount ?? 0)
-            const count = Math.ceil(totalCount / take)
-
-            return { contracts, count }
-        } else if (projectId && key) {
-            const contracts: any[] = await prismaClient.$queryRaw`
-                SELECT c.*, p.projectName, 
-                    u.fullName fullNameOne,  u.lastName lastNameOne,
-                    u2.fullName fullNameTwo,  u2.lastName lastNameTwo,
-                    inv.debt,
-                    inv.invoiceId
-                FROM contracts c
-                    LEFT JOIN projects p ON p.projectId = c.projectId
-                    LEFT JOIN users u ON c.customerIdOne = u.userId
-                    LEFT JOIN users u2 ON c.customerIdOne = u2.userId
-                LEFT JOIN invoice inv ON c.contractId = inv.contractId
-                WHERE c.companyId = ${companyId} AND
-                    c.projectId = ${projectId} AND 
-                    (c.docId LIKE ${_key} OR
-                    p.projectName LIKE ${_key} OR
-                    u.fullName LIKE ${_key} OR
-                    u.lastName LIKE ${_key} OR
-                    u.tel = ${key} OR
-                    u2.fullName LIKE ${_key} OR
-                    u2.lastName LIKE ${_key} OR
-                    u2.tel = ${key} OR 
-                    inv.invoiceId = ${key}
-                    )
-                ORDER BY createdAt DESC
-                LIMIT ${take} OFFSET ${skip}
-            `
-
-            const totalCountResult: any[] = await prismaClient.$queryRaw`
-           SELECT  COUNT(*) totalCount
-                FROM contracts c
-                    LEFT JOIN projects p ON p.projectId = c.projectId
-                    LEFT JOIN users u ON c.customerIdOne = u.userId
-                    LEFT JOIN users u2 ON c.customerIdOne = u2.userId
-                LEFT JOIN invoice inv ON c.contractId = inv.contractId
-                WHERE c.companyId = ${companyId}
-                AND (c.docId LIKE ${_key} OR
-                    p.projectName LIKE ${_key} OR
-                    u.fullName LIKE ${_key} OR
-                    u.lastName LIKE ${_key} OR
-                    u.tel = ${key} OR
-                    u2.fullName LIKE ${_key} OR
-                    u2.lastName LIKE ${_key} OR
-                    u2.tel = ${key} OR 
-                    inv.invoiceId = ${key}
-                    )
-                ORDER BY createdAt DESC
-                `
-            const totalCount = Number(totalCountResult[0]?.totalCount ?? 0)
-            const count = Math.ceil(totalCount / take)
-
-            return { contracts, count }
-        } else if (projectId && !key) {
-            const contracts: any[] = await prismaClient.$queryRaw`
-                SELECT c.*, p.projectName, 
-                    u.fullName fullNameOne,  u.lastName lastNameOne,
-                    u2.fullName fullNameTwo,  u2.lastName lastNameTwo,
-                    inv.debt,
-                    inv.invoiceId
-                FROM contracts c
-                    LEFT JOIN projects p ON p.projectId = c.projectId
-                    LEFT JOIN users u ON c.customerIdOne = u.userId
-                    LEFT JOIN users u2 ON c.customerIdOne = u2.userId
-                LEFT JOIN invoice inv ON c.contractId = inv.contractId
-                WHERE c.companyId = ${companyId} AND
-                    c.projectId = ${projectId}  
-                ORDER BY createdAt DESC
-                LIMIT ${take} OFFSET ${skip}
-            `
-
-            const totalCountResult: any[] = await prismaClient.$queryRaw`
-             SELECT  COUNT(*) totalCount
-                FROM contracts c
-                    LEFT JOIN projects p ON p.projectId = c.projectId
-                    LEFT JOIN users u ON c.customerIdOne = u.userId
-                    LEFT JOIN users u2 ON c.customerIdOne = u2.userId
-                LEFT JOIN invoice inv ON c.contractId = inv.contractId
-                WHERE c.companyId = ${companyId} AND
-                    c.projectId = ${projectId}  
-                `
-            const totalCount = Number(totalCountResult[0]?.totalCount ?? 0)
-            const count = Math.ceil(totalCount / take)
-            return { contracts, count }
-        }
-
-        const contracts: any[] = await prismaClient.$queryRaw`
-                SELECT c.*, p.projectName, 
-                u.fullName fullNameOne,  u.lastName lastNameOne,
-                u2.fullName fullNameTwo,  u2.lastName lastNameTwo,
-                inv.debt,
-                inv.invoiceId
-                FROM contracts c
-                    LEFT JOIN projects p ON p.projectId = c.projectId
-                    LEFT JOIN users u ON c.customerIdOne = u.userId
-                    LEFT JOIN users u2 ON c.customerIdOne = u2.userId
-                LEFT JOIN invoice inv ON c.contractId = inv.contractId
-                WHERE c.companyId = ${companyId}
-                ORDER BY createdAt DESC
-                LIMIT ${take} OFFSET ${skip}
-            `
-
-        const totalCountResult: any[] = await prismaClient.$queryRaw`
-             SELECT COUNT(*) totalCount
-                FROM contracts c
-                    LEFT JOIN projects p ON p.projectId = c.projectId
-                    LEFT JOIN users u ON c.customerIdOne = u.userId
-                    LEFT JOIN users u2 ON c.customerIdOne = u2.userId
-                LEFT JOIN invoice inv ON c.contractId = inv.contractId
-                WHERE c.companyId = ${companyId}
-                ORDER BY createdAt DESC
-                `
+        const contracts: any[] = await prismaClient.$queryRaw(query)
+        const totalCountResult: any[] = await prismaClient.$queryRaw(countQuery)
         const totalCount = Number(totalCountResult[0]?.totalCount ?? 0)
         const count = Math.ceil(totalCount / take)
+
         return { contracts, count }
     } catch (err) {
         logger.error(err)
-        return { contracts: [], count: 1 }
+        return { contracts: [], count: 0 }
     } finally {
         await prismaClient.$disconnect()
     }
