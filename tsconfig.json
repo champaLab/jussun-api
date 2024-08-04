@@ -1,46 +1,44 @@
-// {
-//   "compilerOptions": {
-//     "target": "ES2020",
-//     "module": "NodeNext",
-//     "rootDir": "./src",
-//     "outDir": "./dist",
-//     "strict": true,
-//     "noImplicitAny": false,
-//     "esModuleInterop": true,
-//     "noImplicitUseStrict": false,
-//     "allowImportingTsExtensions": true,
-//     "noEmit": true,
-//     "moduleResolution": "NodeNext",
-//     "resolveJsonModule": true,
-//   },
-//   // "include": [
-//   //   "src/**/*.ts"
-//   // ],
-//   "exclude": [
-//     "node_modules",
-//     "**/*.spec.ts"
-//   ],
-//   "files": [
-//     "src/index.ts"  
-//   ]
-// }
-
 {
   "compilerOptions": {
-    "module": "NodeNext",
-    // "moduleResolution": "node",
-    "esModuleInterop": true,
-    "resolveJsonModule": true,
     "target": "ES2020",
+    "module": "NodeNext",
     "rootDir": "./src",
     "outDir": "./dist",
     "strict": true,
-    "noImplicitUseStrict": false,
     "noImplicitAny": false,
+    "esModuleInterop": true,
+    "noImplicitUseStrict": false,
+    "allowImportingTsExtensions": true,
+    "noEmit": true,
+    "moduleResolution": "NodeNext",
+    "resolveJsonModule": true,
   },
-   
+  // "include": [
+  //   "src/**/*.ts"
+  // ],
   "exclude": [
     "node_modules",
     "**/*.spec.ts"
+  ],
+  "files": [
+    "src/index.ts"  
   ]
 }
+
+// {
+//   "compilerOptions": {
+//   "module": "esnext",  
+//     "target": "esnext", 
+//     "rootDir": "./src",
+//     "outDir": "./dist",
+//     "strict": true,
+//     "esModuleInterop": true,
+//     "noImplicitUseStrict": false,
+//     "noImplicitAny": false,
+//   },
+   
+//   "exclude": [
+//     "node_modules",
+//     "**/*.spec.ts"
+//   ]
+// }

@@ -1,4 +1,5 @@
 import * as admin from 'firebase-admin'
+// @ts-ignore
 import * as serviceAccount from './jutsun-a5d81-firebase-adminsdk-mo29l-a856c863cd.json'
 import dayjs from 'dayjs'
 import env from '../env'

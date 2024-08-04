@@ -3,6 +3,7 @@ import jwt, { SignOptions } from 'jsonwebtoken'
 import env from '../env'
 import logger from '../configs/winston'
 import { logNamespace } from '../log'
+import { TUserPayloadModel } from '../apis/user/type'
 
 const i = 'Champa Lab' // Issuer (Software organization who issues the token)
 const s = 'sonephetmnlv@gmail.com' // Subject (intended user of the token)
@@ -42,14 +43,14 @@ export const verify = async (req: Request, res: Response, next: NextFunction) =>
             return res.json({ status: 'invalid', message: 'Token unauthorized.' })
         }
         if (decoded) {
-            // const payload = decoded as data
-            // logNamespace.run(() => {
-            //     if (payload.username) logNamespace.set('username', payload.username)
-            //     if (payload.shopId) logNamespace.set('shopId', payload.shopId)
-            //     if (payload.userId) logNamespace.set('userId', payload.userId)
-            //     if (payload.role) logNamespace.set('role', payload.role)
-            //     if (payload.fullName) logNamespace.set('fullName', payload.fullName)
-            // })
+            const payload = decoded as TUserPayloadModel
+            logNamespace.run(() => {
+                if (payload.tel) logNamespace.set('tel', payload.tel)
+                if (payload.companyId) logNamespace.set('companyId', payload.companyId)
+                if (payload.userId) logNamespace.set('userId', payload.userId)
+                if (payload.role) logNamespace.set('role', payload.role)
+                if (payload.fullName) logNamespace.set('fullName', payload.fullName)
+            })
 
             // @ts-ignore
             req.tokenPayload = decoded
