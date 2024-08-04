@@ -18,8 +18,9 @@ export const companyController = async (req: Request, res: Response) => {
 
     const result = await companiesService({ companyId, key, page })
 
-    const companyRes = result.companies.map((item) => ({
+    const companyRes = result.companies.map((item, i) => ({
         ...item,
+        indexNo: (i + 1) * page,
         logoPath: item.logoPath ? `${env.HOST_IMAGE}${env.BASE_PATH}${item.logoPath}` : null,
         logoOriginal: item.logoPath,
         createdAt: dateFormatter(item.createdAt),

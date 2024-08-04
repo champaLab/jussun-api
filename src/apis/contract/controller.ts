@@ -15,6 +15,7 @@ import {
 } from './service'
 import dayjs from 'dayjs'
 import { responseData } from '../../utils/functions'
+import { dateFormatter } from '../../utils/dateFormat'
 
 export const contractController = async (req: Request, res: Response) => {
     const payload = tokenPayloadService(req)
@@ -27,11 +28,17 @@ export const contractController = async (req: Request, res: Response) => {
         companyId = Number(req.body.companyId)
     }
 
-    const contract = await contractService({ projectId, companyId, key, page })
-    const contracts = await responseData(contract, page)
+    const result = await contractService({ projectId, companyId, key, page })
+    const contracts = result.contracts.map((item, i) => ({
+        ...item,
+        indexNo: (i + 1) * page,
+        createdAt: dateFormatter(item.createdAt),
+        updatedAt: dateFormatter(item.updatedAt)
+    }))
     return res.json({
         status: 'success',
-        contracts
+        contracts,
+        count: result.count
     })
 }
 

@@ -2,6 +2,7 @@ import { Request, Response } from 'express'
 import { createProjectService, projectsService, updateProjectService } from './service'
 import { tokenPayloadService } from '../user/service'
 import { responseData } from '../../utils/functions'
+import { dateFormatter } from '../../utils/dateFormat'
 
 export const projectsController = async (req: Request, res: Response) => {
     const payload = tokenPayloadService(req)
@@ -15,12 +16,18 @@ export const projectsController = async (req: Request, res: Response) => {
         companyId = payload.companyId
     }
 
-    const p = await projectsService({ companyId, key, page })
-    const projects = await responseData(p, page)
+    const result = await projectsService({ companyId, key, page })
+    const projects = result.projects.map((item, i) => ({
+        ...item,
+        indexNo: (i + 1) * page,
+        createdAt: dateFormatter(item.createdAt),
+        updatedAt: dateFormatter(item.updatedAt)
+    }))
 
     return res.json({
         status: 'success',
-        projects
+        projects,
+        count: result.count
     })
 }
 

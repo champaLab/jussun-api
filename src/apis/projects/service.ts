@@ -5,32 +5,36 @@ import dayjs from 'dayjs'
 import { ProjectModel } from './type'
 import env from '../../env'
 
-export const projectsService = async (data: { companyId: number; key: string | null; page: number }) => {
+export const projectsService = async (data: { companyId: number; key: string | null; page: number }): Promise<{ count: number; projects: any }> => {
     const skip = data.key ? 0 : (data.page - 1) * env.ROW_PER_PAGE
     const take = env.ROW_PER_PAGE
     const key = data.key ? `%${data.key}%` : null
 
     try {
+        let projects: any[] = []
         if (!key) {
-            const p = await prismaClient.projects.findMany({
+            projects = await prismaClient.projects.findMany({
                 where: { companyId: data.companyId }
             })
-            return p
+        } else {
+            projects = await prismaClient.$queryRaw`
+                SELECT p.* FROM projects p 
+                WHERE p.companyId = ${data.companyId} 
+                AND (
+                    p.projectName LIKE ${key}  OR 
+                    p.address LIKE ${key} 
+                ) ORDER BY p.createdAt DESC 
+                LIMIT ${take} OFFSET ${skip} 
+            `
         }
 
-        const p = await prismaClient.$queryRaw`
-        SELECT p.* FROM projects p 
-        WHERE p.companyId = ${data.companyId} 
-        AND (
-            p.projectName LIKE ${key}  OR 
-            p.address LIKE ${key} 
-        ) ORDER BY p.createdAt DESC 
-        LIMIT ${take} OFFSET ${skip} 
-        `
-        return p
+        const counter = await prismaClient.projects.count({ where: { companyId: data.companyId } })
+        const count = Math.ceil(counter / take)
+
+        return { count, projects }
     } catch (err) {
         logger.error(err)
-        return []
+        return { count: 1, projects: [] }
     } finally {
         prismaClient.$disconnect()
     }
