@@ -14,7 +14,6 @@ COPY package.json .
 COPY yarn.lock .
 
 # Install dependencies
-RUN yarn clean  
 RUN yarn install  
 # RUN yarn install --frozen-lockfile
 
