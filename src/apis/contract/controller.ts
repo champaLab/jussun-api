@@ -14,8 +14,8 @@ import {
     updateContractInvoiceIdService
 } from './service'
 import dayjs from 'dayjs'
-import { responseData } from '../../utils/functions'
 import { dateFormatter } from '../../utils/dateFormat'
+import { historyService } from '../../utils/createLog'
 
 export const contractController = async (req: Request, res: Response) => {
     const payload = tokenPayloadService(req)
@@ -62,6 +62,7 @@ export const createContractController = async (req: Request, res: Response) => {
     const updatedAt = null
     const createdAt = dayjs().toDate()
     const paymentMethod = req.body.paymentMethod ?? null
+    const description = 'ເພີ່ມຂໍ້ມູນສັນຍາ'
 
     const debt = totalPrice - payInAdvance
     let numberOfInstallment = debt === 0 ? 1 : Number(req.body.numberOfInstallment)
@@ -164,6 +165,8 @@ export const createContractController = async (req: Request, res: Response) => {
 
     await updateContractInvoiceIdService(p.contractId, createInv.invoiceId)
 
+    await historyService({ req, description })
+
     return res.json({
         status: 'success',
         message: 'ສ້າງໂຄງການ ສຳເລັດແລ້ວ'
@@ -201,6 +204,7 @@ export const updateContractController = async (req: Request, res: Response) => {
     const reservedBy = req.body.reservedBy
     const reservedAt = req.body.reservedAt
     const lastInvoice = Number(req.body.lastInvoice)
+    const description = 'ແກ້ໄຂຂໍ້ມູນສັນຍາ'
 
     if (oldArea != area || oldProjectId != projectId) {
         const projectOld = await finOneProjectService({ projectId: oldProjectId })
@@ -311,6 +315,8 @@ export const updateContractController = async (req: Request, res: Response) => {
         })
     }
 
+    await historyService({ req, description })
+
     return res.json({
         status: 'success',
         message: 'ແກ້ໄຂຂໍ້ມູນສັນຍາ ສຳເລັດແລ້ວ'
@@ -324,6 +330,7 @@ export const updateContractStatusController = async (req: Request, res: Response
     const cancelBy = payload.userId
     const reason = contractStatus == 'ACTIVE' ? null : req.body.reason
     const cancelAt = dayjs().toDate()
+    const description = 'ແກ້ໄຂອັດສະຖານະສັນຍາ'
 
     const p = await updateContractStatusService({
         cancelAt,
@@ -338,6 +345,8 @@ export const updateContractStatusController = async (req: Request, res: Response
             message: 'ແກ້ໄຂຂໍ້ມູນສັນຍາ ຜິດພາດ ລອງໃໝ່ໃນພາຍຫຼັງ'
         })
     }
+
+    await historyService({ req, description })
 
     return res.json({
         status: 'success',

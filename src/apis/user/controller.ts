@@ -253,6 +253,8 @@ export const updateUserController = async (req: Request, res: Response) => {
         }
     }
 
+    await historyService({ req, description })
+
     return res.json({
         status: 'success',
         message: 'ແກ້ໄຂຂໍ້ມູນຜູ້ໃຊ້ງານ ສຳເລັດແລ້ວ'
