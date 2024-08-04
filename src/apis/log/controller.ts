@@ -10,8 +10,9 @@ export const findManyHistoryController = async (req: Request, res: Response) => 
     const companyName = req.body.companyName || null
     const page = req.body.page ? Number(req.body.page) : 1
     const key = req.body.Key
-
-    const hst = await findManyHistoryService({ userId, companyName, page, key })
+    const dateStart = dayjs(req.body.dateStart).format('YYYY-MM-DD')
+    const dateEnd = dayjs(req.body.dateEnd).format('YYYY-MM-DD') + ' 23:59:59'
+    const hst = await findManyHistoryService({ userId, companyName, page, key, dateEnd, dateStart })
     console.log({ hst })
     const histories = hst.history.map((item, i) => ({
         ...item,

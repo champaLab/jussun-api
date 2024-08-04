@@ -7,3 +7,12 @@ export interface Report {
     createdBy: Date
     createdAt: Date
 }
+
+export interface TReport {
+    companyName: string | null
+    userId: number | null
+    key: string | null | undefined
+    page: number
+    dateStart: string
+    dateEnd: string
+}
