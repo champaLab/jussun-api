@@ -17,6 +17,7 @@ import { company } from '@prisma/client'
 import { dateFormatter } from '../../utils/dateFormat'
 import { responseData } from '../../utils/functions'
 import { count } from 'console'
+import { historyService } from '../../utils/createLog'
 
 export const loginController = async (req: Request, res: Response) => {
     const tel = req.body.tel
@@ -168,6 +169,7 @@ export const createUserController = async (req: Request, res: Response) => {
     const role = req.body.role
     const userStatus = true
     let companyId: number | null = req.body.companyId
+    const description = 'ເພີ່ມຂໍ້ມູນຜູ້ໃຊ້ງານ'
 
     if (role === 'CUSTOMER') {
         companyId = null
@@ -194,6 +196,8 @@ export const createUserController = async (req: Request, res: Response) => {
         })
     }
 
+    await historyService({ req, description })
+
     return res.json({
         status: 'success',
         message: 'ການສ້າງຜູ້ໃຊ້ງານ ສຳເລັດແລ້ວ'
@@ -208,6 +212,7 @@ export const updateUserController = async (req: Request, res: Response) => {
     const lastName = req.body.lastName
     const pass = req.body.password != '' ? req.body.password : null
     const role = req.body.role
+    const description = 'ແກ້ໄຂຂໍ້ມູນຜູ້ໃຊ້ງານ'
 
     const userStatus = req.body.userStatus
 

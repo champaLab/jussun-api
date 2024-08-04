@@ -1,3 +1,4 @@
+import { historyService } from './../../utils/createLog'
 import { Request, Response } from 'express'
 import { createExchangeService, readExchangeService, updateExchangeService } from './service'
 import { tokenPayloadService } from '../user/service'
@@ -43,7 +44,7 @@ export const createExchangeController = async (req: Request, res: Response) => {
     const updatedBy = payload.userId
     const thb = parseFloat(req.body.thb)
     const usd = parseFloat(req.body.usd)
-
+    const description = 'ເພີ່ມອັດຕາແລກປ່ຽນ'
     const create = await createExchangeService({
         companyId,
         createdAt,
@@ -62,6 +63,7 @@ export const createExchangeController = async (req: Request, res: Response) => {
             message: 'ການສ້າງ ອັດຕາແລກປ່ຽນ ຜິດພາດ ລອງໃໝ່ໃນພາຍຫຼັງ'
         })
     }
+    await historyService({ req, description })
     return res.json({
         status: 'success',
         message: 'ບັນທຶກ ຂໍ້ມູນສຳເລັດ'
@@ -80,6 +82,7 @@ export const updateExchangeController = async (req: Request, res: Response) => {
     const updatedBy = payload.userId
     const thb = parseFloat(req.body.thb)
     const usd = parseFloat(req.body.usd)
+    const description = 'ແກ້ໄຂອັດຕາເເລກປ່ຽນ'
 
     const update = await updateExchangeService({
         companyId,
@@ -98,6 +101,7 @@ export const updateExchangeController = async (req: Request, res: Response) => {
             message: 'ອັບເດດ ອັດຕາແລກປ່ຽນ ຜິດພາດ ກະລຸນາ ລອງໃໝ່ໃນພາຍຫຼັງ'
         })
     }
+    await historyService({ req, description })
     return res.json({
         status: 'success',
         message: 'ອັບເດດ ຂໍ້ມູນສຳເລັດ'

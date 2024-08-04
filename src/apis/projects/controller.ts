@@ -2,6 +2,7 @@ import { Request, Response } from 'express'
 import { createProjectService, projectsService, updateProjectService } from './service'
 import { tokenPayloadService } from '../user/service'
 import { responseData } from '../../utils/functions'
+import { historyService } from '../../utils/createLog'
 
 export const projectsController = async (req: Request, res: Response) => {
     const payload = tokenPayloadService(req)
@@ -31,6 +32,7 @@ export const createProjectController = async (req: Request, res: Response) => {
     const createdBy = payload.userId
     const projectName = req.body.projectName
     const address = req.body.address
+    const description = 'ເພີ່ມຂໍ້ມູນໂຄງການ'
 
     if (!companyId) {
         return res.json({
@@ -46,7 +48,7 @@ export const createProjectController = async (req: Request, res: Response) => {
             message: 'ສ້າງໂຄງການ ຜິດພາດ ລອງໃໝ່ໃນພາຍຫຼັງ'
         })
     }
-
+    await historyService({ req, description })
     return res.json({
         status: 'success',
         message: 'ສ້າງໂຄງການ ສຳເລັດແລ້ວ'
@@ -61,6 +63,7 @@ export const updateProjectController = async (req: Request, res: Response) => {
     const createdBy = payload.userId
     const projectName = req.body.projectName
     const address = req.body.address
+    const description = 'ແກ້ໄຂຂໍ້ມູນໂຄງການ'
 
     const p = await updateProjectService(projectId, { area, companyId, createdBy, projectName, address })
     if (!p) {
@@ -69,6 +72,7 @@ export const updateProjectController = async (req: Request, res: Response) => {
             message: 'ແກ້ໄຂໂຄງການ ຜິດພາດ ລອງໃໝ່ໃນພາຍຫຼັງ'
         })
     }
+    await historyService({ req, description })
 
     return res.json({
         status: 'success',

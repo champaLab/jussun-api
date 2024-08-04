@@ -129,3 +129,30 @@ model users {
   createdAt  DateTime? @default(now()) @db.DateTime(0)
   updatedAt  DateTime? @default(now()) @db.DateTime(0)
 }
+
+model logs {
+  logId       Int       @id @unique(map: "logs_pk2") @default(autoincrement())
+  description String?   @db.VarChar(200)
+  path        String    @db.VarChar(100)
+  body        String?   @db.Text
+  userId      Int
+  companyId   Int?
+  ip          String?   @db.VarChar(100)
+  createdAt   DateTime? @default(now()) @db.Timestamp(0)
+  deletedAt   DateTime? @db.DateTime(0)
+}
+
+model news {
+  nId         Int       @id @unique(map: "news_pk2") @default(autoincrement())
+  content     String    @db.LongText
+  tel         String?   @db.VarChar(10)
+  imagePath   String?   @db.VarChar(200)
+  ip          String?   @db.VarChar(50)
+  userId      Int
+  sentType    String?   @db.VarChar(200)
+  sentStatus  String    @default("PENDING") @db.VarChar(10)
+  dateForSent DateTime? @db.DateTime(0)
+  sentDate    DateTime? @db.DateTime(0)
+  createdAt   DateTime? @default(now()) @db.DateTime(0)
+  multi       String?   @default("YES") @db.VarChar(5)
+}
