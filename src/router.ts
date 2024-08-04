@@ -4,8 +4,18 @@ import { upload } from './utils/file-helper'
 import { companyController, createCompanyController, updateCompanyController } from './apis/company/controller'
 import { createProjectController, projectsController, updateProjectController } from './apis/projects/controller'
 import { verify } from './utils/jwt'
-import { createUserController, findOneUserController, loginController, meController, updateUserController, userController } from './apis/user/controller'
-import { valLogin, valUserCreate, valUserFind, valUserUpdate } from './apis/user/validate'
+import {
+    createUserController,
+    findOneUserController,
+    findUserForResetController,
+    loginController,
+    meController,
+    resetPasswordCodeController,
+    updateUserController,
+    userController,
+    verifyCodeController
+} from './apis/user/controller'
+import { valLogin, valResetPasswordCode, valSentCode, valUserCreate, valUserFind, valUserUpdate, valVerifyCode } from './apis/user/validate'
 import { contractController, createContractController, updateContractController, updateContractStatusController } from './apis/contract/controller'
 import { valCompany, valCompanyCreate, valCompanyUpdate } from './apis/company/validate'
 import { valContract, valContractCreate, valContractUpdate } from './apis/contract/validate'
@@ -28,6 +38,10 @@ router.post('/users', verify, userController)
 router.post('/users/create', verify, valUserCreate, valResult, createUserController)
 router.post('/users/update', verify, valUserUpdate, valResult, updateUserController)
 router.post('/user/find', verify, valUserFind, valResult, findOneUserController)
+
+router.post('/forgot/find', valSentCode, valResult, findUserForResetController)
+router.post('/forgot/verify', valVerifyCode, valResult, verifyCodeController)
+router.post('/forgot/reset', valResetPasswordCode, valResult, resetPasswordCodeController)
 
 router.post('/company', verify, companyController)
 router.post('/company/create', verify, upload('company', true).single('file'), valCompanyCreate, valResult, createCompanyController)

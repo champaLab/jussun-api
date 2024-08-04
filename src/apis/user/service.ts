@@ -186,3 +186,91 @@ export const findUserService = async (data: { key: string }) => {
         prismaClient.$disconnect()
     }
 }
+
+export const sentCodeService = async (data: { code: string; tel: string }) => {
+    try {
+        const user = await prismaClient.otp.create({
+            data: {
+                code: data.code,
+                tel: data.tel
+            }
+        })
+
+        return user
+    } catch (err) {
+        logger.error(err)
+        console.error(err)
+        return null
+    } finally {
+        prismaClient.$disconnect()
+    }
+}
+
+export const verifyCodeService = async (data: { code: string; tel: string }) => {
+    try {
+        const user = await prismaClient.otp.updateMany({
+            where: {
+                code: data.code,
+                confirm: 'NO',
+                tel: data.tel
+            },
+            data: {
+                confirm: 'YES'
+            }
+        })
+
+        return user
+    } catch (err) {
+        logger.error(err)
+        console.error(err)
+        return null
+    } finally {
+        prismaClient.$disconnect()
+    }
+}
+
+export const resetPasswordService = async (data: { password: string; tel: string }) => {
+    console.log({ data })
+    try {
+        const user = await prismaClient.users.update({
+            where: {
+                tel: data.tel
+            },
+            data: {
+                password: data.password
+            }
+        })
+
+        return user
+    } catch (err) {
+        logger.error(err)
+        console.error(err)
+        return null
+    } finally {
+        prismaClient.$disconnect()
+    }
+}
+
+export const findUserForResetService = async (tel: string) => {
+    try {
+        const users = await prismaClient.users.findFirst({
+            where: {
+                tel
+            },
+            select: {
+                tel: true,
+                fullName: true,
+                lastName: true,
+                userStatus: true
+            }
+        })
+
+        return users
+    } catch (err) {
+        logger.error(err)
+        console.error(err)
+        return null
+    } finally {
+        prismaClient.$disconnect()
+    }
+}
