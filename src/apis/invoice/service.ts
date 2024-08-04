@@ -181,6 +181,6 @@ export const actionInvoiceService = async (data: { invoiceId: number; reservedBy
         console.error(err)
         return null
     } finally {
-        prismaClient.$disconnect()
+        await prismaClient.$disconnect()
     }
 }
