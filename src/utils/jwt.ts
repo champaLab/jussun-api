@@ -43,14 +43,15 @@ export const verify = async (req: Request, res: Response, next: NextFunction) =>
             return res.json({ status: 'invalid', message: 'Token unauthorized.' })
         }
         if (decoded) {
-            const payload = decoded as TUserPayloadModel
-            logNamespace.run(() => {
-                if (payload.tel) logNamespace.set('tel', payload.tel)
-                if (payload.companyId) logNamespace.set('companyId', payload.companyId)
-                if (payload.userId) logNamespace.set('userId', payload.userId)
-                if (payload.role) logNamespace.set('role', payload.role)
-                if (payload.fullName) logNamespace.set('fullName', payload.fullName)
-            })
+            // const payload = decoded as TUserPayloadModel
+            // logNamespace.run(() => {
+            //     if (payload.tel) logNamespace.set('tel', payload.tel)
+            //     if (payload.companyId) logNamespace.set('companyId', payload.companyId)
+            //     if (payload.userId) logNamespace.set('userId', payload.userId)
+            //     if (payload.role) logNamespace.set('role', payload.role)
+            //     if (payload.fullName) logNamespace.set('fullName', payload.fullName)
+            //     logNamespace.set('demo', '12345678')
+            // })
 
             // @ts-ignore
             req.tokenPayload = decoded

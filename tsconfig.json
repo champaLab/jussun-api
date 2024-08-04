@@ -8,8 +8,6 @@
     "noImplicitAny": false,
     "esModuleInterop": true,
     "noImplicitUseStrict": false,
-    // "allowImportingTsExtensions": true,
-    // "noEmit": true,
     "moduleResolution": "NodeNext",
     "resolveJsonModule": true,
   },
