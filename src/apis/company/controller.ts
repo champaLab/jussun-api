@@ -8,6 +8,7 @@ import env from '../../env'
 export const companyController = async (req: Request, res: Response) => {
     const payload = tokenPayloadService(req)
     const key = req.body.key
+    const page = req.body.page
     let companyId = req.body.companyId
     if ((payload.role === 'ADMIN' || payload.role === 'SUPERADMIN') && companyId) {
         companyId = req.body.companyId
@@ -15,9 +16,9 @@ export const companyController = async (req: Request, res: Response) => {
         companyId = payload.companyId
     }
 
-    const company = await companiesService({ companyId, key })
+    const result = await companiesService({ companyId, key, page })
 
-    const companyRes = company.map((item) => ({
+    const companyRes = result.companies.map((item) => ({
         ...item,
         logoPath: item.logoPath ? `${env.HOST_IMAGE}${env.BASE_PATH}${item.logoPath}` : null,
         logoOriginal: item.logoPath,
@@ -27,22 +28,23 @@ export const companyController = async (req: Request, res: Response) => {
 
     return res.json({
         status: 'success',
-        company: companyRes
+        company: companyRes,
+        count: result.count
     })
 }
 
 export const createCompanyController = async (req: Request, res: Response) => {
     const payload = tokenPayloadService(req)
-    const abbreviatedLetters = req.body.abbreviatedLetters
-    const companyId = req.body.companyId
+    const abbreviatedLetters = req.body.abbreviatedLetters != 'null' ? req.body.abbreviatedLetters : null
+    const companyId = req.body.companyId != 'null' ? req.body.companyId : null
     const createdBy = payload.userId
-    const address = req.body.address
-    const companyName = req.body.companyName
+    const address = req.body.address != 'null' ? req.body.address : null
+    const companyName = req.body.companyName != 'null' ? req.body.companyName : null
     const companyStatus = req.body.companyStatus === 'true'
-    const email = req.body.email
-    const fax = req.body.fax
-    const tel = req.body.tel
-    const whatsapp = req.body.whatsapp
+    const email = req.body.email != 'null' ? req.body.email : null
+    const fax = req.body.fax != 'null' ? req.body.fax : null
+    const tel = req.body.tel != 'null' ? req.body.tel : null
+    const whatsapp = req.body.whatsapp != 'null' ? req.body.whatsapp : null
     const logoPath = getPhotoPath(req.file) ?? req.body.logoOriginal
 
     const p = await createCompanyService({
@@ -73,16 +75,16 @@ export const createCompanyController = async (req: Request, res: Response) => {
 
 export const updateCompanyController = async (req: Request, res: Response) => {
     const payload = tokenPayloadService(req)
-    const abbreviatedLetters = req.body.abbreviatedLetters
-    const companyId = Number(req.body.companyId)
+    const abbreviatedLetters = req.body.abbreviatedLetters != 'null' ? req.body.abbreviatedLetters : null
+    const companyId = req.body.companyId != 'null' ? req.body.companyId : null
     const createdBy = payload.userId
-    const address = req.body.address
-    const companyName = req.body.companyName
+    const address = req.body.address != 'null' ? req.body.address : null
+    const companyName = req.body.companyName != 'null' ? req.body.companyName : null
     const companyStatus = req.body.companyStatus === 'true'
-    const email = req.body.email
-    const fax = req.body.fax
-    const tel = req.body.tel
-    const whatsapp = req.body.whatsapp
+    const email = req.body.email != 'null' ? req.body.email : null
+    const fax = req.body.fax != 'null' ? req.body.fax : null
+    const tel = req.body.tel != 'null' ? req.body.tel : null
+    const whatsapp = req.body.whatsapp != 'null' ? req.body.whatsapp : null
     const logoPath = getPhotoPath(req.file) ?? req.body.logoOriginal
 
     const p = await updateCompanyService({

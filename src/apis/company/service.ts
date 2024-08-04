@@ -1,5 +1,6 @@
 import logger from '../../configs/winston'
 import prismaClient from '../../prisma'
+import { paginate } from '../../utils/functions'
 import { CompanyModel } from './type'
 
 export const findOneCompanyService = async (data: { companyId: number }) => {
@@ -13,7 +14,7 @@ export const findOneCompanyService = async (data: { companyId: number }) => {
         await prismaClient.$disconnect()
     }
 }
-export const companiesService = async (data: { companyId: number; key: string | null }) => {
+export const companiesService = async (data: { companyId: number; key: string | null; page: number | null }) => {
     try {
         const { companyId, key } = data
 
@@ -29,13 +30,16 @@ export const companiesService = async (data: { companyId: number; key: string | 
         if (key) {
             condition.where.companyName = { contains: key }
         }
-
+        const { skip, take } = paginate(data)
         // Execute the query with the built condition
-        const companies = await prismaClient.company.findMany(condition)
-        return companies
+        const companies = await prismaClient.company.findMany({ ...condition, take, skip })
+        const counter = await prismaClient.company.count({ ...condition })
+        const count = Math.ceil(counter / take)
+
+        return { companies, count }
     } catch (err) {
         logger.error(err)
-        return []
+        return { companies: [], count: 0 }
     } finally {
         await prismaClient.$disconnect()
     }
