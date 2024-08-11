@@ -9,15 +9,33 @@ export const readExchangeService = async (data: { companyId: number; dateStart: 
     const take = env.ROW_PER_PAGE
     const { companyId, dateStart, dateEnd } = data
     try {
-        const totalPage: any[] = await prismaClient.$queryRaw`
-        SELECT COUNT(*) totalCount FROM exchange WHERE DATE(createdAt) BETWEEN ${dateStart} AND ${dateEnd} AND ${companyId};`
+        if (dateStart && dateEnd) {
+            const totalPage: any[] = await prismaClient.$queryRaw`
+        SELECT COUNT(*) totalCount FROM exchange WHERE DATE(createdAt) BETWEEN ${dateStart} AND ${dateEnd} AND companyId = ${companyId};`
 
-        const totalCount = Number(totalPage[0]?.totalCount ?? 0)
-        const count = Math.ceil(totalCount / take)
+            const totalCount = Number(totalPage[0]?.totalCount ?? 0)
+            const count = Math.ceil(totalCount / take)
 
-        const exchange: exchange[] = await prismaClient.$queryRaw`
-        SELECT * FROM exchange WHERE DATE(createdAt) BETWEEN ${dateStart} AND ${dateEnd} AND ${companyId}
+            const exchange: exchange[] = await prismaClient.$queryRaw`
+        SELECT * FROM exchange WHERE DATE(createdAt) BETWEEN ${dateStart} AND ${dateEnd} AND companyId = ${companyId}
           ORDER BY createdAt DESC LIMIT ${take} OFFSET ${skip}    ;`
+            return { count, exchange }
+        }
+
+        const totalPage = await prismaClient.exchange.count({
+            where: { companyId: companyId }
+        })
+
+        const count = Math.ceil(totalPage / take)
+        const exchange = await prismaClient.exchange.findMany({
+            where: { companyId: companyId },
+            orderBy: { createdAt: 'desc' },
+            skip: skip,
+            take: take
+        })
+
+        console.log({ count, exchange })
+
         return { count, exchange }
     } catch (err) {
         logger.error(err)

@@ -72,6 +72,8 @@ model invoice {
   debt             Float?    @default(0) @db.Float
   contractId       Int
   currency         String    @db.VarChar(30)
+  comment          String?   @db.VarChar(255)
+  monthly          String?   @db.VarChar(10)
   paymentMethod    String?   @db.VarChar(50)
   exchangeRate     Float?    @db.Float
   currencyExchange String?   @db.VarChar(5)
@@ -145,16 +147,16 @@ model logs {
 model news {
   nId         Int       @id @unique(map: "news_pk2") @default(autoincrement())
   content     String    @db.LongText
-  tel         String?   @db.VarChar(10)
+  tel         String?   @db.Text
   imagePath   String?   @db.VarChar(200)
   ip          String?   @db.VarChar(50)
   userId      Int
   sentType    String?   @db.VarChar(200)
   sentStatus  String    @default("PENDING") @db.VarChar(10)
   dateForSent DateTime? @db.DateTime(0)
+  multi       String?   @default("YES") @db.VarChar(5)
   sentDate    DateTime? @db.DateTime(0)
   createdAt   DateTime? @default(now()) @db.DateTime(0)
-  multi       String?   @default("YES") @db.VarChar(5)
 }
 
 /// This model or at least one of its fields has comments in the database, and requires an additional setup for migrations: Read more: https://pris.ly/d/database-comments

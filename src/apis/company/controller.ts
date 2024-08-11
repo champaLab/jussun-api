@@ -1,9 +1,24 @@
 import { Request, Response } from 'express'
-import { companiesService, createCompanyService, updateCompanyService } from './service'
+import { companiesService, companyForAutocompleteService, createCompanyService, updateCompanyService } from './service'
 import { tokenPayloadService } from '../user/service'
 import { getPhotoPath } from '../../utils/fileUrl'
 import { dateFormatter } from '../../utils/dateFormat'
 import env from '../../env'
+
+export const companyForAutocompleteController = async (req: Request, res: Response) => {
+    const payload = tokenPayloadService(req)
+    let companyId = payload.companyId
+    if (payload.role === 'ADMIN' || payload.role === 'SUPERADMIN') {
+        companyId = null
+    }
+
+    const company = await companyForAutocompleteService(companyId)
+
+    return res.json({
+        status: 'success',
+        company
+    })
+}
 
 export const companyController = async (req: Request, res: Response) => {
     const payload = tokenPayloadService(req)

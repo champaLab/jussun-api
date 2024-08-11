@@ -8,8 +8,8 @@ import dayjs from 'dayjs'
 export const readExchangeController = async (req: Request, res: Response) => {
     const payload = tokenPayloadService(req)
     const companyId = Number(payload.companyId)
-    const dateStart = dayjs(req.body.dateStart).format('YYYY-MM-DD')
-    const dateEnd = dayjs(req.body.dateEnd).format('YYYY-MM-DD') + ' 23:59:59'
+    const dateStart = req.body.dateStart && dayjs(req.body.dateStart).format('YYYY-MM-DD')
+    const dateEnd = req.body.dateEnd && dayjs(req.body.dateEnd).format('YYYY-MM-DD') + ' 23:59:59'
     const page = Number(req.body.page ?? 0)
 
     const exc = await readExchangeService({

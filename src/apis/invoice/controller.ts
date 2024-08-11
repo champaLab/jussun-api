@@ -1,6 +1,7 @@
 import { Request, Response } from 'express'
 import {
     actionInvoiceService,
+    addCommentInvoiceService,
     closeContractService,
     findInvoicePaydayService,
     findLastExchangeService,
@@ -14,12 +15,12 @@ import env from '../../env'
 import { createInvoiceService, updateContractInvoiceIdService } from '../contract/service'
 import { TResponseModel } from './type'
 import dayjs from 'dayjs'
-import { publishRealtime } from '../../utils/firebaseReeltime'
 
 export const invoicePaydayController = async (req: Request, res: Response) => {
     const payload = tokenPayloadService(req)
     let companyId = req.body.companyId
     const key = req.body.key
+    const monthly = req.body.monthly
     const page = req.body.page ? Number(req.body.page) : 1
     const invoiceStatus = req.body.invoiceStatus
     const date = req.body.date ? req.body.date.split('-') : [dayjs().format('DD'), dayjs().add(5, 'days').format('DD')]
@@ -33,7 +34,7 @@ export const invoicePaydayController = async (req: Request, res: Response) => {
         companyId = payload.companyId
     }
 
-    const inv = await findInvoicePaydayService({ invoiceStatus, companyId, key, page, projectId, dayEnd, dayStart })
+    const inv = await findInvoicePaydayService({ invoiceStatus, companyId, key, page, projectId, dayEnd, dayStart, monthly })
     const invoices = inv.invoices.map((item, i) => ({
         ...item,
         indexNo: (i + 1) * page,
@@ -89,13 +90,6 @@ export const invoicePaidController = async (req: Request, res: Response) => {
         debt = inv.debt ?? 0 - invAmount / exchangeRate
     }
 
-    // if (debt > inv.debt) {
-    //     return res.json({
-    //         status: 'error',
-    //         message: ''
-    //     })
-    // }
-
     const paid = await paidInvoiceService({
         invoiceId,
         amount: invAmount,
@@ -117,6 +111,7 @@ export const invoicePaidController = async (req: Request, res: Response) => {
             message: 'ແຈ້ງຊຳລະ ຜິດພາດ ລອງໃໝ່ໃນພາຍຫຼັງ'
         })
     }
+    const monthly = dayjs().add(1, 'month').format('MM/YYYY')
 
     if (debt > 0) {
         const createInv = await createInvoiceService({
@@ -135,7 +130,9 @@ export const invoicePaidController = async (req: Request, res: Response) => {
             exchangeRate: null,
             createdBy: null,
             reservedAt: null,
-            reservedBy: null
+            reservedBy: null,
+            comment: null,
+            monthly
         })
         if (!createInv) {
             return res.json({
@@ -186,5 +183,25 @@ export const actionInvoiceController = async (req: Request, res: Response) => {
     return res.json({
         status: 'success',
         message: ''
+    })
+}
+
+export const addCommentInvoiceController = async (req: Request, res: Response) => {
+    const payload = tokenPayloadService(req)
+    const invoiceId = Number(req.body.invoiceId)
+    const comment = req.body.comment
+
+    const result = await addCommentInvoiceService({ invoiceId, comment })
+
+    if (!result) {
+        return res.json({
+            status: 'error',
+            message: 'ບັນທຶກຂໍ້ມູນຜິດພາດ ລອງໃໝ່ໃນພາຍຫຼັງ'
+        })
+    }
+
+    return res.json({
+        status: 'success',
+        message: 'ບັນທຶກຂໍ້ມູນ ສຳເລັດແລ້ວ'
     })
 }

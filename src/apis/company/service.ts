@@ -14,6 +14,30 @@ export const findOneCompanyService = async (data: { companyId: number }) => {
         await prismaClient.$disconnect()
     }
 }
+
+export const companyForAutocompleteService = async (companyId: number | null) => {
+    try {
+        if (companyId) {
+            const com = await prismaClient.company.findMany({
+                where: { companyId: companyId, companyStatus: true },
+                select: { companyId: true, companyName: true, tel: true }
+            })
+            return com
+        }
+
+        const p = await prismaClient.company.findMany({
+            where: { companyStatus: true },
+            select: { companyId: true, companyName: true, tel: true }
+        })
+        return p
+    } catch (err) {
+        logger.error(err)
+        return []
+    } finally {
+        await prismaClient.$disconnect()
+    }
+}
+
 export const companiesService = async (data: { companyId: number; key: string | null; page: number | null }) => {
     try {
         const { companyId, key } = data

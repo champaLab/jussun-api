@@ -56,3 +56,8 @@ export const valContractUpdate = [
     body('customerIdOne').not().isEmpty().withMessage('ກະລຸນາເລືອກ ລູກຄ້າ'),
     body('invoiceId').not().isEmpty().withMessage('ກະລຸນາເລືອກ ໃບແຈ້ງໜີ້')
 ]
+
+export const valAddComment = [
+    body('invoiceId').not().isEmpty().withMessage('ກະລຸນາປ້ອນ ເລກທີບິນ'),
+    body('comment').not().isEmpty().withMessage('ກະລຸນາປ້ອນ ຂໍ້ຄວາມ')
+]

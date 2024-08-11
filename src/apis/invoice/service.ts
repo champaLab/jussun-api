@@ -12,10 +12,13 @@ export const findInvoicePaydayService = async (data: {
     invoiceStatus: string | null
     dayStart: string
     dayEnd: string
+    monthly: string
 }): Promise<TResponseModel> => {
     const skip = (data.page - 1) * env.ROW_PER_PAGE
     const take = env.ROW_PER_PAGE
-    const { invoiceStatus, companyId, key, projectId } = data
+    const { invoiceStatus, companyId, key, projectId, monthly } = data
+
+    console.log({ data })
 
     let condition = Prisma.sql`c.companyId = ${companyId}`
     if (invoiceStatus) {
@@ -50,7 +53,7 @@ export const findInvoicePaydayService = async (data: {
                 LEFT JOIN users u2 ON c.customerIdTwo = u2.userId
                 LEFT JOIN company com ON com.companyId = c.companyId
                 LEFT JOIN invoice inv ON c.contractId = inv.contractId
-            WHERE ${condition}
+            WHERE ${condition} AND inv.monthly = ${monthly}
         `
 
         const totalCount = Number(totalCountResult[0]?.totalCount ?? 0)
@@ -65,7 +68,8 @@ export const findInvoicePaydayService = async (data: {
                 inv.invoiceId, inv.paidDate, com.companyName, com.logoPath,
                 com.address, com.abbreviatedLetters, com.tel AS companyContact,
                 com.email, com.fax, com.whatsapp,
-                CONCAT(u3.fullName, ' ', u3.lastName) AS reservedByName
+                CONCAT(u3.fullName, ' ', u3.lastName) AS reservedByName,
+                inv.comment
             FROM contracts c
                 LEFT JOIN projects p ON p.projectId = c.projectId
                 LEFT JOIN users u ON c.customerIdOne = u.userId
@@ -73,7 +77,7 @@ export const findInvoicePaydayService = async (data: {
                 LEFT JOIN company com ON com.companyId = c.companyId
                 LEFT JOIN invoice inv ON c.contractId = inv.contractId
                 LEFT JOIN users u3 ON inv.reservedBy  = u3.userId
-            WHERE ${condition}
+            WHERE ${condition} AND inv.monthly = ${monthly}
             LIMIT ${take} OFFSET ${skip}
         `
 
@@ -174,6 +178,23 @@ export const actionInvoiceService = async (data: { invoiceId: number; reservedBy
         const result = await prismaClient.invoice.update({
             where: { invoiceId },
             data: { reservedBy: null, reservedAt: null }
+        })
+        return result
+    } catch (err) {
+        logger.error(err)
+        console.error(err)
+        return null
+    } finally {
+        await prismaClient.$disconnect()
+    }
+}
+
+export const addCommentInvoiceService = async (data: { invoiceId: number; comment: string }) => {
+    const { invoiceId, comment } = data
+    try {
+        const result = await prismaClient.invoice.update({
+            where: { invoiceId },
+            data: { comment }
         })
         return result
     } catch (err) {

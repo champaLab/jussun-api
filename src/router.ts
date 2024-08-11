@@ -1,7 +1,7 @@
 import Router from 'express'
 
 import { upload } from './utils/file-helper'
-import { companyController, createCompanyController, updateCompanyController } from './apis/company/controller'
+import { companyController, companyForAutocompleteController, createCompanyController, updateCompanyController } from './apis/company/controller'
 import { createProjectController, projectsController, updateProjectController } from './apis/projects/controller'
 import { verify } from './utils/jwt'
 import {
@@ -18,12 +18,12 @@ import {
 import { valLogin, valResetPasswordCode, valSentCode, valUserCreate, valUserFind, valUserUpdate, valVerifyCode } from './apis/user/validate'
 import { contractController, createContractController, updateContractController, updateContractStatusController } from './apis/contract/controller'
 import { valCompany, valCompanyCreate, valCompanyUpdate } from './apis/company/validate'
-import { valContract, valContractCreate, valContractUpdate } from './apis/contract/validate'
+import { valAddComment, valContract, valContractCreate, valContractUpdate } from './apis/contract/validate'
 import { valProjectCreate, valProjectUpdate } from './apis/projects/validate'
 import { valResult } from './utils/validateResult'
 import { findManyPaidToDayController } from './apis/payment/controller'
 import { valInvoicePaidToday } from './apis/payment/validate'
-import { actionInvoiceController, invoicePaidController, invoicePaydayController } from './apis/invoice/controller'
+import { actionInvoiceController, addCommentInvoiceController, invoicePaidController, invoicePaydayController } from './apis/invoice/controller'
 import { createExchangeController, readExchangeController, updateExchangeController } from './apis/exchange/controller'
 import { valCreateExchange, valReadExchange, valUpdateExchange } from './apis/exchange/validate'
 import { valUpdateInvoice } from './apis/invoice/validate'
@@ -47,6 +47,7 @@ router.post('/forgot/reset', valResetPasswordCode, valResult, resetPasswordCodeC
 router.post('/company', verify, companyController)
 router.post('/company/create', verify, upload('company', true).single('file'), valCompanyCreate, valResult, createCompanyController)
 router.post('/company/update', verify, upload('company', true).single('file'), valCompanyUpdate, valResult, updateCompanyController)
+router.get('/company/autocomplete', verify, companyForAutocompleteController)
 
 router.post('/projects', verify, projectsController)
 router.post('/projects/create', verify, valProjectCreate, valResult, createProjectController)
@@ -60,6 +61,7 @@ router.post('/contracts/update/status', verify, updateContractStatusController)
 // TODO: PAYMENT
 router.post('/invoices/action', verify, actionInvoiceController)
 router.post('/invoices/payday', verify, invoicePaydayController)
+router.post('/invoices/comment', verify, valAddComment, valResult, addCommentInvoiceController)
 router.post('/invoices/paid', verify, upload('bills', true).single('file'), verify, valUpdateInvoice, valResult, invoicePaidController)
 
 // TODO:Exchange endpoint

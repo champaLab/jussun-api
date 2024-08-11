@@ -69,35 +69,39 @@ export const contractService = async (data: {
     const skip = key ? 0 : (page - 1) * env.ROW_PER_PAGE
     const take = env.ROW_PER_PAGE
 
-    let whereConditions = `WHERE c.companyId = ${companyId}`
+    let whereConditions: Prisma.Sql = Prisma.sql`WHERE c.companyId = ${companyId}`
+
     if (key) {
-        whereConditions += Prisma.sql`
-            AND (c.docId LIKE ${_key}
-            OR p.projectName LIKE ${_key}
-            OR u.fullName LIKE ${_key}
-            OR u.lastName LIKE ${_key}
-            OR u.tel = ${key}
-            OR u2.fullName LIKE ${_key}
-            OR u2.lastName LIKE ${_key}
-            OR u2.tel = ${key}
-            OR inv.invoiceId = ${key})`
+        whereConditions = Prisma.sql`
+            ${whereConditions} AND (
+                c.docId LIKE ${_key}
+                OR p.projectName LIKE ${_key}
+                OR u.fullName LIKE ${_key}
+                OR u.lastName LIKE ${_key}
+                OR u.tel = ${key}
+                OR u2.fullName LIKE ${_key}
+                OR u2.lastName LIKE ${_key}
+                OR u2.tel = ${key}
+                OR inv.invoiceId = ${key}
+            )
+        `
     }
     if (projectId) {
-        whereConditions += Prisma.sql` AND c.projectId = ${projectId}`
+        whereConditions = Prisma.sql`${whereConditions} AND c.projectId = ${projectId}`
     }
 
     const query = Prisma.sql`
         SELECT c.*, p.projectName, 
             u.fullName AS fullNameOne, u.lastName AS lastNameOne,
             u2.fullName AS fullNameTwo, u2.lastName AS lastNameTwo,
-            inv.debt, inv.invoiceId
+            inv.*
         FROM contracts c
         LEFT JOIN projects p ON p.projectId = c.projectId
         LEFT JOIN users u ON c.customerIdOne = u.userId
         LEFT JOIN users u2 ON c.customerIdTwo = u2.userId
         LEFT JOIN invoice inv ON c.contractId = inv.contractId
         ${whereConditions}
-        ORDER BY createdAt DESC
+        ORDER BY c.createdAt DESC
         LIMIT ${take} OFFSET ${skip}
     `
 
@@ -175,6 +179,7 @@ export const updateContractService = async (data: contracts) => {
 
 export const createInvoiceService = async (data: invoice) => {
     const { invoiceId, ...newData } = data
+    console.log({ newData })
 
     try {
         const p = await prismaClient.invoice.create({

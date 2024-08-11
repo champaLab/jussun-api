@@ -137,6 +137,11 @@ export const createContractController = async (req: Request, res: Response) => {
         })
     }
 
+    const monthly = dayjs().add(1, 'month').format('MM/YYYY')
+
+    console.log({ monthly })
+    console.log('-'.repeat(100))
+
     const createInv = await createInvoiceService({
         amount,
         debt,
@@ -153,7 +158,9 @@ export const createContractController = async (req: Request, res: Response) => {
         exchangeRate: null,
         createdBy: null,
         reservedAt: null,
-        reservedBy: null
+        reservedBy: null,
+        comment: null,
+        monthly
     })
 
     if (!createInv) {
@@ -203,6 +210,7 @@ export const updateContractController = async (req: Request, res: Response) => {
     const exchangeRate = req.body.exchangeRate
     const reservedBy = req.body.reservedBy
     const reservedAt = req.body.reservedAt
+    const monthly = req.body.monthly
     const lastInvoice = Number(req.body.lastInvoice)
     const description = 'ແກ້ໄຂຂໍ້ມູນສັນຍາ'
 
@@ -253,6 +261,7 @@ export const updateContractController = async (req: Request, res: Response) => {
     const paidNow = dayjs().toDate()
     const invoiceId = Number(req.body.invoiceId)
     const fines = req.body.fines ? parseFloat(req.body.fines) : 0
+    const comment = req.body.comment
 
     console.log('-'.repeat(150))
     console.error({ debt, numberOfInstallment, contractStatus, amount, invoiceStatus, paidNow, invoiceId })
@@ -305,7 +314,9 @@ export const updateContractController = async (req: Request, res: Response) => {
         exchangeRate,
         createdBy: null,
         reservedAt,
-        reservedBy
+        reservedBy,
+        comment,
+        monthly
     })
 
     if (!createInv) {

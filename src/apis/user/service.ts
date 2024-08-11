@@ -29,7 +29,7 @@ export const findManyUserService = async (data: { companyId: number | null; key:
     if (conditions.length > 0) {
         whereClause = Prisma.sql`WHERE ${Prisma.join(conditions, ` AND `)}`
     }
-    console.log(role, { conditions }, { companyId })
+    console.log(role, conditions, { companyId })
 
     try {
         const totalCountResult: any[] = await prismaClient.$queryRaw`

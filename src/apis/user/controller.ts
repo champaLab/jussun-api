@@ -203,15 +203,15 @@ export const userController = async (req: Request, res: Response) => {
     const page = req.body.page ? Number(req.body.page) : 1
     const role = req.body.role
     let companyId: number | null = Number(req.body.companyId)
-    console.log(payload)
+    console.log(req.body)
 
-    if ((role && role === 'CUSTOMER') || !role) {
+    if ((payload.role === 'ADMIN' || payload.role === 'SUPERADMIN') && role && role === 'CUSTOMER') {
         companyId = null
-    } else if (payload.role === 'OWNER' || (payload.role === 'EMPLOYEE' && role != 'CUSTOMER')) {
-        companyId = payload.companyId
-    } else {
+    } else if (payload.role === 'OWNER' || payload.role === 'EMPLOYEE') {
         companyId = payload.companyId
     }
+
+    console.log({ companyId })
 
     const u = await findManyUserService({ companyId, key, page, role })
     const users = u.users.map((item, i) => ({
@@ -283,6 +283,8 @@ export const updateUserController = async (req: Request, res: Response) => {
     const description = 'ແກ້ໄຂຂໍ້ມູນຜູ້ໃຊ້ງານ'
 
     const userStatus = req.body.userStatus
+
+    console.log({ userStatus })
 
     let companyId: number | null = req.body.companyId
 
