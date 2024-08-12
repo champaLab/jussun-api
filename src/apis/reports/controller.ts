@@ -32,7 +32,7 @@ export const getReportsController = async (req: Request, res: Response) => {
     const contractStatus = 'ACTIVE'
     const invoiceStatus = 'PENDING'
 
-    const payday = await summaryContractPaydayService({ payDay, monthly, contractStatus, invoiceStatus })
+    const payday = await summaryContractPaydayService({ payDay, monthly, contractStatus, invoiceStatus, companyId: payload.companyId! })
     console.log(payday)
 
     return res.json({
