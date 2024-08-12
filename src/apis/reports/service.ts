@@ -19,12 +19,22 @@ export const readReportService = async (data: { userId: number; dateStart: strin
     }
 }
 
-export const summaryContractPaydayService = async (data: { userId: number; dateStart: string; dateEnd: string; payDay: number }) => {
-    const { userId, dateStart, dateEnd, payDay } = data
+export const summaryContractPaydayService = async (data: { payDay: number; monthly: string; contractStatus: string; invoiceStatus: string }) => {
+    const { payDay, monthly, contractStatus, invoiceStatus } = data
+    console.log(data)
     try {
-        const contract = await prismaClient.contracts.count()
-        const projects = await prismaClient.projects.count()
-        const contractPayday = await prismaClient.contracts.count({ where: { payDay } })
+        const contract = await prismaClient.$queryRaw`
+            SELECT contractStatus, COUNT(*) total FROM contracts GROUP BY contractStatus
+        `
+        const projects = await prismaClient.contracts.count()
+
+        const [{ contractPayday }]: any[] = await prismaClient.$queryRaw`
+            SELECT COUNT(*) as contractPayday FROM contracts c
+            LEFT JOIN invoice inv ON inv.contractId = c.contractId
+            WHERE  c.payDay = ${payDay} AND c.contractStatus = ${contractStatus} AND inv.monthly = ${monthly} AND inv.invoiceStatus = ${invoiceStatus} 
+        `
+
+        console.log({ contractPayday })
         return { contractPayday, contract, projects }
     } catch (err) {
         logger.error(err)

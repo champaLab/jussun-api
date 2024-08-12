@@ -47,6 +47,7 @@ export const createContractController = async (req: Request, res: Response) => {
     const area = Number(req.body.area)
     const companyId = Number(payload.companyId)
     const contractId = req.body.contractId
+
     const createdBy = payload.userId
     const updatedBy = payload.userId
     const currency = req.body.currency
@@ -60,6 +61,7 @@ export const createContractController = async (req: Request, res: Response) => {
     const customerIdTwo = req.body.customerIdTwo ? Number(req.body.customerIdTwo) : null
     const totalPrice = price * area
     const updatedAt = null
+    const billPath = null
     const createdAt = dayjs().toDate()
     const paymentMethod = req.body.paymentMethod ?? null
     const description = 'ເພີ່ມຂໍ້ມູນສັນຍາ'
@@ -160,7 +162,8 @@ export const createContractController = async (req: Request, res: Response) => {
         reservedAt: null,
         reservedBy: null,
         comment: null,
-        monthly
+        monthly,
+        billPath
     })
 
     if (!createInv) {
@@ -187,7 +190,6 @@ export const updateContractController = async (req: Request, res: Response) => {
     const createdBy = Number(req.body.createdBy)
     const updatedBy = payload.userId
     const currency = req.body.currency
-    const docId = req.body.docId
     const modeOfPayment = req.body.modeOfPayment
     const payInAdvance = Number(req.body.payInAdvance)
     const payDay = Number(req.body.payDay)
@@ -211,8 +213,10 @@ export const updateContractController = async (req: Request, res: Response) => {
     const reservedBy = req.body.reservedBy
     const reservedAt = req.body.reservedAt
     const monthly = req.body.monthly
+    const billPath = req.body.billPath
     const lastInvoice = Number(req.body.lastInvoice)
     const description = 'ແກ້ໄຂຂໍ້ມູນສັນຍາ'
+    const docId = req.body.docId
 
     if (oldArea != area || oldProjectId != projectId) {
         const projectOld = await finOneProjectService({ projectId: oldProjectId })
@@ -316,7 +320,8 @@ export const updateContractController = async (req: Request, res: Response) => {
         reservedAt,
         reservedBy,
         comment,
-        monthly
+        monthly,
+        billPath
     })
 
     if (!createInv) {

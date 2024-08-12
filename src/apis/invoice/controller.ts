@@ -15,6 +15,7 @@ import env from '../../env'
 import { createInvoiceService, updateContractInvoiceIdService } from '../contract/service'
 import { TResponseModel } from './type'
 import dayjs from 'dayjs'
+import { getPhotoPath } from '../../utils/fileUrl'
 
 export const invoicePaydayController = async (req: Request, res: Response) => {
     const payload = tokenPayloadService(req)
@@ -68,6 +69,8 @@ export const invoicePaidController = async (req: Request, res: Response) => {
     const paidDate = today()
 
     const inv = await findOneInvoiceService({ invoiceId })
+    const billPath = getPhotoPath(req.file)
+    console.log({ billPath })
 
     if (!inv) {
         return res.json({
@@ -132,7 +135,8 @@ export const invoicePaidController = async (req: Request, res: Response) => {
             reservedAt: null,
             reservedBy: null,
             comment: null,
-            monthly
+            monthly,
+            billPath
         })
         if (!createInv) {
             return res.json({

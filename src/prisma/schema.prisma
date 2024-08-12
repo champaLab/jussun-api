@@ -78,6 +78,7 @@ model invoice {
   exchangeRate     Float?    @db.Float
   currencyExchange String?   @db.VarChar(5)
   invoiceStatus    String?   @default("PENDING") @db.VarChar(20)
+  billPath         String?   @db.VarChar(255)
   paidDate         DateTime? @db.DateTime(0)
   createdBy        Int?
   createdAt        DateTime? @default(now()) @db.DateTime(0)
@@ -90,6 +91,7 @@ model projects {
   projectId   Int       @id @default(autoincrement())
   companyId   Int
   area        Float     @db.Float
+  code        String    @unique(map: "code") @db.VarChar(50)
   projectName String    @db.VarChar(200)
   address     String?   @db.VarChar(100)
   createdBy   Int

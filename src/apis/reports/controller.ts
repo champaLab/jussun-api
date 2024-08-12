@@ -27,12 +27,12 @@ export const readReportController = async (req: Request, res: Response) => {
 
 export const getReportsController = async (req: Request, res: Response) => {
     const payload = tokenPayloadService(req)
-    const userId = Number(payload.userId)
-    const dateStart = dayjs(req.body.dateStart).format('YYYY-MM-DD')
-    const dateEnd = dayjs(req.body.dateEnd).format('YYYY-MM-DD') + ' 23:59:59'
-    const payDay = Number(dayjs().day())
+    const monthly = dayjs().format('MM/YYYY')
+    const payDay = Number(dayjs().format('DD'))
+    const contractStatus = 'ACTIVE'
+    const invoiceStatus = 'PENDING'
 
-    const payday = await summaryContractPaydayService({ payDay, dateEnd, dateStart, userId })
+    const payday = await summaryContractPaydayService({ payDay, monthly, contractStatus, invoiceStatus })
     console.log(payday)
 
     return res.json({

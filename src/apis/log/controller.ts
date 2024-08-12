@@ -22,6 +22,7 @@ export const findManyHistoryController = async (req: Request, res: Response) => 
 
     return res.json({
         status: 'success',
-        histories
+        histories,
+        count: hst.count
     })
 }

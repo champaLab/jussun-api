@@ -96,10 +96,10 @@ export const contractService = async (data: {
             u2.fullName AS fullNameTwo, u2.lastName AS lastNameTwo,
             inv.*
         FROM contracts c
-        LEFT JOIN projects p ON p.projectId = c.projectId
+        LEFT JOIN projects p ON c.projectId = p.projectId
         LEFT JOIN users u ON c.customerIdOne = u.userId
         LEFT JOIN users u2 ON c.customerIdTwo = u2.userId
-        LEFT JOIN invoice inv ON c.contractId = inv.contractId
+        LEFT JOIN invoice inv ON c.lastInvoice = inv.invoiceId
         ${whereConditions}
         ORDER BY c.createdAt DESC
         LIMIT ${take} OFFSET ${skip}
@@ -108,11 +108,12 @@ export const contractService = async (data: {
     const countQuery = Prisma.sql`
         SELECT COUNT(*) AS totalCount
         FROM contracts c
-        LEFT JOIN projects p ON p.projectId = c.projectId
+        LEFT JOIN projects p ON c.projectId = p.projectId
         LEFT JOIN users u ON c.customerIdOne = u.userId
         LEFT JOIN users u2 ON c.customerIdTwo = u2.userId
-        LEFT JOIN invoice inv ON c.contractId = inv.contractId
+        LEFT JOIN invoice inv ON c.lastInvoice = inv.invoiceId
         ${whereConditions}
+        GROUP BY c.contractId
     `
 
     try {

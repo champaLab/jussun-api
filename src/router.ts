@@ -2,7 +2,7 @@ import Router from 'express'
 
 import { upload } from './utils/file-helper'
 import { companyController, companyForAutocompleteController, createCompanyController, updateCompanyController } from './apis/company/controller'
-import { createProjectController, projectsController, updateProjectController } from './apis/projects/controller'
+import { createProjectController, projectsController, projectsForAutocompleteController, updateProjectController } from './apis/projects/controller'
 import { verify } from './utils/jwt'
 import {
     createUserController,
@@ -30,6 +30,7 @@ import { valUpdateInvoice } from './apis/invoice/validate'
 import { getReportsController, readReportController } from './apis/reports/controller'
 import { readReceiveController } from './apis/receive/controller'
 import { findManyHistoryController } from './apis/log/controller'
+import { historiesPayByContractController } from './apis/historyPay/controller'
 
 const router = Router()
 
@@ -53,10 +54,14 @@ router.post('/projects', verify, projectsController)
 router.post('/projects/create', verify, valProjectCreate, valResult, createProjectController)
 router.post('/projects/update', verify, valProjectUpdate, valResult, updateProjectController)
 
+router.get('/projects/autocomplete', verify, projectsForAutocompleteController)
+
 router.post('/contracts', verify, valContract, valResult, contractController)
 router.post('/contracts/create', verify, valContractCreate, valResult, createContractController)
 router.post('/contracts/update', verify, valContractUpdate, valResult, updateContractController)
 router.post('/contracts/update/status', verify, updateContractStatusController)
+
+router.post('/history-pay', verify, historiesPayByContractController)
 
 // TODO: PAYMENT
 router.post('/invoices/action', verify, actionInvoiceController)
