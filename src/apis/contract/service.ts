@@ -63,7 +63,7 @@ export const contractService = async (data: {
     companyId: number | null
     key: string | null
     page: number
-}): Promise<{ contracts: any[]; count: number }> => {
+}): Promise<{ contracts: contracts[]; count: number }> => {
     const { projectId, companyId, key, page } = data
     const _key = key ? `${key}%` : null
     const skip = key ? 0 : (page - 1) * env.ROW_PER_PAGE
@@ -117,7 +117,7 @@ export const contractService = async (data: {
     `
 
     try {
-        const contracts: any[] = await prismaClient.$queryRaw(query)
+        const contracts: contracts[] = await prismaClient.$queryRaw(query)
         const totalCountResult: any[] = await prismaClient.$queryRaw(countQuery)
         const totalCount = Number(totalCountResult[0]?.totalCount ?? 0)
         const count = Math.ceil(totalCount / take)

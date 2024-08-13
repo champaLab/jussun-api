@@ -54,7 +54,7 @@ export const createContractController = async (req: Request, res: Response) => {
     const docId = req.body.docId
     const modeOfPayment = req.body.modeOfPayment
     const payInAdvance = Number(req.body.payInAdvance)
-    const payDay = Number(req.body.payDay)
+    const payDay = dayjs(req.body.payDay).add(7, 'hours').toDate()
     const price = Number(req.body.price)
     const projectId = Number(req.body.projectId)
     const customerIdOne = Number(req.body.customerIdOne)
@@ -66,13 +66,13 @@ export const createContractController = async (req: Request, res: Response) => {
     const paymentMethod = req.body.paymentMethod ?? null
     const description = 'ເພີ່ມຂໍ້ມູນສັນຍາ'
 
-    const debt = totalPrice - payInAdvance
+    const debt = totalPrice
     let numberOfInstallment = debt === 0 ? 1 : Number(req.body.numberOfInstallment)
-    const contractStatus = debt === 0 ? 'CLOSED' : 'ACTIVE'
+    const contractStatus = 'ACTIVE'
 
-    const amount = Math.ceil((area * price) / numberOfInstallment)
-    const invoiceStatus = amount == totalPrice ? 'PAID' : 'PENDING'
-    const paidNow = amount == totalPrice ? dayjs().toDate() : null
+    const amount = payInAdvance > 0 ? payInAdvance : Math.ceil((area * price) / numberOfInstallment)
+    const invoiceStatus = 'PENDING'
+    const paidNow = null
 
     const contract = await finOneContractService({ docId })
     if (contract) {
@@ -139,7 +139,7 @@ export const createContractController = async (req: Request, res: Response) => {
         })
     }
 
-    const monthly = dayjs().add(1, 'month').format('MM/YYYY')
+    const monthly = dayjs().format('MM/YYYY')
 
     console.log({ monthly })
     console.log('-'.repeat(100))
@@ -192,7 +192,7 @@ export const updateContractController = async (req: Request, res: Response) => {
     const currency = req.body.currency
     const modeOfPayment = req.body.modeOfPayment
     const payInAdvance = Number(req.body.payInAdvance)
-    const payDay = Number(req.body.payDay)
+    const payDay = dayjs(req.body.payDay).add(7, 'hours').toDate()
     const price = Number(req.body.price)
     const projectId = Number(req.body.projectId)
     const area = Number(req.body.area)

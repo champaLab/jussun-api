@@ -38,8 +38,8 @@ model contracts {
   currency            String?   @default("LAK") @db.VarChar(10)
   contractStatus      String?   @default("ACTIVE") @db.VarChar(20)
   area                Float     @db.Float
-  numberOfInstallment Int?      @default(1)
-  payDay              Int
+  numberOfInstallment Int       @default(1)
+  payDay              DateTime  @db.Date
   modeOfPayment       String?   @default("monthly") @db.VarChar(20)
   payInAdvance        Float?    @default(0) @db.Float
   customerIdOne       Int

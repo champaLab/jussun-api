@@ -22,7 +22,7 @@ export const valContractCreate = [
             }
             return true
         }),
-    body('payDay').not().isEmpty().withMessage('ກະລຸນາປ້ອນ ວັນທີນັດຊຳລະ'),
+    body('payDay').not().isEmpty().withMessage('ກະລຸນາປ້ອນ ວັນທີນັດຊຳລະ').isISO8601().withMessage('ວັນທີນັດຊຳລະຕ້ອງເປັນວັນທີ'),
     body('price').not().isEmpty().withMessage('ກະລຸນາປ້ອນ ຍອດເງິນ'),
     body('projectId').not().isEmpty().withMessage('ກະລຸນາເລືອກ ໂຄງການ'),
     body('customerIdOne').not().isEmpty().withMessage('ກະລຸນາເລືອກ ລູກຄ້າ')
@@ -50,7 +50,7 @@ export const valContractUpdate = [
             }
             return true
         }),
-    body('payDay').not().isEmpty().withMessage('ກະລຸນາປ້ອນ ວັນທີນັດຊຳລະ'),
+    body('payDay').not().isEmpty().withMessage('ກະລຸນາປ້ອນ ວັນທີນັດຊຳລະ').isDate().withMessage('ວັນທີນັດຊຳລະຕ້ອງເປັນວັນທີ'),
     body('price').not().isEmpty().withMessage('ກະລຸນາປ້ອນ ຍອດເງິນ'),
     body('projectId').not().isEmpty().withMessage('ກະລຸນາເລືອກ ໂຄງການ'),
     body('customerIdOne').not().isEmpty().withMessage('ກະລຸນາເລືອກ ລູກຄ້າ'),

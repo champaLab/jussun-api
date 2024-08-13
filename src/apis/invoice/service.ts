@@ -10,8 +10,7 @@ export const findInvoicePaydayService = async (data: {
     key: string | null
     projectId: number | null
     invoiceStatus: string | null
-    dayStart: string
-    dayEnd: string
+    date: string
     monthly: string
 }): Promise<TResponseModel> => {
     const skip = (data.page - 1) * env.ROW_PER_PAGE
@@ -35,7 +34,7 @@ export const findInvoicePaydayService = async (data: {
         `
     } else {
         condition = Prisma.sql`${condition} AND (
-            c.payDay BETWEEN ${data.dayStart} AND ${data.dayEnd}
+            DATE(c.payDay) = ${data.date}  
         )
         `
     }
@@ -120,6 +119,39 @@ export const findOneInvoiceService = async (data: { invoiceId: number }) => {
         logger.error(err)
         console.error(err)
         return null
+    } finally {
+        prismaClient.$disconnect()
+    }
+}
+
+export const findOneContractService = async (contractId: number) => {
+    try {
+        const result = await prismaClient.contracts.findFirst({
+            where: { contractId }
+        })
+
+        return result
+    } catch (err) {
+        logger.error(err)
+        console.error(err)
+        return null
+    } finally {
+        prismaClient.$disconnect()
+    }
+}
+
+export const findCountInvoiceService = async (data: { contractId: number; invoiceId: number }) => {
+    const { contractId, invoiceId } = data
+    try {
+        const result = await prismaClient.invoice.count({
+            where: { contractId, invoiceId: { not: invoiceId } }
+        })
+
+        return result
+    } catch (err) {
+        logger.error(err)
+        console.error(err)
+        return 0
     } finally {
         prismaClient.$disconnect()
     }

@@ -20,7 +20,7 @@ export interface TUserCreateModel {
     lastName: string
     password: string
     role: string
-    userStatus: boolean
+    userStatus: boolean | number
 }
 
 export interface TResponseUserModel {

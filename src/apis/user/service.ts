@@ -79,7 +79,7 @@ export const createUserService = async (data: TUserCreateModel) => {
             data: {
                 tel: data.tel,
                 role: data.role,
-                userStatus: data.userStatus,
+                userStatus: data.userStatus === 1 ? true : false,
                 fullName: data.fullName,
                 lastName: data.lastName,
                 password: data.password,
@@ -97,6 +97,7 @@ export const createUserService = async (data: TUserCreateModel) => {
 }
 
 export const updateUserAndPasswordService = async (userId: number, data: TUserCreateModel) => {
+    console.log(data)
     try {
         const user = await prismaClient.users.update({
             where: {
@@ -109,7 +110,7 @@ export const updateUserAndPasswordService = async (userId: number, data: TUserCr
                 lastName: data.lastName,
                 password: data.password,
                 role: data.role,
-                userStatus: data.userStatus
+                userStatus: data.userStatus === 1 ? true : false
             }
         })
         return user
@@ -120,6 +121,7 @@ export const updateUserAndPasswordService = async (userId: number, data: TUserCr
 }
 
 export const updateUserService = async (userId: number, data: TUserCreateModel) => {
+    console.log(data)
     try {
         const user = await prismaClient.users.update({
             where: {
@@ -131,7 +133,7 @@ export const updateUserService = async (userId: number, data: TUserCreateModel) 
                 fullName: data.fullName,
                 lastName: data.lastName,
                 role: data.role,
-                userStatus: data.userStatus
+                userStatus: data.userStatus === 1 ? true : false
             }
         })
         return user
