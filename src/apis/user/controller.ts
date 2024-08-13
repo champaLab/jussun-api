@@ -282,7 +282,7 @@ export const updateUserController = async (req: Request, res: Response) => {
     const role = req.body.role
     const description = 'ແກ້ໄຂຂໍ້ມູນຜູ້ໃຊ້ງານ'
 
-    const userStatus = req.body.userStatus
+    const userStatus = req.body.userStatus === 1 || req.body.userStatus === true ? true : false
 
     console.log({ userStatus })
 

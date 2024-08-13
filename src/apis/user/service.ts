@@ -133,7 +133,7 @@ export const updateUserService = async (userId: number, data: TUserCreateModel) 
                 fullName: data.fullName,
                 lastName: data.lastName,
                 role: data.role,
-                userStatus: data.userStatus === 1 ? true : false
+                userStatus: data.userStatus
             }
         })
         return user
