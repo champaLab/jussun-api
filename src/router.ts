@@ -21,7 +21,6 @@ import { valCompany, valCompanyCreate, valCompanyUpdate } from './apis/company/v
 import { valAddComment, valContract, valContractCreate, valContractUpdate } from './apis/contract/validate'
 import { valProjectCreate, valProjectUpdate } from './apis/projects/validate'
 import { valResult } from './utils/validateResult'
-import { findManyPaidToDayController } from './apis/payment/controller'
 import { valInvoicePaidToday } from './apis/payment/validate'
 import { actionInvoiceController, addCommentInvoiceController, invoicePaidController, invoicePaydayController } from './apis/invoice/controller'
 import { createExchangeController, readExchangeController, updateExchangeController } from './apis/exchange/controller'
