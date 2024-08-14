@@ -194,7 +194,8 @@ export const sentCodeService = async (data: { code: string; tel: string }) => {
         const user = await prismaClient.otp.create({
             data: {
                 code: data.code,
-                tel: data.tel
+                tel: data.tel,
+                retry: 0
             }
         })
 
