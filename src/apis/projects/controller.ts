@@ -63,10 +63,11 @@ export const createProjectController = async (req: Request, res: Response) => {
     }
 
     const p = await createProjectService({ address, area, code, companyId, createdAt, createdBy, projectId, projectName, updatedAt, updatedBy })
+
     if (!p) {
         return res.json({
             status: 'error',
-            message: 'ສ້າງໂຄງການ ຜິດພາດ ລອງໃໝ່ໃນພາຍຫຼັງ'
+            message: 'ລະຫັດໂຄງການນີ້ ມີໃນລະບົບແລ້ວ'
         })
     }
     await historyService({ req, description })

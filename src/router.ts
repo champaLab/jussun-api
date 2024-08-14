@@ -30,6 +30,8 @@ import { getReportsController, readReportController } from './apis/reports/contr
 import { readReceiveController } from './apis/receive/controller'
 import { findManyHistoryController } from './apis/log/controller'
 import { historiesPayByContractController } from './apis/historyPay/controller'
+import { valRemind } from './apis/remindToPay/validate'
+import { sentRemindToPayController } from './apis/remindToPay/controller'
 
 const router = Router()
 
@@ -67,6 +69,7 @@ router.post('/invoices/action', verify, actionInvoiceController)
 router.post('/invoices/payday', verify, invoicePaydayController)
 router.post('/invoices/comment', verify, valAddComment, valResult, addCommentInvoiceController)
 router.post('/invoices/paid', verify, upload('bills', true).single('file'), verify, valUpdateInvoice, valResult, invoicePaidController)
+router.post('/remind-to-pay', verify, valRemind, valResult, sentRemindToPayController)
 
 // TODO:Exchange endpoint
 router.post('/exchanges', verify, valReadExchange, valResult, readExchangeController)
