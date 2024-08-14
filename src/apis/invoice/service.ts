@@ -1,7 +1,7 @@
 import logger from '../../configs/winston'
 import prismaClient from '../../prisma'
 import { company, invoice, Prisma, users } from '@prisma/client'
-import { TPaidInvoice, TResponseModel, TUserCreateModel, TUserPayloadModel } from './type'
+import { TPaidInvoice, TResponseModel } from './type'
 import { Request } from 'express'
 import env from '../../env'
 export const findInvoicePaydayService = async (data: {
@@ -34,7 +34,7 @@ export const findInvoicePaydayService = async (data: {
         `
     } else {
         condition = Prisma.sql`${condition} AND (
-            DATE(c.payDay) = ${data.date}  
+            DAY(c.payDay) = ${data.date}  
         )
         `
     }
