@@ -11,7 +11,6 @@ export interface TUserPayloadModel {
     companyName: string | null
     address: string | null
     email: string | null
-    abbreviatedLetters: string | null
 }
 export interface TUserCreateModel {
     tel: string

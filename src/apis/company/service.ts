@@ -1,7 +1,7 @@
+import { company } from '@prisma/client'
 import logger from '../../configs/winston'
 import prismaClient from '../../prisma'
 import { paginate } from '../../utils/functions'
-import { CompanyModel } from './type'
 
 export const findOneCompanyService = async (data: { companyId: number }) => {
     try {
@@ -69,7 +69,7 @@ export const companiesService = async (data: { companyId: number; key: string | 
     }
 }
 
-export const createCompanyService = async (data: CompanyModel) => {
+export const createCompanyService = async (data: company) => {
     console.log({ data })
     try {
         const p = await prismaClient.company.create({
@@ -79,7 +79,6 @@ export const createCompanyService = async (data: CompanyModel) => {
                 createdBy: data.createdBy,
                 logoPath: data.logoPath,
                 tel: data.tel,
-                abbreviatedLetters: data.abbreviatedLetters,
                 companyStatus: data.companyStatus,
                 fax: data.fax,
                 email: data.email,
@@ -95,7 +94,14 @@ export const createCompanyService = async (data: CompanyModel) => {
     }
 }
 
-export const updateCompanyService = async (data: CompanyModel) => {
+export const checkDataNull = (value: string, type?: 'string' | 'number' | 'boolean') => {
+    if (value === 'undefined' || value === 'null' || value === '') return null
+    if (type === 'number') return parseInt(value)
+    if (type === 'boolean') return value === 'true' ? true : false
+    return value
+}
+
+export const updateCompanyService = async (data: company) => {
     console.log(data)
     try {
         const p = await prismaClient.company.update({
@@ -108,7 +114,6 @@ export const updateCompanyService = async (data: CompanyModel) => {
                 updatedBy: data.createdBy,
                 logoPath: data.logoPath,
                 tel: data.tel,
-                abbreviatedLetters: data.abbreviatedLetters,
                 companyStatus: data.companyStatus,
                 fax: data.fax,
                 email: data.email,

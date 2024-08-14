@@ -1,8 +1,8 @@
 import { Request, Response } from 'express'
-import { companiesService, companyForAutocompleteService, createCompanyService, updateCompanyService } from './service'
+import { checkDataNull, companiesService, companyForAutocompleteService, createCompanyService, updateCompanyService } from './service'
 import { tokenPayloadService } from '../user/service'
 import { getPhotoPath } from '../../utils/fileUrl'
-import { dateFormatter } from '../../utils/dateFormat'
+import { dateFormatter, today } from '../../utils/dateFormat'
 import env from '../../env'
 
 export const companyForAutocompleteController = async (req: Request, res: Response) => {
@@ -51,20 +51,18 @@ export const companyController = async (req: Request, res: Response) => {
 
 export const createCompanyController = async (req: Request, res: Response) => {
     const payload = tokenPayloadService(req)
-    const abbreviatedLetters = req.body.abbreviatedLetters != 'null' ? req.body.abbreviatedLetters : null
-    const companyId = req.body.companyId != 'null' ? req.body.companyId : null
     const createdBy = payload.userId
-    const address = req.body.address != 'null' ? req.body.address : null
-    const companyName = req.body.companyName != 'null' ? req.body.companyName : null
-    const companyStatus = req.body.companyStatus === 'true'
-    const email = req.body.email != 'null' ? req.body.email : null
-    const fax = req.body.fax != 'null' ? req.body.fax : null
-    const tel = req.body.tel != 'null' ? req.body.tel : null
-    const whatsapp = req.body.whatsapp != 'null' ? req.body.whatsapp : null
-    const logoPath = getPhotoPath(req.file) ?? req.body.logoOriginal
+    const companyId: any = checkDataNull(req.body.companyId, 'number')
+    const address: any = checkDataNull(req.body.address)
+    const companyName: any = checkDataNull(req.body.companyName)
+    const companyStatus: any = req.body.companyStatus === 'true'
+    const email: any = checkDataNull(req.body.email)
+    const fax: any = checkDataNull(req.body.fax)
+    const tel: any = checkDataNull(req.body.tel)
+    const whatsapp: any = checkDataNull(req.body.whatsapp)
+    const logoPath: any = getPhotoPath(req.file) ?? checkDataNull(req.body.logoOriginal)
 
     const p = await createCompanyService({
-        abbreviatedLetters,
         companyId,
         createdBy,
         address,
@@ -74,7 +72,10 @@ export const createCompanyController = async (req: Request, res: Response) => {
         fax,
         logoPath,
         tel,
-        whatsapp
+        whatsapp,
+        createdAt: today(),
+        updatedAt: today(),
+        updatedBy: null
     })
     if (!p) {
         return res.json({
@@ -91,20 +92,18 @@ export const createCompanyController = async (req: Request, res: Response) => {
 
 export const updateCompanyController = async (req: Request, res: Response) => {
     const payload = tokenPayloadService(req)
-    const abbreviatedLetters = req.body.abbreviatedLetters != 'null' ? req.body.abbreviatedLetters : null
-    const companyId = req.body.companyId != 'null' ? req.body.companyId : null
     const createdBy = payload.userId
-    const address = req.body.address != 'null' ? req.body.address : null
-    const companyName = req.body.companyName != 'null' ? req.body.companyName : null
-    const companyStatus = req.body.companyStatus === 'true'
-    const email = req.body.email != 'null' ? req.body.email : null
-    const fax = req.body.fax != 'null' ? req.body.fax : null
-    const tel = req.body.tel != 'null' ? req.body.tel : null
-    const whatsapp = req.body.whatsapp != 'null' ? req.body.whatsapp : null
-    const logoPath = getPhotoPath(req.file) ?? req.body.logoOriginal
+    const companyId: any = checkDataNull(req.body.companyId, 'number')
+    const address: any = checkDataNull(req.body.address)
+    const companyName: any = checkDataNull(req.body.companyName)
+    const companyStatus: any = req.body.companyStatus === 'true'
+    const email: any = checkDataNull(req.body.email)
+    const fax: any = checkDataNull(req.body.fax)
+    const tel: any = checkDataNull(req.body.tel)
+    const whatsapp: any = checkDataNull(req.body.whatsapp)
+    const logoPath: any = getPhotoPath(req.file) ?? checkDataNull(req.body.logoOriginal)
 
     const p = await updateCompanyService({
-        abbreviatedLetters,
         companyId,
         createdBy,
         address,
@@ -114,7 +113,10 @@ export const updateCompanyController = async (req: Request, res: Response) => {
         fax,
         logoPath,
         tel,
-        whatsapp
+        whatsapp,
+        createdAt: null,
+        updatedAt: null,
+        updatedBy: payload.userId
     })
     if (!p) {
         return res.json({
