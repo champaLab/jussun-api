@@ -165,10 +165,10 @@ model news {
 model otp {
   otpId     Int       @id @unique(map: "otp_pk2") @default(autoincrement())
   tel       String    @db.VarChar(10)
-  status    String    @default("PENDING") @db.VarChar(10)
   code      String    @db.VarChar(10)
   confirm   String?   @default("NO") @db.VarChar(5)
+  status    String    @default("PENDING") @db.VarChar(10)
   sentDate  DateTime? @db.DateTime(0)
-  retry     Int?      @default(0)
-  createdAt Int?
+  retry     Int       @default(0)
+  createdAt DateTime? @default(now()) @db.DateTime(0)
 }
