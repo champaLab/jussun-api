@@ -94,6 +94,7 @@ export const contractService = async (data: {
         SELECT c.*, p.projectName, 
             u.fullName AS fullNameOne, u.lastName AS lastNameOne,
             u2.fullName AS fullNameTwo, u2.lastName AS lastNameTwo,
+            u.tel AS telCustomerOne, u2.tel AS telCustomerTwo,
             inv.*
         FROM contracts c
         LEFT JOIN projects p ON c.projectId = p.projectId

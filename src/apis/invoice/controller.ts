@@ -40,6 +40,7 @@ export const invoicePaydayController = async (req: Request, res: Response) => {
         ...item,
         indexNo: (i + 1) * page,
         logoPath: item.logoPath ? `${env.HOST_IMAGE}${env.BASE_PATH}${item.logoPath}` : null,
+        remindSentDate: dateFormatter(item.remindSentDate),
         paidDate: dateFormatter(item.paidDate),
         createdAt: dateFormatter(item.createdAt),
         updatedAt: dateFormatter(item.updatedAt),
@@ -151,7 +152,9 @@ export const invoicePaidController = async (req: Request, res: Response) => {
             reservedBy: null,
             comment: null,
             monthly,
-            billPath
+            billPath,
+            remindSentDate: null,
+            remindSentTime: null
         })
         if (!createInv) {
             return res.json({
