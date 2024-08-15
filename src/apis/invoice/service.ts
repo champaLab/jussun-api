@@ -58,6 +58,8 @@ export const findInvoicePaydayService = async (data: {
         const totalCount = Number(totalCountResult[0]?.totalCount ?? 0)
         const count = Math.ceil(totalCount / take)
 
+        console.log({ condition })
+
         const invoices: any[] = await prismaClient.$queryRaw`
             SELECT c.*, p.projectName,
                 u.fullName AS fullNameOne, u.lastName AS lastNameOne,
@@ -65,7 +67,7 @@ export const findInvoicePaydayService = async (data: {
                 inv.debt, inv.amount, inv.currency, inv.fines, inv.invoiceStatus,
                 inv.reservedBy, inv.reservedAt, inv.paymentMethod,
                 inv.invoiceId, inv.paidDate, com.companyName, com.logoPath,
-                com.address, com.abbreviatedLetters, com.tel AS companyContact,
+                com.address, com.tel AS companyContact,
                 com.email, com.fax, com.whatsapp,
                 CONCAT(u3.fullName, ' ', u3.lastName) AS reservedByName,
                 inv.comment
@@ -76,7 +78,7 @@ export const findInvoicePaydayService = async (data: {
                 LEFT JOIN company com ON com.companyId = c.companyId
                 LEFT JOIN invoice inv ON c.contractId = inv.contractId
                 LEFT JOIN users u3 ON inv.reservedBy  = u3.userId
-            WHERE ${condition} AND inv.monthly = ${monthly}
+            WHERE ${condition}  AND inv.monthly = ${monthly}
             LIMIT ${take} OFFSET ${skip}
         `
 

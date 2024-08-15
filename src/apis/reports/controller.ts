@@ -11,8 +11,6 @@ export const readReportController = async (req: Request, res: Response) => {
     const dateEnd = dayjs(req.body.dateEnd).format('YYYY-MM-DD') + ' 23:59:59'
 
     const rp = await readReportService({ userId, dateEnd, dateStart })
-    console.log(rp)
-
     const reports = rp.map((item, i) => ({
         ...item,
         indexNo: i + 1,
@@ -33,7 +31,6 @@ export const getReportsController = async (req: Request, res: Response) => {
     const invoiceStatus = 'PENDING'
 
     const payday = await summaryContractPaydayService({ payDay, monthly, contractStatus, invoiceStatus, companyId: payload.companyId! })
-    console.log(payday)
 
     return res.json({
         status: 'success',
