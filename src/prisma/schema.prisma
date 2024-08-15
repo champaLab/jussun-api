@@ -79,8 +79,8 @@ model invoice {
   paidDate         DateTime? @db.DateTime(0)
   createdBy        Int?
   createdAt        DateTime? @default(now()) @db.DateTime(0)
-  updatedAt        DateTime? @default(now()) @db.DateTime(0)
   reservedBy       Int?
+  updatedAt        DateTime? @default(now()) @db.DateTime(0)
   reservedAt       DateTime? @db.DateTime(0)
   remindSentTime   Int?      @default(0)
   remindSentDate   DateTime? @db.DateTime(0)
