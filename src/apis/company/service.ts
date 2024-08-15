@@ -70,20 +70,10 @@ export const companiesService = async (data: { companyId: number; key: string | 
 }
 
 export const createCompanyService = async (data: company) => {
-    console.log({ data })
+    const { companyId, createdAt, ...newData } = data
     try {
         const p = await prismaClient.company.create({
-            data: {
-                address: data.address,
-                companyName: data.companyName,
-                createdBy: data.createdBy,
-                logoPath: data.logoPath,
-                tel: data.tel,
-                companyStatus: data.companyStatus,
-                fax: data.fax,
-                email: data.email,
-                whatsapp: data.whatsapp
-            }
+            data: newData
         })
         return p
     } catch (err) {
@@ -102,23 +92,13 @@ export const checkDataNull = (value: string, type?: 'string' | 'number' | 'boole
 }
 
 export const updateCompanyService = async (data: company) => {
-    console.log(data)
+    const { companyId, createdAt, ...newData } = data
     try {
         const p = await prismaClient.company.update({
             where: {
                 companyId: data.companyId
             },
-            data: {
-                address: data.address,
-                companyName: data.companyName,
-                updatedBy: data.createdBy,
-                logoPath: data.logoPath,
-                tel: data.tel,
-                companyStatus: data.companyStatus,
-                fax: data.fax,
-                email: data.email,
-                whatsapp: data.whatsapp
-            }
+            data: newData
         })
         return p
     } catch (err) {

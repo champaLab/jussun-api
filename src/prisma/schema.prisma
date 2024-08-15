@@ -12,15 +12,16 @@ model company {
   companyId     Int       @id @default(autoincrement())
   companyName   String    @unique(map: "companyName") @db.VarChar(255)
   logoPath      String    @db.VarChar(255)
+  financeTel    String    @db.VarChar(10)
   fax           String?   @db.VarChar(20)
   tel           String    @db.VarChar(8)
   email         String?   @db.VarChar(60)
   whatsapp      String?   @db.VarChar(8)
   address       String    @db.VarChar(100)
-  createdBy     Int
   updatedBy     Int?
   companyStatus Boolean?  @default(true)
   createdAt     DateTime? @default(now()) @db.DateTime(0)
+  createdBy     Int
   updatedAt     DateTime? @unique(map: "updatedAt") @db.DateTime(0)
 }
 
