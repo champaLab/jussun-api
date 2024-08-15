@@ -59,6 +59,7 @@ export const createCompanyController = async (req: Request, res: Response) => {
     const email: any = checkDataNull(req.body.email)
     const fax: any = checkDataNull(req.body.fax)
     const tel: any = checkDataNull(req.body.tel)
+    const financeTel: any = checkDataNull(req.body.financeTel)
     const whatsapp: any = checkDataNull(req.body.whatsapp)
     const logoPath: any = getPhotoPath(req.file) ?? checkDataNull(req.body.logoOriginal)
 
@@ -75,7 +76,8 @@ export const createCompanyController = async (req: Request, res: Response) => {
         whatsapp,
         createdAt: today(),
         updatedAt: today(),
-        updatedBy: null
+        updatedBy: null,
+        financeTel
     })
     if (!p) {
         return res.json({
@@ -102,6 +104,7 @@ export const updateCompanyController = async (req: Request, res: Response) => {
     const tel: any = checkDataNull(req.body.tel)
     const whatsapp: any = checkDataNull(req.body.whatsapp)
     const logoPath: any = getPhotoPath(req.file) ?? checkDataNull(req.body.logoOriginal)
+    const financeTel: any = checkDataNull(req.body.financeTel)
 
     const p = await updateCompanyService({
         companyId,
@@ -116,7 +119,8 @@ export const updateCompanyController = async (req: Request, res: Response) => {
         whatsapp,
         createdAt: null,
         updatedAt: null,
-        updatedBy: payload.userId
+        updatedBy: payload.userId,
+        financeTel
     })
     if (!p) {
         return res.json({
