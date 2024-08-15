@@ -9,23 +9,21 @@ datasource db {
 }
 
 model company {
-  companyId          Int       @id @default(autoincrement())
-  companyName        String    @unique(map: "companyName") @db.VarChar(255)
-  logoPath           String    @db.VarChar(255)
-  fax                String?   @db.VarChar(20)
-  tel                String    @db.VarChar(8)
-  email              String?   @db.VarChar(60)
-  whatsapp           String?   @db.VarChar(8)
-  address            String    @db.VarChar(100)
-  abbreviatedLetters String?   @db.VarChar(20)
-  createdBy          Int
-  updatedBy          Int?
-  companyStatus      Boolean?  @default(true)
-  createdAt          DateTime? @default(now()) @db.DateTime(0)
-  updatedAt          DateTime? @unique(map: "updatedAt") @db.DateTime(0)
+  companyId     Int       @id @default(autoincrement())
+  companyName   String    @unique(map: "companyName") @db.VarChar(255)
+  logoPath      String    @db.VarChar(255)
+  fax           String?   @db.VarChar(20)
+  tel           String    @db.VarChar(8)
+  email         String?   @db.VarChar(60)
+  whatsapp      String?   @db.VarChar(8)
+  address       String    @db.VarChar(100)
+  createdBy     Int
+  updatedBy     Int?
+  companyStatus Boolean?  @default(true)
+  createdAt     DateTime? @default(now()) @db.DateTime(0)
+  updatedAt     DateTime? @unique(map: "updatedAt") @db.DateTime(0)
 }
 
-/// This model or at least one of its fields has comments in the database, and requires an additional setup for migrations: Read more: https://pris.ly/d/database-comments
 model contracts {
   contractId          Int       @id @default(autoincrement())
   companyId           Int
@@ -64,7 +62,6 @@ model exchange {
   deletedAt  DateTime? @db.DateTime(0)
 }
 
-/// This model or at least one of its fields has comments in the database, and requires an additional setup for migrations: Read more: https://pris.ly/d/database-comments
 model invoice {
   invoiceId        Int       @id @default(autoincrement())
   fines            Float?    @default(0) @db.Float
@@ -87,53 +84,6 @@ model invoice {
   reservedAt       DateTime? @db.DateTime(0)
   remindSentTime   Int?      @default(0)
   remindSentDate   DateTime? @db.DateTime(0)
-}
-
-model projects {
-  projectId   Int       @id @default(autoincrement())
-  companyId   Int
-  area        Float     @db.Float
-  code        String    @unique(map: "code") @db.VarChar(50)
-  projectName String    @db.VarChar(200)
-  address     String?   @db.VarChar(100)
-  createdBy   Int
-  updatedBy   Int?
-  createdAt   DateTime? @default(now()) @db.DateTime(0)
-  updatedAt   DateTime? @default(now()) @db.DateTime(0)
-}
-
-/// This model or at least one of its fields has comments in the database, and requires an additional setup for migrations: Read more: https://pris.ly/d/database-comments
-model transaction {
-  transactionId   Int       @id @default(autoincrement())
-  ip              String    @db.VarChar(200)
-  amount          Float     @db.Float
-  remark          String?   @db.VarChar(255)
-  currency        String    @db.VarChar(5)
-  pamentMethod    String    @db.VarChar(50)
-  transactionUUID String?   @db.VarChar(50)
-  contractId      Int
-  currencyLAK     Float     @db.Float
-  currencyTHB     Float     @db.Float
-  currencyUSD     Float     @db.Float
-  createdBy       Int?
-  updatedBy       Int?
-  createdAt       DateTime? @default(now()) @db.DateTime(0)
-  updatedAt       DateTime? @default(now()) @db.DateTime(0)
-  deletedAt       DateTime? @db.DateTime(0)
-}
-
-/// This model or at least one of its fields has comments in the database, and requires an additional setup for migrations: Read more: https://pris.ly/d/database-comments
-model users {
-  userId     Int       @id @default(autoincrement())
-  companyId  Int?
-  fullName   String    @db.VarChar(80)
-  lastName   String    @db.VarChar(80)
-  tel        String    @unique(map: "tel") @db.VarChar(8)
-  password   String    @db.VarChar(255)
-  role       String    @default("CUSTOMER") @db.VarChar(10)
-  userStatus Boolean   @default(true)
-  createdAt  DateTime? @default(now()) @db.DateTime(0)
-  updatedAt  DateTime? @default(now()) @db.DateTime(0)
 }
 
 model logs {
@@ -173,4 +123,58 @@ model otp {
   sentDate  DateTime? @db.DateTime(0)
   retry     Int       @default(0)
   createdAt DateTime? @default(now()) @db.DateTime(0)
+}
+
+model projects {
+  projectId   Int       @id @default(autoincrement())
+  companyId   Int
+  area        Float     @db.Float
+  code        String    @unique(map: "code") @db.VarChar(50)
+  projectName String    @db.VarChar(200)
+  address     String?   @db.VarChar(100)
+  createdBy   Int
+  updatedBy   Int?
+  createdAt   DateTime? @default(now()) @db.DateTime(0)
+  updatedAt   DateTime? @default(now()) @db.DateTime(0)
+}
+
+model transaction {
+  transactionId   Int       @id @default(autoincrement())
+  ip              String    @db.VarChar(200)
+  amount          Float     @db.Float
+  remark          String?   @db.VarChar(255)
+  currency        String    @db.VarChar(5)
+  pamentMethod    String    @db.VarChar(50)
+  transactionUUID String?   @db.VarChar(50)
+  contractId      Int
+  currencyLAK     Float     @db.Float
+  currencyTHB     Float     @db.Float
+  currencyUSD     Float     @db.Float
+  createdBy       Int?
+  updatedBy       Int?
+  createdAt       DateTime? @default(now()) @db.DateTime(0)
+  updatedAt       DateTime? @default(now()) @db.DateTime(0)
+  deletedAt       DateTime? @db.DateTime(0)
+}
+
+model users {
+  userId     Int       @id @default(autoincrement())
+  companyId  Int?
+  fullName   String    @db.VarChar(80)
+  lastName   String    @db.VarChar(80)
+  tel        String    @unique(map: "tel") @db.VarChar(8)
+  password   String    @db.VarChar(255)
+  role       String    @default("CUSTOMER") @db.VarChar(10)
+  userStatus Boolean   @default(true)
+  createdAt  DateTime? @default(now()) @db.DateTime(0)
+  updatedAt  DateTime? @default(now()) @db.DateTime(0)
+}
+
+model payment_method {
+  id            Int       @id @unique(map: "payment_method_pk2") @default(autoincrement())
+  companyId     Int
+  accountName   String    @db.VarChar(100)
+  accountNumber String    @db.VarChar(100)
+  qrPath        String?   @db.VarChar(255)
+  deletedAt     DateTime? @db.DateTime(0)
 }

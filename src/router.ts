@@ -32,6 +32,12 @@ import { findManyHistoryController } from './apis/log/controller'
 import { historiesPayByContractController } from './apis/historyPay/controller'
 import { valRemind } from './apis/remindToPay/validate'
 import { sentRemindToPayController } from './apis/remindToPay/controller'
+import {
+    createPaymentMethodController,
+    deletePaymentMethodController,
+    paymentMethodController,
+    updatePaymentMethodController
+} from './apis/paymentMethod/controller'
 
 const router = Router()
 
@@ -80,6 +86,11 @@ router.post('/exchanges/update', verify, valUpdateExchange, valResult, updateExc
 router.post('/money/me', verify, readReportController)
 router.post('/receive', verify, readReceiveController)
 router.get('/reports', verify, getReportsController)
+
+router.post('/payments', verify, paymentMethodController)
+router.post('/payments/create', verify, upload('payment', true).single('file'), verify, createPaymentMethodController)
+router.post('/payments/update', verify, upload('payment', true).single('file'), verify, updatePaymentMethodController)
+router.post('/payments/delete', verify, verify, deletePaymentMethodController)
 
 //TODO: History endpoint
 router.post('/history', verify, findManyHistoryController)

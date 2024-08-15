@@ -158,8 +158,7 @@ export const mergePayloadUserService = (user: users, company: company | null) =>
         logoPath: company ? company.logoPath : null,
         companyName: company ? company.companyName : null,
         address: company ? company.address : null,
-        email: company ? company.email : null,
-        abbreviatedLetters: company ? company.abbreviatedLetters : null
+        email: company ? company.email : null
     }
 
     return payload

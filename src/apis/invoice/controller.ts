@@ -26,7 +26,7 @@ export const invoicePaydayController = async (req: Request, res: Response) => {
     const monthly = req.body.monthly
     const page = req.body.page ? Number(req.body.page) : 1
     const invoiceStatus = req.body.invoiceStatus
-    const date = dayjs(req.body.date).add(7, 'hours').format('YYYY-MM-DD')
+    const date = dayjs(req.body.date).add(7, 'hours').format('DD')
     const projectId = req.body.projectId ? parseInt(req.body.projectId) : null
 
     if ((payload.role === 'ADMIN' || payload.role === 'SUPERADMIN') && companyId) {
