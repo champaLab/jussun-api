@@ -79,8 +79,8 @@ model invoice {
   paidDate         DateTime? @db.DateTime(0)
   createdBy        Int?
   createdAt        DateTime? @default(now()) @db.DateTime(0)
-  reservedBy       Int?
   updatedAt        DateTime? @default(now()) @db.DateTime(0)
+  reservedBy       Int?
   reservedAt       DateTime? @db.DateTime(0)
   remindSentTime   Int?      @default(0)
   remindSentDate   DateTime? @db.DateTime(0)
@@ -168,4 +168,13 @@ model users {
   userStatus Boolean   @default(true)
   createdAt  DateTime? @default(now()) @db.DateTime(0)
   updatedAt  DateTime? @default(now()) @db.DateTime(0)
+}
+
+model payment_method {
+  id            Int       @id @unique(map: "payment_method_pk2") @default(autoincrement())
+  companyId     Int
+  accountName   String    @db.VarChar(100)
+  accountNumber String    @db.VarChar(100)
+  qrPath        String?   @db.VarChar(255)
+  deletedAt     DateTime? @db.DateTime(0)
 }

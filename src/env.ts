@@ -31,5 +31,6 @@ export default {
     QR_ENCRYPTION_KEY: `${process.env.QR_ENCRYPTION_KEY}`,
     CONTACT_NUMBER: `${process.env.CONTACT_NUMBER}`,
     ROW_PER_PAGE: Number(`${process.env.ROW_PER_PAGE ?? 0}`),
-    FIREBASE_DATABASE_URL: `${process.env.FIREBASE_DATABASE_URL}`
+    FIREBASE_DATABASE_URL: `${process.env.FIREBASE_DATABASE_URL}`,
+    FOLDER_UPLOADS: `${process.env.FOLDER_UPLOADS}`
 }
