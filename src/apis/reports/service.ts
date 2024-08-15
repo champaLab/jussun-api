@@ -39,7 +39,8 @@ export const summaryContractPaydayService = async (data: {
         const [{ contractPayday }]: any[] = await prismaClient.$queryRaw`
             SELECT COUNT(*) as contractPayday FROM contracts c
             LEFT JOIN invoice inv ON inv.contractId = c.contractId
-            WHERE (DAY(c.payDay) = DAY(CURDATE()) OR c.payDay = DATE(CURDATE()) ) AND
+            WHERE c.payDay = DATE(CURDATE()) AND
+            inv.monthly = ${monthly} AND
             companyId = ${companyId} AND
             c.contractStatus = 'ACTIVE' AND
             inv.invoiceStatus = 'PENDING'
