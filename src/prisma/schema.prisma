@@ -18,10 +18,10 @@ model company {
   email         String?   @db.VarChar(60)
   whatsapp      String?   @db.VarChar(8)
   address       String    @db.VarChar(100)
+  createdBy     Int
   updatedBy     Int?
   companyStatus Boolean?  @default(true)
   createdAt     DateTime? @default(now()) @db.DateTime(0)
-  createdBy     Int
   updatedAt     DateTime? @unique(map: "updatedAt") @db.DateTime(0)
 }
 
@@ -80,8 +80,8 @@ model invoice {
   paidDate         DateTime? @db.DateTime(0)
   createdBy        Int?
   createdAt        DateTime? @default(now()) @db.DateTime(0)
-  reservedBy       Int?
   updatedAt        DateTime? @default(now()) @db.DateTime(0)
+  reservedBy       Int?
   reservedAt       DateTime? @db.DateTime(0)
   remindSentTime   Int?      @default(0)
   remindSentDate   DateTime? @db.DateTime(0)
