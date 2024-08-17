@@ -5,6 +5,19 @@ import dayjs from 'dayjs'
 import { ProjectModel } from './type'
 import env from '../../env'
 
+export const projectsForAutocompleteService = async (companyId: number) => {
+    try {
+        const p = await prismaClient.projects.findMany({ where: { companyId }, orderBy: { area: 'desc' } })
+
+        return p
+    } catch (err) {
+        logger.error(err)
+        return { count: 1, projects: [] }
+    } finally {
+        prismaClient.$disconnect()
+    }
+}
+
 export const projectsService = async (data: { companyId: number; key: string | null; page: number }): Promise<{ count: number; projects: any }> => {
     const skip = data.key ? 0 : (data.page - 1) * env.ROW_PER_PAGE
     const take = env.ROW_PER_PAGE
@@ -14,7 +27,10 @@ export const projectsService = async (data: { companyId: number; key: string | n
         let projects: any[] = []
         if (!key) {
             projects = await prismaClient.projects.findMany({
-                where: { companyId: data.companyId }
+                where: { companyId: data.companyId },
+                orderBy: { area: 'desc' },
+                skip,
+                take
             })
         } else {
             projects = await prismaClient.$queryRaw`
@@ -23,7 +39,7 @@ export const projectsService = async (data: { companyId: number; key: string | n
                 AND (
                     p.projectName LIKE ${key}  OR 
                     p.address LIKE ${key} 
-                ) ORDER BY p.createdAt DESC 
+                ) ORDER BY p.area DESC 
                 LIMIT ${take} OFFSET ${skip} 
             `
         }
@@ -40,17 +56,11 @@ export const projectsService = async (data: { companyId: number; key: string | n
     }
 }
 
-export const createProjectService = async (data: ProjectModel) => {
-    console.log(data)
+export const createProjectService = async (data: projects) => {
+    const { projectId, createdAt, updatedAt, ...newData } = data
     try {
         const p = await prismaClient.projects.create({
-            data: {
-                area: data.area,
-                companyId: data.companyId,
-                createdBy: data.createdBy,
-                projectName: data.projectName,
-                address: data.address
-            }
+            data: newData
         })
         return p
     } catch (err) {
@@ -61,21 +71,15 @@ export const createProjectService = async (data: ProjectModel) => {
     }
 }
 
-export const updateProjectService = async (projectId: number, data: ProjectModel) => {
-    console.log({ data, projectId })
+export const updateProjectService = async (data: projects) => {
+    const { projectId, createdAt, ...newData } = data
+
     try {
         const p = await prismaClient.projects.update({
             where: {
                 projectId: projectId
             },
-            data: {
-                area: data.area,
-                companyId: data.companyId,
-                updatedBy: data.createdBy,
-                projectName: data.projectName,
-                address: data.address,
-                updatedAt: dayjs().toDate()
-            }
+            data: newData
         })
         return p
     } catch (err) {

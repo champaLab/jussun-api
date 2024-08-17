@@ -29,7 +29,7 @@ export const findManyUserService = async (data: { companyId: number | null; key:
     if (conditions.length > 0) {
         whereClause = Prisma.sql`WHERE ${Prisma.join(conditions, ` AND `)}`
     }
-    console.log(role, { conditions }, { companyId })
+    console.log(role, conditions, { companyId })
 
     try {
         const totalCountResult: any[] = await prismaClient.$queryRaw`
@@ -79,7 +79,7 @@ export const createUserService = async (data: TUserCreateModel) => {
             data: {
                 tel: data.tel,
                 role: data.role,
-                userStatus: data.userStatus,
+                userStatus: data.userStatus === 1 ? true : false,
                 fullName: data.fullName,
                 lastName: data.lastName,
                 password: data.password,
@@ -97,6 +97,7 @@ export const createUserService = async (data: TUserCreateModel) => {
 }
 
 export const updateUserAndPasswordService = async (userId: number, data: TUserCreateModel) => {
+    console.log(data)
     try {
         const user = await prismaClient.users.update({
             where: {
@@ -109,7 +110,7 @@ export const updateUserAndPasswordService = async (userId: number, data: TUserCr
                 lastName: data.lastName,
                 password: data.password,
                 role: data.role,
-                userStatus: data.userStatus
+                userStatus: data.userStatus === 1 ? true : false
             }
         })
         return user
@@ -120,6 +121,7 @@ export const updateUserAndPasswordService = async (userId: number, data: TUserCr
 }
 
 export const updateUserService = async (userId: number, data: TUserCreateModel) => {
+    console.log(data)
     try {
         const user = await prismaClient.users.update({
             where: {
@@ -156,8 +158,7 @@ export const mergePayloadUserService = (user: users, company: company | null) =>
         logoPath: company ? company.logoPath : null,
         companyName: company ? company.companyName : null,
         address: company ? company.address : null,
-        email: company ? company.email : null,
-        abbreviatedLetters: company ? company.abbreviatedLetters : null
+        email: company ? company.email : null
     }
 
     return payload
@@ -192,7 +193,8 @@ export const sentCodeService = async (data: { code: string; tel: string }) => {
         const user = await prismaClient.otp.create({
             data: {
                 code: data.code,
-                tel: data.tel
+                tel: data.tel,
+                retry: 0
             }
         })
 

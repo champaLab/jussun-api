@@ -7,11 +7,13 @@
     "scripts": {
         "dev": "nodemon --delay 800ms src/index.ts",
         "start": "ts-node src/index.ts",
-        "serve": "pm2-runtime start dist/index.js --name jutsun-api",
+        "serve": "pm2 start ./dist/index.js --name jutsun-api",
+        "prod": "yarn git:pull && rm -rf .env && cp -rp .env.prod .env && yarn && yarn db && yarn build && pm2 restart jutsun-api && pm2 save && pm2 logs && git add . && git commit -m 'pull'",
         "git:pull": "git fetch --all && git merge --no-edit origin/master",
         "git:reset": "git reset --hard origin/master",
         "start:container": "chmod +x Makefile.sh && ./Makefile.sh",
-        "prod": "yarn git:pull && cp -rp .env.dev .env && yarn start:container",
+        "prod:container": "yarn git:pull && cp -rp .env.dev .env && yarn start:container",
+        "serve:container": "pm2-runtime start dist/index.js --name jutsun-api",
         "build": "tsc",
         "build:dev": "cp -rp .env.dev .env && tsc && yarn prod",
         "build:prod": "cp -rp .env.prod .env && tsc && yarn prod",
@@ -55,7 +57,7 @@
         "xlsx": "^0.18.5"
     },
     "devDependencies": {
-        "@prisma/client": "^5.17.0",
+        "@prisma/client": "^5.18.0",
         "@types/cls-hooked": "^4.3.6",
         "@types/cors": "^2.8.17",
         "@types/dotenv": "^8.2.0",
@@ -70,7 +72,7 @@
         "@types/uuid": "^10.0.0",
         "@types/xlsx": "^0.0.36",
         "nodemon": "^3.1.4",
-        "prisma": "^5.17.0",
+        "prisma": "^5.18.0",
         "typescript": "^5.5.4",
         "winston-daily-rotate-file": "^5.0.0"
     }

@@ -4,4 +4,5 @@ export interface ProjectModel {
     createdBy: number
     projectName: string
     address: string
+    code: string
 }
