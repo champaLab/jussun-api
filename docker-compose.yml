@@ -1,5 +1,3 @@
-version: '3.8'
-
 services:
     app:
         build: .
@@ -11,5 +9,6 @@ services:
         volumes:
             # - .:/app
             - ./uploads:/app/uploads
+            - ./logs:/app/logs
 
         restart: always

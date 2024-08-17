@@ -1,34 +1,14 @@
-import { company } from '@prisma/client'
+import { company, payment_method } from '@prisma/client'
 import logger from '../../configs/winston'
 import prismaClient from '../../prisma'
 import { paginate } from '../../utils/functions'
 
-export const findOneCompanyService = async (data: { companyId: number }) => {
+export const findPaymentMethodService = async (data: { companyId: number }) => {
+    const { companyId } = data
     try {
-        const p = await prismaClient.company.findFirst({ where: { companyId: data.companyId } })
+        const p = await prismaClient.payment_method.findMany({ where: { companyId } })
         return p
-    } catch (err) {
-        logger.error(err)
-        return null
-    } finally {
-        await prismaClient.$disconnect()
-    }
-}
 
-export const companyForAutocompleteService = async (companyId: number | null) => {
-    try {
-        if (companyId) {
-            const com = await prismaClient.company.findMany({
-                where: { companyId: companyId, companyStatus: true },
-                select: { companyId: true, companyName: true, tel: true }
-            })
-            return com
-        }
-
-        const p = await prismaClient.company.findMany({
-            where: { companyStatus: true },
-            select: { companyId: true, companyName: true, tel: true }
-        })
         return p
     } catch (err) {
         logger.error(err)
@@ -69,10 +49,11 @@ export const companiesService = async (data: { companyId: number; key: string | 
     }
 }
 
-export const createCompanyService = async (data: company) => {
-    const { companyId, createdAt, ...newData } = data
+export const createPaymentMethodService = async (data: payment_method) => {
+    const { id, ...newData } = data
+    console.log(newData)
     try {
-        const p = await prismaClient.company.create({
+        const p = await prismaClient.payment_method.create({
             data: newData
         })
         return p
@@ -84,26 +65,32 @@ export const createCompanyService = async (data: company) => {
     }
 }
 
-export const checkDataNull = (value: string, type?: 'string' | 'number' | 'boolean') => {
-    if (value === 'undefined' || value === 'null' || value === '') return null
-    if (type === 'number') return parseInt(value)
-    if (type === 'boolean') return value === 'true' ? true : false
-    return value
-}
+export const updatePaymentMethodService = async (data: payment_method) => {
+    const { id, ...newData } = data
 
-export const updateCompanyService = async (data: company) => {
-    const { companyId, createdAt, ...newData } = data
+    console.log(newData)
     try {
-        const p = await prismaClient.company.update({
-            where: {
-                companyId: data.companyId
-            },
+        const p = await prismaClient.payment_method.update({
+            where: { id: id },
             data: newData
         })
         return p
     } catch (err) {
         logger.error(err)
-        console.log(err)
+        return null
+    } finally {
+        await prismaClient.$disconnect()
+    }
+}
+
+export const deletePaymentMethodService = async (id: number, companyId: number) => {
+    try {
+        const p = await prismaClient.payment_method.delete({
+            where: { id, companyId }
+        })
+        return p
+    } catch (err) {
+        logger.error(err)
         return null
     } finally {
         await prismaClient.$disconnect()

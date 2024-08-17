@@ -7,11 +7,9 @@ import './crontab'
 logNamespace.run(() => {})
 
 const server = app.listen(env.NODE_PORT, env.NODE_HOST, async () => {
-    console.log('SCHEMA : ', env.DB_SCHEMA)
     console.log(`Listening on ${env.NODE_HOST}:${env.NODE_PORT} ${env.BASE_PATH}`)
     logger.info('Started', `Listening on ${env.NODE_HOST}:${env.NODE_PORT} ${env.BASE_PATH}`)
 })
-
 for (const signal of ['SIGINT', 'SIGBREAK', 'SIGTERM']) {
     process.on(signal, () => {
         logger.info(`${signal} signal received.`)

@@ -6,11 +6,15 @@ import {
     createUserService,
     findManyUserService,
     findOneUserService,
+    findUserForResetService,
     findUserService,
     mergePayloadUserService,
+    resetPasswordService,
+    sentCodeService,
     tokenPayloadService,
     updateUserAndPasswordService,
-    updateUserService
+    updateUserService,
+    verifyCodeService
 } from './service'
 import { findOneCompanyService } from '../company/service'
 import { company } from '@prisma/client'
@@ -19,6 +23,70 @@ import { responseData } from '../../utils/functions'
 import { count } from 'console'
 import { historyService } from '../../utils/createLog'
 
+export const findUserForResetController = async (req: Request, res: Response) => {
+    const tel = `${req.body.tel}`.trim().slice(-8)
+    const user = await findUserForResetService(tel)
+
+    if (!user) {
+        return res.json({
+            status: 'error',
+            message: 'ບໍ່ພົບບັນຊີ ທີ່ທ່ານຮ້ອງຂໍ'
+        })
+    }
+
+    if (user && !user.userStatus) {
+        return res.json({
+            status: 'error',
+            message: 'ບັນຊີຂອງທ່ານ ຖືກລະງັບການໃຊ້ງານ ຊົ່ວຄາວ'
+        })
+    }
+
+    const code = `${Math.floor(Math.random() * 900000) + 100000}`
+    const verifyCode = await sentCodeService({ tel, code })
+    if (!verifyCode) {
+        return res.json({
+            status: 'error',
+            message: 'ບໍ່ສາມາດສ້າງ ລະຫັດຢືນຢັນ ຜູ້ໃຊ້ງານໄດ້'
+        })
+    }
+
+    return res.json({
+        status: 'success',
+        user
+    })
+}
+
+export const verifyCodeController = async (req: Request, res: Response) => {
+    const code = req.body.code
+    const tel = `${req.body.tel}`.trim().slice(-8)
+    const checkCode = await verifyCodeService({ code, tel })
+    if (!checkCode) {
+        return res.json({ status: 'error', message: 'ການຢືນຢັນ ບໍ່ສຳເລັດ ລະຫັດຜ່ານອາດໝົດເວລາແລ້ວ' })
+    }
+
+    return res.json({ status: 'success', message: '' })
+}
+
+export const resetPasswordCodeController = async (req: Request, res: Response) => {
+    const pass = req.body.password
+    const password = encrypt(pass)
+    const tel = req.body.tel
+
+    const update = await resetPasswordService({ password, tel })
+    if (!update) {
+        return res.json({
+            status: 'error',
+            message: 'ບໍ່ສາມາດ ປ່ຽນລະຫັດຜ່ານໄດ້'
+        })
+    }
+
+    return res.json({
+        status: 'success',
+        message: 'ປ່ຽນລະຫັດຜ່ານ ສຳເລັດແລ້ວ'
+    })
+}
+
+// -----------------
 export const loginController = async (req: Request, res: Response) => {
     const tel = req.body.tel
     const password = req.body.password
@@ -135,15 +203,15 @@ export const userController = async (req: Request, res: Response) => {
     const page = req.body.page ? Number(req.body.page) : 1
     const role = req.body.role
     let companyId: number | null = Number(req.body.companyId)
-    console.log(payload)
+    console.log(req.body)
 
-    if ((role && role === 'CUSTOMER') || !role) {
+    if ((payload.role === 'ADMIN' || payload.role === 'SUPERADMIN') && role && role === 'CUSTOMER') {
         companyId = null
-    } else if (payload.role === 'OWNER' || (payload.role === 'EMPLOYEE' && role != 'CUSTOMER')) {
-        companyId = payload.companyId
-    } else {
+    } else if (payload.role === 'OWNER' || payload.role === 'EMPLOYEE') {
         companyId = payload.companyId
     }
+
+    console.log({ companyId })
 
     const u = await findManyUserService({ companyId, key, page, role })
     const users = u.users.map((item, i) => ({
@@ -214,7 +282,9 @@ export const updateUserController = async (req: Request, res: Response) => {
     const role = req.body.role
     const description = 'ແກ້ໄຂຂໍ້ມູນຜູ້ໃຊ້ງານ'
 
-    const userStatus = req.body.userStatus
+    const userStatus = req.body.userStatus === 1 || req.body.userStatus === true ? true : false
+
+    console.log({ userStatus })
 
     let companyId: number | null = req.body.companyId
 

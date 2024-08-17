@@ -1,8 +1,18 @@
 import { Request, Response } from 'express'
-import { createProjectService, projectsService, updateProjectService } from './service'
+import { createProjectService, projectsForAutocompleteService, projectsService, updateProjectService } from './service'
 import { tokenPayloadService } from '../user/service'
-import { responseData } from '../../utils/functions'
+import { dateFormatter, today } from '../../utils/dateFormat'
 import { historyService } from '../../utils/createLog'
+
+export const projectsForAutocompleteController = async (req: Request, res: Response) => {
+    const payload = tokenPayloadService(req)
+    const projects = await projectsForAutocompleteService(payload.companyId!)
+
+    return res.json({
+        status: 'success',
+        projects
+    })
+}
 
 export const projectsController = async (req: Request, res: Response) => {
     const payload = tokenPayloadService(req)
@@ -16,12 +26,18 @@ export const projectsController = async (req: Request, res: Response) => {
         companyId = payload.companyId
     }
 
-    const p = await projectsService({ companyId, key, page })
-    const projects = await responseData(p, page)
+    const result = await projectsService({ companyId, key, page })
+    const projects = result.projects.map((item, i) => ({
+        ...item,
+        indexNo: (i + 1) * page,
+        createdAt: dateFormatter(item.createdAt),
+        updatedAt: dateFormatter(item.updatedAt)
+    }))
 
     return res.json({
         status: 'success',
-        projects
+        projects,
+        count: result.count
     })
 }
 
@@ -32,7 +48,12 @@ export const createProjectController = async (req: Request, res: Response) => {
     const createdBy = payload.userId
     const projectName = req.body.projectName
     const address = req.body.address
+    const code = req.body.code
     const description = 'ເພີ່ມຂໍ້ມູນໂຄງການ'
+    const createdAt = null
+    const projectId = 1
+    const updatedAt = null
+    const updatedBy = null
 
     if (!companyId) {
         return res.json({
@@ -41,11 +62,12 @@ export const createProjectController = async (req: Request, res: Response) => {
         })
     }
 
-    const p = await createProjectService({ area, companyId, createdBy, projectName, address })
+    const p = await createProjectService({ address, area, code, companyId, createdAt, createdBy, projectId, projectName, updatedAt, updatedBy })
+
     if (!p) {
         return res.json({
             status: 'error',
-            message: 'ສ້າງໂຄງການ ຜິດພາດ ລອງໃໝ່ໃນພາຍຫຼັງ'
+            message: 'ລະຫັດໂຄງການນີ້ ມີໃນລະບົບແລ້ວ'
         })
     }
     await historyService({ req, description })
@@ -63,9 +85,24 @@ export const updateProjectController = async (req: Request, res: Response) => {
     const createdBy = payload.userId
     const projectName = req.body.projectName
     const address = req.body.address
+    const code = req.body.code
     const description = 'ແກ້ໄຂຂໍ້ມູນໂຄງການ'
+    const createdAt = null
+    const updatedAt = today()
+    const updatedBy = payload.userId
 
-    const p = await updateProjectService(projectId, { area, companyId, createdBy, projectName, address })
+    const p = await updateProjectService({
+        area,
+        companyId,
+        createdBy,
+        projectName,
+        address,
+        code,
+        createdAt,
+        projectId,
+        updatedAt,
+        updatedBy
+    })
     if (!p) {
         return res.json({
             status: 'error',
