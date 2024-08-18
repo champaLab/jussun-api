@@ -37,6 +37,7 @@ export interface TPaidInvoice {
     exchangeRate: number | null
     currencyExchange: string | null
     createdBy: number | null
+    comment: string | null
 }
 export interface TUserPayloadModel {
     userId: number
