@@ -9,10 +9,22 @@ import env from '../../env'
 
 export const historiesPayByContractController = async (req: Request, res: Response) => {
     const payload = tokenPayloadService(req)
-    const contractId = Number(req.body.contractId)
+    const contractId = Number(req.params.contractId)
 
-    const contract = await historiesPayByContractService({ contractId })
+    const ct = await historiesPayByContractService({ contractId })
+    if (!ct) {
+        return res.json({
+            status: 'error',
+            message: 'contract not found'
+        })
+    }
     const result = await invoicesByContractService({ contractId })
+
+    const contract = {
+        ...ct,
+        logoPath: ct.logoPath ? `${env.HOST_IMAGE}${env.BASE_PATH}${ct.logoPath}` : null,
+        createdAt: dateFormatter(ct.createdAt)
+    }
 
     const invoices = result.map((item, i) => ({
         ...item,

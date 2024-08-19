@@ -57,6 +57,7 @@ export const invoicePaydayController = async (req: Request, res: Response) => {
         }
     })
 }
+
 export const invoicePaidController = async (req: Request, res: Response) => {
     const payload = tokenPayloadService(req)
     const invoiceId = Number(req.body.invoiceId)

@@ -29,7 +29,7 @@ import { valUpdateInvoice } from './apis/invoice/validate'
 import { getReportsController, readReportController } from './apis/reports/controller'
 import { readReceiveController } from './apis/receive/controller'
 import { findManyHistoryController } from './apis/log/controller'
-import { historiesPayByContractController } from './apis/historyPay/controller'
+import { historiesPayByContractController } from './apis/contractDetail/controller'
 import { valRemind } from './apis/remindToPay/validate'
 import { sentRemindToPayController } from './apis/remindToPay/controller'
 import {
@@ -68,7 +68,7 @@ router.post('/contracts/create', verify, valContractCreate, valResult, createCon
 router.post('/contracts/update', verify, valContractUpdate, valResult, updateContractController)
 router.post('/contracts/update/status', verify, updateContractStatusController)
 
-router.post('/history-pay', verify, historiesPayByContractController)
+router.get('/contract/:contractId', verify, historiesPayByContractController)
 
 // TODO: PAYMENT
 router.post('/invoices/action', verify, actionInvoiceController)
