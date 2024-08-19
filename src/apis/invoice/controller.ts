@@ -57,6 +57,7 @@ export const invoicePaydayController = async (req: Request, res: Response) => {
         }
     })
 }
+
 export const invoicePaidController = async (req: Request, res: Response) => {
     const payload = tokenPayloadService(req)
     const invoiceId = Number(req.body.invoiceId)
@@ -66,6 +67,7 @@ export const invoicePaidController = async (req: Request, res: Response) => {
     const fines = parseFloat(req.body.fines ?? 0)
     const paymentMethod = req.body.invPaymentMethod
     let currencyExchange = req.body.currencyExchange
+    let comment = req.body.comment
     let exchangeRate: number | null = parseFloat(req.body.exchangeRate)
     const paidDate = today()
 
@@ -117,7 +119,8 @@ export const invoicePaidController = async (req: Request, res: Response) => {
         currencyExchange,
         exchangeRate,
         invoiceStatus,
-        createdBy: payload.userId
+        createdBy: payload.userId,
+        comment
     })
 
     if (!paid) {
