@@ -60,8 +60,8 @@ export const verifyCodeController = async (req: Request, res: Response) => {
     const code = req.body.code
     const tel = `${req.body.tel}`.trim().slice(-8)
     const checkCode = await verifyCodeService({ code, tel })
-    if (!checkCode) {
-        return res.json({ status: 'error', message: 'ການຢືນຢັນ ບໍ່ສຳເລັດ ລະຫັດຜ່ານອາດໝົດເວລາແລ້ວ' })
+    if (!checkCode || checkCode.count === 0) {
+        return res.json({ status: 'error', message: 'ການຢືນຢັນ ບໍ່ສຳເລັດ ລະຫັດຢືນຢັນ ບໍ່ຖືກຕ້ອງ' })
     }
 
     return res.json({ status: 'success', message: '' })
