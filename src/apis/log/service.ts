@@ -1,8 +1,8 @@
-import { TReport } from './type.d'
 import { Prisma } from '@prisma/client'
 import logger from '../../configs/winston'
 import prismaClient from '../../prisma'
 import env from '../../env'
+import { TReport } from './type'
 
 export const findManyHistoryService = async (data: TReport) => {
     const skip = data.key ? 0 : (data.page - 1) * env.ROW_PER_PAGE
