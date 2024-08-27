@@ -106,7 +106,7 @@ model news {
   imagePath   String?   @db.VarChar(200)
   ip          String?   @db.VarChar(50)
   userId      Int
-  sentType    String?   @db.VarChar(200)
+  sentType    String    @db.VarChar(200)
   sentStatus  String    @default("PENDING") @db.VarChar(10)
   dateForSent DateTime? @db.DateTime(0)
   multi       String?   @default("YES") @db.VarChar(5)

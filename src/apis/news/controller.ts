@@ -6,47 +6,72 @@ import { dateFormatter, today } from '../../utils/dateFormat'
 import { checkDataNull } from '../company/service'
 import { getPhotoPath } from '../../utils/fileUrl'
 import dayjs from 'dayjs'
+import { getClientIp } from 'request-ip'
+import env from '../../env'
 
 export const getNewsController = async (req: Request, res: Response) => {
     const dateStart = req.body.dateStart && dayjs(req.body.dateStart).format('YYYY-MM-DD')
     const dateEnd = req.body.dateEnd && dayjs(req.body.dateEnd).format('YYYY-MM-DD') + ' 23:59:59'
     const page = Number(req.body.page ?? 0)
-    console.log('@@@@@@', dateStart, dateEnd)
+
     const readNews = await getNewsService({
         dateEnd,
         dateStart,
         page
     })
-    const news = readNews.news?.map((item, i) => ({
-        ...item,
-        indexNo: (i + 1) * page,
-        createdAt: dateFormatter(item.createdAt),
-        updatedAt: dateFormatter(item.deletedAt)
-    }))
+
+    console.log(readNews)
+
+    const news: any[] = []
+
+    for (let i = 0; i < readNews.news.length; i++) {
+        const item = readNews.news[i]
+        let sentTypeParsed
+
+        try {
+            sentTypeParsed = JSON.parse(item.sentType)
+        } catch (error) {
+            console.error(`Failed to parse sentType for item at index ${i}:`, error)
+            sentTypeParsed = item.sentType // Or handle the error as needed
+        }
+        news.push({
+            ...item,
+            indexNo: (i + 1) * page,
+            sentType: sentTypeParsed,
+            logoPath: item.imagePath ? `${env.HOST_IMAGE}${env.BASE_PATH}${item.imagePath}` : null,
+            createdAt: dateFormatter(item.createdAt),
+            dateForSent: dateFormatter(item.dateForSent),
+            sentDate: dateFormatter(item.sentDate)
+        })
+    }
     return res.json({
         status: 'success',
-        reports: {
-            news,
-            count: readNews.count
-        }
+        news,
+        count: readNews.count
     })
 }
 export const createNewsController = async (req: Request, res: Response) => {
     const payload = tokenPayloadService(req)
     const nId = req.body.nId
     const content = req.body.content
-    const imagePath: any = getPhotoPath(req.file) ?? checkDataNull(req.body.imagePath)
+    const imagePath = getPhotoPath(req.file)
     const multi = req.body.multi
-    const sentStatus = req.body.sentStatus
-    const ip = req.body.ip
+    const sentStatus = 'PENDING'
+    const ip = getClientIp(req)
     const userId = payload.userId
     const tel = req.body.tel
-    const sentType = req.body.sentType
-    const deletedAt = req.body.deletedAt
+    const sentType: any[] = []
+    const deletedAt = null
     const deletedBy = req.body.deletedBy
     const createdAt = today()
-    const dateForSent = today()
-    const sentDate = today()
+    const dateForSent = today(req.body.dateForSent)
+    const sentDate = null
+
+    console.log()
+    req.body.sentType.split(',').forEach((item: any) => {
+        sentType.push(item)
+    })
+
     const create = await createNewsService({
         deletedAt,
         deletedBy,
@@ -59,7 +84,7 @@ export const createNewsController = async (req: Request, res: Response) => {
         ip,
         nId,
         sentDate,
-        sentType,
+        sentType: JSON.stringify(sentType),
         tel,
         userId
     })

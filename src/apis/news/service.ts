@@ -22,7 +22,7 @@ export const createNewsService = async (data: news) => {
     }
 }
 
-// deleteAt = is alway be null 
+// deleteAt = is alway be null
 export const getNewsService = async (data: { page: number; dateStart: string; dateEnd: string }) => {
     const skip = (data.page - 1) * env.ROW_PER_PAGE
     const take = env.ROW_PER_PAGE
@@ -36,7 +36,7 @@ export const getNewsService = async (data: { page: number; dateStart: string; da
 
             const news: news[] = await prismaClient.$queryRaw` SELECT * FROM news WHERE deletedAt IS NULL ORDER BY createdAt DESC LIMIT ${take} OFFSET ${skip};
  `
-            return { count , news }
+            return { count, news }
         }
         const totalPage = await prismaClient.news.count({
             where: { deletedAt: null }
@@ -55,7 +55,7 @@ export const getNewsService = async (data: { page: number; dateStart: string; da
     } catch (err) {
         logger.error(err)
         console.log(err)
-        return { count: 0, exchange: [] }
+        return { count: 0, news: [] }
     } finally {
         await prismaClient.$disconnect()
     }
