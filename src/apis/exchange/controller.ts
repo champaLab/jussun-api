@@ -54,7 +54,8 @@ export const createExchangeController = async (req: Request, res: Response) => {
         thb,
         updatedAt,
         updatedBy,
-        usd
+        usd,
+        deletedBy: null
     })
 
     console.log({ createdAt })
@@ -95,7 +96,8 @@ export const updateExchangeController = async (req: Request, res: Response) => {
         thb,
         updatedAt,
         updatedBy,
-        usd
+        usd,
+        deletedBy: null
     })
     if (!update) {
         return res.json({

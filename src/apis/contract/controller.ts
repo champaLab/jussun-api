@@ -130,7 +130,9 @@ export const createContractController = async (req: Request, res: Response) => {
         cancelAt: null,
         cancelBy: null,
         reason: null,
-        lastInvoice: null
+        lastInvoice: null,
+        deletedAt: null,
+        deletedBy: null
     })
     if (!p) {
         return res.json({
@@ -295,7 +297,9 @@ export const updateContractController = async (req: Request, res: Response) => {
         cancelBy,
         reason,
         contractStatus,
-        lastInvoice
+        lastInvoice,
+        deletedAt: null,
+        deletedBy: null
     })
     if (!p) {
         return res.json({

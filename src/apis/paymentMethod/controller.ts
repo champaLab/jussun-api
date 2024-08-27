@@ -41,7 +41,8 @@ export const createPaymentMethodController = async (req: Request, res: Response)
         companyId,
         deletedAt: null,
         id: 0,
-        qrPath
+        qrPath,
+        deletedBy: null
     })
 
     if (!p) {
@@ -70,7 +71,8 @@ export const updatePaymentMethodController = async (req: Request, res: Response)
         companyId,
         deletedAt: null,
         id,
-        qrPath
+        qrPath,
+        deletedBy: null
     })
 
     if (!p) {
