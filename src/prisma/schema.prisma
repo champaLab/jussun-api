@@ -8,8 +8,6 @@ datasource db {
   url      = env("PRISMA_DB_CONN")
 }
 
-<<<<<<< HEAD
-=======
 model company {
   companyId     Int       @id @default(autoincrement())
   companyName   String    @unique(map: "companyName") @db.VarChar(255)
@@ -191,4 +189,3 @@ model payment_method {
   deletedAt     DateTime? @db.DateTime(0)
   deletedBy     Int?
 }
->>>>>>> origin/master
