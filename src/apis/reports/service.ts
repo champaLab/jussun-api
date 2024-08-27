@@ -51,7 +51,7 @@ export const summaryContractPaydayService = async (data: {
     } catch (err) {
         logger.error(err)
         console.log(err)
-        return { contractPayday: 0, contract: 0, projects: 0 }
+        return { contractPayday: 0, contract: [], projects: 0 }
     } finally {
         await prismaClient.$disconnect()
     }
