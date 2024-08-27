@@ -62,7 +62,20 @@ export const createProjectController = async (req: Request, res: Response) => {
         })
     }
 
-    const p = await createProjectService({ address, area, code, companyId, createdAt, createdBy, projectId, projectName, updatedAt, updatedBy })
+    const p = await createProjectService({
+        address,
+        area,
+        code,
+        companyId,
+        createdAt,
+        createdBy,
+        projectId,
+        projectName,
+        updatedAt,
+        updatedBy,
+        deletedAt: null,
+        deletedBy: null
+    })
 
     if (!p) {
         return res.json({
@@ -101,7 +114,9 @@ export const updateProjectController = async (req: Request, res: Response) => {
         createdAt,
         projectId,
         updatedAt,
-        updatedBy
+        updatedBy,
+        deletedAt: null,
+        deletedBy: null
     })
     if (!p) {
         return res.json({
