@@ -153,12 +153,12 @@ export const meController = async (req: Request, res: Response) => {
     const user = await findOneUserService({ tel: tokenPayload.tel })
     if (!user) {
         return res.json({
-            status: 'error',
+            status: 'invalid',
             message: 'ບໍ່ພົບຂໍ້ມູນຜູ້ໃຊ້ງານ'
         })
     } else if (!user.userStatus) {
         return res.json({
-            status: 'error',
+            status: 'invalid',
             message: 'ບັນຊີຂອງທ່ານ ຖືກລະງັບການໃຊ້ງານ'
         })
     }
@@ -168,14 +168,14 @@ export const meController = async (req: Request, res: Response) => {
         company = await findOneCompanyService({ companyId: Number(user.companyId) })
         if (!company) {
             return res.json({
-                status: 'error',
+                status: 'invalid',
                 message: 'ບໍ່ພົບຂໍ້ມູນບໍລິສັດ'
             })
         }
 
         if (!company.companyStatus) {
             return res.json({
-                status: 'error',
+                status: 'invalid',
                 message: 'ບໍລິສັດຂອງທ່ານ ຖືກລະງັບການໃຊ້ງານ'
             })
         }
@@ -185,7 +185,7 @@ export const meController = async (req: Request, res: Response) => {
     const token = await sign(payload)
     if (!token) {
         return res.json({
-            status: 'error',
+            status: 'invalid',
             message: 'Sign token error'
         })
     }
