@@ -29,10 +29,11 @@ export const summaryContractPaydayService = async (data: {
     companyId: number
 }) => {
     const { payDay, monthly, contractStatus, invoiceStatus, companyId } = data
+    console.log(data)
 
     try {
         const contracts = await prismaClient.$queryRaw`
-            SELECT contractStatus, COUNT(*) total FROM contracts GROUP BY contractStatus
+            SELECT contractStatus, COUNT(*) total FROM contracts WHERE companyId = ${companyId} GROUP BY contractStatus
         `
         const projects = await prismaClient.projects.count({ where: { companyId } })
 
@@ -50,7 +51,7 @@ export const summaryContractPaydayService = async (data: {
     } catch (err) {
         logger.error(err)
         console.log(err)
-        return { contractPayday: 0, contract: 0, projects: 0 }
+        return { contractPayday: 0, contract: [], projects: 0 }
     } finally {
         await prismaClient.$disconnect()
     }

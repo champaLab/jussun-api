@@ -38,6 +38,8 @@ import {
     paymentMethodController,
     updatePaymentMethodController
 } from './apis/paymentMethod/controller'
+import { createNewsController, deleteNewsController, getNewsController, updateNewsController } from './apis/news/controller'
+import { valNews } from './apis/news/validatotr'
 
 const router = Router()
 
@@ -95,4 +97,9 @@ router.post('/payments/delete', verify, verify, deletePaymentMethodController)
 //TODO: History endpoint
 router.post('/history', verify, findManyHistoryController)
 
+//TODO: News endpoint
+router.post('/news/create', verify, upload('news', true).single('file'), valNews, createNewsController)
+router.post('/news/update', verify, upload('news', true).single('file'), updateNewsController)
+router.post('/news/delete', verify, deleteNewsController)
+router.post('/news', verify, getNewsController)
 export default router
