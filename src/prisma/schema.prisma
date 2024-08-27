@@ -18,10 +18,10 @@ model company {
   email         String?   @db.VarChar(60)
   whatsapp      String?   @db.VarChar(8)
   address       String    @db.VarChar(100)
-  createdBy     Int
   updatedBy     Int?
   companyStatus Boolean?  @default(true)
   createdAt     DateTime? @default(now()) @db.DateTime(0)
+  createdBy     Int
   updatedAt     DateTime? @unique(map: "updatedAt") @db.DateTime(0)
 }
 
@@ -80,8 +80,8 @@ model invoice {
   paidDate         DateTime? @db.DateTime(0)
   createdBy        Int?
   createdAt        DateTime? @default(now()) @db.DateTime(0)
-  updatedAt        DateTime? @default(now()) @db.DateTime(0)
   reservedBy       Int?
+  updatedAt        DateTime? @default(now()) @db.DateTime(0)
   reservedAt       DateTime? @db.DateTime(0)
   remindSentTime   Int?      @default(0)
   remindSentDate   DateTime? @db.DateTime(0)
@@ -106,14 +106,13 @@ model news {
   imagePath   String?   @db.VarChar(200)
   ip          String?   @db.VarChar(50)
   userId      Int
-  sentType    String    @db.VarChar(200)
+  sentType    String?   @db.VarChar(200)
   sentStatus  String    @default("PENDING") @db.VarChar(10)
   dateForSent DateTime? @db.DateTime(0)
   multi       String?   @default("YES") @db.VarChar(5)
   sentDate    DateTime? @db.DateTime(0)
   createdAt   DateTime? @default(now()) @db.DateTime(0)
   deletedAt   DateTime? @db.DateTime(0)
-  deletedBy   Int?
 }
 
 /// This model or at least one of its fields has comments in the database, and requires an additional setup for migrations: Read more: https://pris.ly/d/database-comments
