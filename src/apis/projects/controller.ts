@@ -1,5 +1,5 @@
 import { Request, Response } from 'express'
-import { createProjectService, projectsForAutocompleteService, projectsService, updateProjectService } from './service'
+import { createProjectService, deleteProjectService, projectsForAutocompleteService, projectsService, updateProjectService } from './service'
 import { tokenPayloadService } from '../user/service'
 import { dateFormatter, today } from '../../utils/dateFormat'
 import { historyService } from '../../utils/createLog'
@@ -122,6 +122,30 @@ export const updateProjectController = async (req: Request, res: Response) => {
         return res.json({
             status: 'error',
             message: 'ແກ້ໄຂໂຄງການ ຜິດພາດ ລອງໃໝ່ໃນພາຍຫຼັງ'
+        })
+    }
+    await historyService({ req, description })
+
+    return res.json({
+        status: 'success',
+        message: 'ແກ້ໄຂໂຄງການ ສຳເລັດແລ້ວ'
+    })
+}
+
+export const deleteProjectController = async (req: Request, res: Response) => {
+    const userId = tokenPayloadService(req).userId
+    const projectId = Number(req.params.projectId)
+    const description = 'ລົບຂໍ້ມູນໂຄງການ projectId: ' + projectId
+
+    const p = await deleteProjectService({
+        projectId,
+        userId
+    })
+
+    if (!p) {
+        return res.json({
+            status: 'error',
+            message: 'ລົບຂໍ້ມູນໂຄງການ ຜິດພາດ ລອງໃໝ່ໃນພາຍຫຼັງ'
         })
     }
     await historyService({ req, description })

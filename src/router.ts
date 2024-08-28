@@ -2,7 +2,13 @@ import Router from 'express'
 
 import { upload } from './utils/file-helper'
 import { companyController, companyForAutocompleteController, createCompanyController, updateCompanyController } from './apis/company/controller'
-import { createProjectController, projectsController, projectsForAutocompleteController, updateProjectController } from './apis/projects/controller'
+import {
+    createProjectController,
+    deleteProjectController,
+    projectsController,
+    projectsForAutocompleteController,
+    updateProjectController
+} from './apis/projects/controller'
 import { verify } from './utils/jwt'
 import {
     createUserController,
@@ -62,6 +68,7 @@ router.get('/company/autocomplete', verify, companyForAutocompleteController)
 router.post('/projects', verify, projectsController)
 router.post('/projects/create', verify, valProjectCreate, valResult, createProjectController)
 router.post('/projects/update', verify, valProjectUpdate, valResult, updateProjectController)
+router.delete('/projects/delete/:projectId', verify, deleteProjectController)
 
 router.get('/projects/autocomplete', verify, projectsForAutocompleteController)
 
