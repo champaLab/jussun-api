@@ -107,8 +107,8 @@ export const updateCompanyController = async (req: Request, res: Response) => {
     const whatsapp: any = checkDataNull(req.body.whatsapp)
     const logoPath: any = getPhotoPath(req.file) ?? checkDataNull(req.body.logoOriginal)
     const financeTel: any = checkDataNull(req.body.financeTel)
-    const deletedAt = req.body.deletedAt
-    const deletedBy = req.body.deletedBy
+    const deletedAt = null
+    const deletedBy = null
 
     const p = await updateCompanyService({
         companyId,

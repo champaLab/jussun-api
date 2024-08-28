@@ -91,7 +91,7 @@ export const loginController = async (req: Request, res: Response) => {
     const tel = req.body.tel
     const password = req.body.password
 
-    // console.log(encrypt(password))
+    console.log(encrypt(password))
 
     const user = await findOneUserService({ tel })
     if (!user) {
