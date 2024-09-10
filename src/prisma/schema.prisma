@@ -189,3 +189,11 @@ model payment_method {
   deletedAt     DateTime? @db.DateTime(0)
   deletedBy     Int?
 }
+
+model stores {
+  id           Int       @id @unique(map: "stores_pk2") @default(autoincrement())
+  name         String?   @db.VarChar(255)
+  opening_time DateTime? @default(now()) @db.DateTime(0)
+  closing_time DateTime? @default(now()) @db.DateTime(0)
+  closing_id   String?   @db.VarChar(100)
+}
