@@ -14,7 +14,8 @@ import {
     updateContractInvoiceIdService
 } from './service'
 import dayjs from 'dayjs'
-import { responseData } from '../../utils/functions'
+import { dateFormatter } from '../../utils/dateFormat'
+import { historyService } from '../../utils/createLog'
 
 export const contractController = async (req: Request, res: Response) => {
     const payload = tokenPayloadService(req)
@@ -27,11 +28,17 @@ export const contractController = async (req: Request, res: Response) => {
         companyId = Number(req.body.companyId)
     }
 
-    const contract = await contractService({ projectId, companyId, key, page })
-    const contracts = await responseData(contract, page)
+    const result = await contractService({ projectId, companyId, key, page })
+    const contracts = result.contracts.map((item, i) => ({
+        ...item,
+        indexNo: (i + 1) * page,
+        createdAt: dateFormatter(item.createdAt),
+        updatedAt: dateFormatter(item.updatedAt)
+    }))
     return res.json({
         status: 'success',
-        contracts
+        contracts,
+        count: result.count
     })
 }
 
@@ -40,29 +47,32 @@ export const createContractController = async (req: Request, res: Response) => {
     const area = Number(req.body.area)
     const companyId = Number(payload.companyId)
     const contractId = req.body.contractId
+
     const createdBy = payload.userId
     const updatedBy = payload.userId
     const currency = req.body.currency
     const docId = req.body.docId
     const modeOfPayment = req.body.modeOfPayment
     const payInAdvance = Number(req.body.payInAdvance)
-    const payDay = Number(req.body.payDay)
+    const payDay = dayjs(req.body.payDay).add(7, 'hours').toDate()
     const price = Number(req.body.price)
     const projectId = Number(req.body.projectId)
     const customerIdOne = Number(req.body.customerIdOne)
     const customerIdTwo = req.body.customerIdTwo ? Number(req.body.customerIdTwo) : null
     const totalPrice = price * area
     const updatedAt = null
+    const billPath = null
     const createdAt = dayjs().toDate()
     const paymentMethod = req.body.paymentMethod ?? null
+    const description = 'ເພີ່ມຂໍ້ມູນສັນຍາ'
 
-    const debt = totalPrice - payInAdvance
+    const debt = totalPrice
     let numberOfInstallment = debt === 0 ? 1 : Number(req.body.numberOfInstallment)
-    const contractStatus = debt === 0 ? 'CLOSED' : 'ACTIVE'
+    const contractStatus = 'ACTIVE'
 
-    const amount = Math.ceil((area * price) / numberOfInstallment)
-    const invoiceStatus = amount == totalPrice ? 'PAID' : 'PENDING'
-    const paidNow = amount == totalPrice ? dayjs().toDate() : null
+    const amount = payInAdvance > 0 ? payInAdvance : Math.ceil((area * price) / numberOfInstallment)
+    const invoiceStatus = 'PENDING'
+    const paidNow = null
 
     const contract = await finOneContractService({ docId })
     if (contract) {
@@ -120,7 +130,9 @@ export const createContractController = async (req: Request, res: Response) => {
         cancelAt: null,
         cancelBy: null,
         reason: null,
-        lastInvoice: null
+        lastInvoice: null,
+        deletedAt: null,
+        deletedBy: null
     })
     if (!p) {
         return res.json({
@@ -128,6 +140,11 @@ export const createContractController = async (req: Request, res: Response) => {
             message: 'ສ້າງໂຄງການ ຜິດພາດ ລອງໃໝ່ໃນພາຍຫຼັງ'
         })
     }
+
+    const monthly = dayjs().format('MM/YYYY')
+
+    console.log({ monthly })
+    console.log('-'.repeat(100))
 
     const createInv = await createInvoiceService({
         amount,
@@ -143,7 +160,14 @@ export const createContractController = async (req: Request, res: Response) => {
         paymentMethod,
         currencyExchange: null,
         exchangeRate: null,
-        createdBy: null
+        createdBy: null,
+        reservedAt: null,
+        reservedBy: null,
+        comment: null,
+        monthly,
+        billPath,
+        remindSentDate: null,
+        remindSentTime: null
     })
 
     if (!createInv) {
@@ -154,6 +178,8 @@ export const createContractController = async (req: Request, res: Response) => {
     }
 
     await updateContractInvoiceIdService(p.contractId, createInv.invoiceId)
+
+    await historyService({ req, description })
 
     return res.json({
         status: 'success',
@@ -168,10 +194,9 @@ export const updateContractController = async (req: Request, res: Response) => {
     const createdBy = Number(req.body.createdBy)
     const updatedBy = payload.userId
     const currency = req.body.currency
-    const docId = req.body.docId
     const modeOfPayment = req.body.modeOfPayment
     const payInAdvance = Number(req.body.payInAdvance)
-    const payDay = Number(req.body.payDay)
+    const payDay = dayjs(req.body.payDay).add(7, 'hours').toDate()
     const price = Number(req.body.price)
     const projectId = Number(req.body.projectId)
     const area = Number(req.body.area)
@@ -189,7 +214,13 @@ export const updateContractController = async (req: Request, res: Response) => {
     const paymentMethod = req.body.paymentMethod
     const currencyExchange = req.body.currencyExchange
     const exchangeRate = req.body.exchangeRate
+    const reservedBy = req.body.reservedBy
+    const reservedAt = req.body.reservedAt
+    const monthly = req.body.monthly
+    const billPath = req.body.billPath
     const lastInvoice = Number(req.body.lastInvoice)
+    const description = 'ແກ້ໄຂຂໍ້ມູນສັນຍາ'
+    const docId = req.body.docId
 
     if (oldArea != area || oldProjectId != projectId) {
         const projectOld = await finOneProjectService({ projectId: oldProjectId })
@@ -238,6 +269,7 @@ export const updateContractController = async (req: Request, res: Response) => {
     const paidNow = dayjs().toDate()
     const invoiceId = Number(req.body.invoiceId)
     const fines = req.body.fines ? parseFloat(req.body.fines) : 0
+    const comment = req.body.comment
 
     console.log('-'.repeat(150))
     console.error({ debt, numberOfInstallment, contractStatus, amount, invoiceStatus, paidNow, invoiceId })
@@ -265,7 +297,9 @@ export const updateContractController = async (req: Request, res: Response) => {
         cancelBy,
         reason,
         contractStatus,
-        lastInvoice
+        lastInvoice,
+        deletedAt: null,
+        deletedBy: null
     })
     if (!p) {
         return res.json({
@@ -288,7 +322,14 @@ export const updateContractController = async (req: Request, res: Response) => {
         paymentMethod,
         currencyExchange,
         exchangeRate,
-        createdBy: null
+        createdBy: null,
+        reservedAt,
+        reservedBy,
+        comment,
+        monthly,
+        billPath,
+        remindSentDate: null,
+        remindSentTime: null
     })
 
     if (!createInv) {
@@ -297,6 +338,8 @@ export const updateContractController = async (req: Request, res: Response) => {
             message: 'ສ້າງໃບແຈ້ງໜີ້ ຜິດພາດ ລອງໃໝ່ໃນພາຍຫຼັງ'
         })
     }
+
+    await historyService({ req, description })
 
     return res.json({
         status: 'success',
@@ -311,6 +354,7 @@ export const updateContractStatusController = async (req: Request, res: Response
     const cancelBy = payload.userId
     const reason = contractStatus == 'ACTIVE' ? null : req.body.reason
     const cancelAt = dayjs().toDate()
+    const description = 'ແກ້ໄຂອັດສະຖານະສັນຍາ'
 
     const p = await updateContractStatusService({
         cancelAt,
@@ -325,6 +369,8 @@ export const updateContractStatusController = async (req: Request, res: Response
             message: 'ແກ້ໄຂຂໍ້ມູນສັນຍາ ຜິດພາດ ລອງໃໝ່ໃນພາຍຫຼັງ'
         })
     }
+
+    await historyService({ req, description })
 
     return res.json({
         status: 'success',

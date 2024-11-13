@@ -1,23 +1,41 @@
 import { Request, Response } from 'express'
-import { companiesService, createCompanyService, updateCompanyService } from './service'
+import { checkDataNull, companiesService, companyForAutocompleteService, createCompanyService, updateCompanyService } from './service'
 import { tokenPayloadService } from '../user/service'
 import { getPhotoPath } from '../../utils/fileUrl'
-import { dateFormatter } from '../../utils/dateFormat'
+import { dateFormatter, today } from '../../utils/dateFormat'
 import env from '../../env'
+
+export const companyForAutocompleteController = async (req: Request, res: Response) => {
+    const payload = tokenPayloadService(req)
+    let companyId = payload.companyId
+    if (payload.role === 'ADMIN' || payload.role === 'SUPERADMIN') {
+        companyId = null
+    }
+
+    const company = await companyForAutocompleteService(companyId)
+
+    return res.json({
+        status: 'success',
+        company
+    })
+}
 
 export const companyController = async (req: Request, res: Response) => {
     const payload = tokenPayloadService(req)
+    const key = req.body.key
+    const page = req.body.page
     let companyId = req.body.companyId
     if ((payload.role === 'ADMIN' || payload.role === 'SUPERADMIN') && companyId) {
         companyId = req.body.companyId
-    } else {
+    } else if (payload.role != 'ADMIN' && payload.role != 'SUPERADMIN') {
         companyId = payload.companyId
     }
 
-    const company = await companiesService({ companyId })
+    const result = await companiesService({ companyId, key, page })
 
-    const companyRes = company.map((item) => ({
+    const companyRes = result.companies.map((item, i) => ({
         ...item,
+        indexNo: (i + 1) * page,
         logoPath: item.logoPath ? `${env.HOST_IMAGE}${env.BASE_PATH}${item.logoPath}` : null,
         logoOriginal: item.logoPath,
         createdAt: dateFormatter(item.createdAt),
@@ -26,26 +44,26 @@ export const companyController = async (req: Request, res: Response) => {
 
     return res.json({
         status: 'success',
-        company: companyRes
+        company: companyRes,
+        count: result.count
     })
 }
 
 export const createCompanyController = async (req: Request, res: Response) => {
     const payload = tokenPayloadService(req)
-    const abbreviatedLetters = req.body.abbreviatedLetters
-    const companyId = req.body.companyId
     const createdBy = payload.userId
-    const address = req.body.address
-    const companyName = req.body.companyName
-    const companyStatus = req.body.companyStatus === 'true'
-    const email = req.body.email
-    const fax = req.body.fax
-    const tel = req.body.tel
-    const whatsapp = req.body.whatsapp
-    const logoPath = getPhotoPath(req.file) ?? req.body.logoOriginal
+    const companyId: any = checkDataNull(req.body.companyId, 'number')
+    const address: any = checkDataNull(req.body.address)
+    const companyName: any = checkDataNull(req.body.companyName)
+    const companyStatus: any = req.body.companyStatus === 'true'
+    const email: any = checkDataNull(req.body.email)
+    const fax: any = checkDataNull(req.body.fax)
+    const tel: any = checkDataNull(req.body.tel)
+    const financeTel: any = checkDataNull(req.body.financeTel)
+    const whatsapp: any = checkDataNull(req.body.whatsapp)
+    const logoPath: any = getPhotoPath(req.file) ?? checkDataNull(req.body.logoOriginal)
 
     const p = await createCompanyService({
-        abbreviatedLetters,
         companyId,
         createdBy,
         address,
@@ -55,7 +73,13 @@ export const createCompanyController = async (req: Request, res: Response) => {
         fax,
         logoPath,
         tel,
-        whatsapp
+        whatsapp,
+        createdAt: today(),
+        updatedAt: today(),
+        updatedBy: null,
+        financeTel,
+        deletedAt: null,
+        deletedBy: null
     })
     if (!p) {
         return res.json({
@@ -72,20 +96,21 @@ export const createCompanyController = async (req: Request, res: Response) => {
 
 export const updateCompanyController = async (req: Request, res: Response) => {
     const payload = tokenPayloadService(req)
-    const abbreviatedLetters = req.body.abbreviatedLetters
-    const companyId = Number(req.body.companyId)
     const createdBy = payload.userId
-    const address = req.body.address
-    const companyName = req.body.companyName
-    const companyStatus = req.body.companyStatus === 'true'
-    const email = req.body.email
-    const fax = req.body.fax
-    const tel = req.body.tel
-    const whatsapp = req.body.whatsapp
-    const logoPath = getPhotoPath(req.file) ?? req.body.logoOriginal
+    const companyId: any = checkDataNull(req.body.companyId, 'number')
+    const address: any = checkDataNull(req.body.address)
+    const companyName: any = checkDataNull(req.body.companyName)
+    const companyStatus: any = req.body.companyStatus === 'true'
+    const email: any = checkDataNull(req.body.email)
+    const fax: any = checkDataNull(req.body.fax)
+    const tel: any = checkDataNull(req.body.tel)
+    const whatsapp: any = checkDataNull(req.body.whatsapp)
+    const logoPath: any = getPhotoPath(req.file) ?? checkDataNull(req.body.logoOriginal)
+    const financeTel: any = checkDataNull(req.body.financeTel)
+    const deletedAt = null
+    const deletedBy = null
 
     const p = await updateCompanyService({
-        abbreviatedLetters,
         companyId,
         createdBy,
         address,
@@ -95,7 +120,13 @@ export const updateCompanyController = async (req: Request, res: Response) => {
         fax,
         logoPath,
         tel,
-        whatsapp
+        whatsapp,
+        createdAt: null,
+        updatedAt: null,
+        updatedBy: payload.userId,
+        financeTel,
+        deletedAt,
+        deletedBy
     })
     if (!p) {
         return res.json({

@@ -16,5 +16,23 @@ git merge  Branch-name --no-ff
 3 validater
 4 add router 
 
-System@Lab*1122
+
+docker-compose build 
+docker-compose up -d --build
+docker-compose logs -f
+docker ps
+docker-compose down
+
+
+
+
+sudo systemctl daemon-reload
+sudo systemctl start nodejs1
+sudo systemctl enable nodejs1
+
+sudo systemctl start nodejs2
+sudo systemctl enable nodejs2
+
+sudo systemctl start nodejs3
+sudo systemctl enable nodejs3
 

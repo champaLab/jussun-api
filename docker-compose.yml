@@ -1,9 +1,27 @@
-version: '3'
 services:
-    node-ts-app:
-        build: .
+    mysql:
+        image: mysql:latest
+        container_name: mysql-db
         ports:
-            - '1144:1144'
+            - '3306:3306'
+        environment:
+            MYSQL_ROOT_PASSWORD: jutsun_dev
+            MYSQL_DATABASE: jutsun_dev
+            MYSQL_USER: jutsun
+            MYSQL_PASSWORD: 'jutsun^1122'
         volumes:
-            - /path/on/host/uploads:/app/uploads
-        container_name: node-ts-app-container
+            - mysql_data:/var/lib/mysql
+
+    phpmyadmin:
+        image: phpmyadmin/phpmyadmin:latest
+        container_name: phpmyadmin
+        ports:
+            - '8080:80'
+        environment:
+            PMA_HOST: mysql
+            MYSQL_ROOT_PASSWORD: jutsun_dev
+        depends_on:
+            - mysql
+
+volumes:
+    mysql_data:

@@ -1,5 +1,6 @@
 generator client {
-  provider = "prisma-client-js"
+  provider      = "prisma-client-js"
+  binaryTargets = ["native", "debian-openssl-1.1.x", "debian-openssl-3.0.x"]
 }
 
 datasource db {
@@ -24,7 +25,6 @@ model company {
   updatedAt          DateTime? @unique(map: "updatedAt") @db.DateTime(0)
 }
 
-/// This model or at least one of its fields has comments in the database, and requires an additional setup for migrations: Read more: https://pris.ly/d/database-comments
 model contracts {
   contractId          Int       @id @default(autoincrement())
   companyId           Int
@@ -63,7 +63,6 @@ model exchange {
   deletedAt  DateTime? @db.DateTime(0)
 }
 
-/// This model or at least one of its fields has comments in the database, and requires an additional setup for migrations: Read more: https://pris.ly/d/database-comments
 model invoice {
   invoiceId        Int       @id @default(autoincrement())
   fines            Float?    @default(0) @db.Float
@@ -93,7 +92,6 @@ model projects {
   updatedAt   DateTime? @default(now()) @db.DateTime(0)
 }
 
-/// This model or at least one of its fields has comments in the database, and requires an additional setup for migrations: Read more: https://pris.ly/d/database-comments
 model transaction {
   transactionId   Int       @id @default(autoincrement())
   ip              String?   @db.VarChar(200)
@@ -113,7 +111,6 @@ model transaction {
   deletedAt       DateTime? @db.DateTime(0)
 }
 
-/// This model or at least one of its fields has comments in the database, and requires an additional setup for migrations: Read more: https://pris.ly/d/database-comments
 model users {
   userId     Int       @id @default(autoincrement())
   companyId  Int?
