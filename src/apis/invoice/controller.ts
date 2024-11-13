@@ -133,7 +133,7 @@ export const invoicePaidController = async (req: Request, res: Response) => {
 
     if (debt > 0) {
         const countInv = await findCountInvoiceService({ contractId: contract.contractId, invoiceId })
-        const numberOfInstallment = countInv > contract.numberOfInstallment ? 1 : contract.numberOfInstallment - countInv
+        const numberOfInstallment = countInv > (contract.numberOfInstallment ?? 1) ? 1 : (contract.numberOfInstallment ?? 1) - countInv
         const amount = inv.amount / numberOfInstallment
 
         const createInv = await createInvoiceService({
@@ -157,7 +157,8 @@ export const invoicePaidController = async (req: Request, res: Response) => {
             monthly,
             billPath,
             remindSentDate: null,
-            remindSentTime: null
+            remindSentTime: null,
+            numberOfInstallment
         })
         if (!createInv) {
             return res.json({

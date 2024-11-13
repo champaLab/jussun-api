@@ -167,7 +167,8 @@ export const createContractController = async (req: Request, res: Response) => {
         monthly,
         billPath,
         remindSentDate: null,
-        remindSentTime: null
+        remindSentTime: null,
+        numberOfInstallment
     })
 
     if (!createInv) {
@@ -329,7 +330,8 @@ export const updateContractController = async (req: Request, res: Response) => {
         monthly,
         billPath,
         remindSentDate: null,
-        remindSentTime: null
+        remindSentTime: null,
+        numberOfInstallment
     })
 
     if (!createInv) {

@@ -8,6 +8,8 @@ import { ResInvoice, ResContract } from './type'
 export const historiesPayByContractService = async (data: { contractId: number }): Promise<ResContract | null> => {
     const { contractId } = data
 
+    console.log({ contractId })
+
     try {
         const result: ResContract[] = await prismaClient.$queryRaw`
             SELECT c.*,
