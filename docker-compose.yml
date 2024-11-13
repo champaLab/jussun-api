@@ -1,14 +1,27 @@
 services:
-    app:
-        build: .
-        container_name: jutsun-api
+    mysql:
+        image: mysql:latest
+        container_name: mysql-db
         ports:
-            - '1101:1101'
+            - '3306:3306'
         environment:
-            - PRISMA_DB_CONN=${PRISMA_DB_CONN}
+            MYSQL_ROOT_PASSWORD: jutsun_dev
+            MYSQL_DATABASE: jutsun_dev
+            MYSQL_USER: jutsun
+            MYSQL_PASSWORD: 'jutsun^1122'
         volumes:
-            # - .:/app
-            - ./uploads:/app/uploads
-            - ./logs:/app/logs
+            - mysql_data:/var/lib/mysql
 
-        restart: always
+    phpmyadmin:
+        image: phpmyadmin/phpmyadmin:latest
+        container_name: phpmyadmin
+        ports:
+            - '8080:80'
+        environment:
+            PMA_HOST: mysql
+            MYSQL_ROOT_PASSWORD: jutsun_dev
+        depends_on:
+            - mysql
+
+volumes:
+    mysql_data:
