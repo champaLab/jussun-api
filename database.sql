@@ -1,188 +1,222 @@
-CREATE TABLE company (
-    companyId INT PRIMARY KEY AUTO_INCREMENT,
-    companyName VARCHAR(255) UNIQUE,
-    logoPath VARCHAR(255) NOT NULL,
-    financeTel VARCHAR(10) NOT NULL,
-    fax VARCHAR(20),
-    tel VARCHAR(8) NOT NULL,
-    email VARCHAR(60),
-    whatsapp VARCHAR(8),
-    address VARCHAR(100) NOT NULL,
-    createdBy INT NOT NULL,
-    updatedBy INT,
-    companyStatus BOOLEAN DEFAULT TRUE,
-    createdAt DATETIME(0) DEFAULT CURRENT_TIMESTAMP,
-    updatedAt DATETIME(0) UNIQUE,
-    deletedAt DATETIME(0),
-    deletedBy INT
+create table company
+(
+    companyId     int auto_increment
+        primary key,
+    companyName   varchar(255)                         null,
+    logoPath      varchar(255)                         not null,
+    financeTel    varchar(10)                          not null,
+    fax           varchar(20)                          null,
+    tel           varchar(8)                           not null,
+    email         varchar(60)                          null,
+    whatsapp      varchar(8)                           null,
+    address       varchar(100)                         not null,
+    createdBy     int                                  not null,
+    updatedBy     int                                  null,
+    companyStatus tinyint(1) default 1                 null,
+    createdAt     datetime   default CURRENT_TIMESTAMP null,
+    updatedAt     datetime                             null,
+    deletedAt     datetime                             null,
+    deletedBy     int                                  null,
+    constraint companyName
+        unique (companyName),
+    constraint updatedAt
+        unique (updatedAt)
 );
 
-CREATE TABLE contracts (
-    contractId INT PRIMARY KEY AUTO_INCREMENT,
-    companyId INT NOT NULL,
-    docId VARCHAR(15) NOT NULL,
-    createdBy INT NOT NULL,
-    updatedBy INT,
-    projectId INT NOT NULL,
-    price FLOAT NOT NULL,
-    totalPrice FLOAT NOT NULL,
-    currency VARCHAR(10) DEFAULT 'LAK',
-    contractStatus VARCHAR(20) DEFAULT 'ACTIVE',
-    area FLOAT NOT NULL,
-    numberOfInstallment INT DEFAULT 1,
-    payDay DATE NOT NULL,
-    modeOfPayment VARCHAR(20) DEFAULT 'monthly',
-    payInAdvance FLOAT DEFAULT 0,
-    customerIdOne INT NOT NULL,
-    customerIdTwo INT,
-    createdAt DATETIME(0) DEFAULT CURRENT_TIMESTAMP,
-    updatedAt DATETIME(0) DEFAULT CURRENT_TIMESTAMP,
-    cancelAt DATETIME(0),
-    cancelBy INT,
-    reason VARCHAR(255),
-    lastInvoice INT,
-    deletedAt DATETIME(0),
-    deletedBy INT
+create table contracts
+(
+    contractId          int auto_increment
+        primary key,
+    companyId           int                                   not null,
+    docId               varchar(15)                           not null,
+    createdBy           int                                   not null,
+    updatedBy           int                                   null,
+    projectId           int                                   not null,
+    price               float                                 not null,
+    totalPrice          float                                 not null,
+    currency            varchar(10) default 'LAK'             null,
+    contractStatus      varchar(20) default 'ACTIVE'          null,
+    area                float                                 not null,
+    numberOfInstallment int         default 1                 null,
+    payDay              date                                  not null,
+    modeOfPayment       varchar(20) default 'monthly'         null,
+    payInAdvance        float       default 0                 null,
+    customerIdOne       int                                   not null,
+    customerIdTwo       int                                   null,
+    createdAt           datetime    default CURRENT_TIMESTAMP null,
+    updatedAt           datetime    default CURRENT_TIMESTAMP null,
+    cancelAt            datetime                              null,
+    cancelBy            int                                   null,
+    reason              varchar(255)                          null,
+    lastInvoice         int                                   null,
+    deletedAt           datetime                              null,
+    deletedBy           int                                   null
 );
 
-CREATE TABLE exchange (
-    exchangeId INT PRIMARY KEY AUTO_INCREMENT,
-    companyId INT NOT NULL,
-    thb FLOAT NOT NULL,
-    usd FLOAT NOT NULL,
-    createdBy INT NOT NULL,
-    updatedBy INT,
-    createdAt DATETIME(0) DEFAULT CURRENT_TIMESTAMP,
-    updatedAt DATETIME(0) DEFAULT CURRENT_TIMESTAMP,
-    deletedAt DATETIME(0),
-    deletedBy INT
+create table exchange
+(
+    exchangeId int auto_increment
+        primary key,
+    companyId  int                                not null,
+    thb        float                              not null,
+    usd        float                              not null,
+    createdBy  int                                not null,
+    updatedBy  int                                null,
+    createdAt  datetime default CURRENT_TIMESTAMP null,
+    updatedAt  datetime default CURRENT_TIMESTAMP null,
+    deletedAt  datetime                           null,
+    deletedBy  int                                null
 );
 
-CREATE TABLE invoice (
-    invoiceId INT PRIMARY KEY AUTO_INCREMENT,
-    fines FLOAT DEFAULT 0,
-    amount FLOAT NOT NULL,
-    debt FLOAT DEFAULT 0,
-    contractId INT NOT NULL,
-    currency VARCHAR(30) NOT NULL,
-    comment VARCHAR(255),
-    monthly VARCHAR(10),
-    paymentMethod VARCHAR(50),
-    exchangeRate FLOAT,
-    currencyExchange VARCHAR(5),
-    invoiceStatus VARCHAR(20) DEFAULT 'PENDING',
-    billPath VARCHAR(255),
-    paidDate DATETIME(0),
-    createdBy INT,
-    createdAt DATETIME(0) DEFAULT CURRENT_TIMESTAMP,
-    updatedAt DATETIME(0) DEFAULT CURRENT_TIMESTAMP,
-    reservedBy INT,
-    reservedAt DATETIME(0),
-    remindSentTime INT DEFAULT 0,
-    remindSentDate DATETIME(0)
+create table invoice
+(
+    invoiceId           int auto_increment
+        primary key,
+    fines               float       default 0                 null,
+    amount              float                                 not null,
+    debt                float       default 0                 null,
+    contractId          int                                   not null,
+    currency            varchar(30)                           not null,
+    numberOfInstallment int         default 0                 not null,
+    comment             varchar(255)                          null,
+    monthly             varchar(10)                           null,
+    paymentMethod       varchar(50)                           null,
+    exchangeRate        float                                 null,
+    currencyExchange    varchar(5)                            null,
+    invoiceStatus       varchar(20) default 'PENDING'         null,
+    billPath            varchar(255)                          null,
+    paidDate            datetime                              null,
+    createdBy           int                                   null,
+    createdAt           datetime    default CURRENT_TIMESTAMP null,
+    updatedAt           datetime    default CURRENT_TIMESTAMP null,
+    reservedBy          int                                   null,
+    reservedAt          datetime                              null,
+    remindSentTime      int         default 0                 null,
+    remindSentDate      datetime                              null
 );
 
-CREATE TABLE logs (
-    logId INT PRIMARY KEY AUTO_INCREMENT,
-    description VARCHAR(200),
-    path VARCHAR(100) NOT NULL,
-    body TEXT,
-    userId INT NOT NULL,
-    companyId INT,
-    ip VARCHAR(100),
-    createdAt TIMESTAMP(0) DEFAULT CURRENT_TIMESTAMP,
-    deletedAt DATETIME(0)
+create table logs
+(
+    logId       int auto_increment
+        primary key,
+    description varchar(200)                        null,
+    path        varchar(100)                        not null,
+    body        text                                null,
+    userId      int                                 not null,
+    companyId   int                                 null,
+    ip          varchar(100)                        null,
+    createdAt   timestamp default CURRENT_TIMESTAMP null,
+    deletedAt   datetime                            null
 );
 
-CREATE TABLE news (
-    nId INT PRIMARY KEY AUTO_INCREMENT,
-    content LONGTEXT NOT NULL,
-    tel TEXT,
-    imagePath VARCHAR(200),
-    ip VARCHAR(50),
-    userId INT NOT NULL,
-    sentType VARCHAR(200) NOT NULL,
-    sentStatus VARCHAR(10) DEFAULT 'PENDING',
-    dateForSent DATETIME(0),
-    multi VARCHAR(5) DEFAULT 'YES',
-    sentDate DATETIME(0),
-    createdAt DATETIME(0) DEFAULT CURRENT_TIMESTAMP,
-    deletedAt DATETIME(0),
-    deletedBy INT
+create table news
+(
+    nId         int auto_increment
+        primary key,
+    content     longtext                              not null,
+    tel         text                                  null,
+    imagePath   varchar(200)                          null,
+    ip          varchar(50)                           null,
+    userId      int                                   not null,
+    sentType    varchar(200)                          not null,
+    sentStatus  varchar(10) default 'PENDING'         null,
+    dateForSent datetime                              null,
+    multi       varchar(5)  default 'YES'             null,
+    sentDate    datetime                              null,
+    createdAt   datetime    default CURRENT_TIMESTAMP null,
+    deletedAt   datetime                              null,
+    deletedBy   int                                   null
 );
 
-CREATE TABLE otp (
-    otpId INT PRIMARY KEY AUTO_INCREMENT,
-    tel VARCHAR(10) NOT NULL,
-    code VARCHAR(10) NOT NULL,
-    confirm VARCHAR(5) DEFAULT 'NO',
-    status VARCHAR(10) DEFAULT 'PENDING',
-    sentDate DATETIME(0),
-    retry INT DEFAULT 0,
-    createdAt DATETIME(0) DEFAULT CURRENT_TIMESTAMP
+create table otp
+(
+    otpId     int auto_increment
+        primary key,
+    tel       varchar(10)                           not null,
+    code      varchar(10)                           not null,
+    confirm   varchar(5)  default 'NO'              null,
+    status    varchar(10) default 'PENDING'         null,
+    sentDate  datetime                              null,
+    retry     int         default 0                 null,
+    createdAt datetime    default CURRENT_TIMESTAMP null
 );
 
-CREATE TABLE projects (
-    projectId INT PRIMARY KEY AUTO_INCREMENT,
-    companyId INT NOT NULL,
-    area FLOAT NOT NULL,
-    code VARCHAR(50) UNIQUE,
-    projectName VARCHAR(200) NOT NULL,
-    address VARCHAR(100),
-    createdBy INT NOT NULL,
-    updatedBy INT,
-    createdAt DATETIME(0) DEFAULT CURRENT_TIMESTAMP,
-    updatedAt DATETIME(0) DEFAULT CURRENT_TIMESTAMP,
-    deletedAt DATETIME(0),
-    deletedBy INT
+create table payment_method
+(
+    id            int auto_increment
+        primary key,
+    companyId     int          not null,
+    accountName   varchar(100) not null,
+    accountNumber varchar(100) not null,
+    qrPath        varchar(255) null,
+    deletedAt     datetime     null,
+    deletedBy     int          null
 );
 
-CREATE TABLE transaction (
-    transactionId INT PRIMARY KEY AUTO_INCREMENT,
-    ip VARCHAR(200) NOT NULL,
-    amount FLOAT NOT NULL,
-    remark VARCHAR(255),
-    currency VARCHAR(5) NOT NULL,
-    pamentMethod VARCHAR(50) NOT NULL,
-    transactionUUID VARCHAR(50),
-    contractId INT NOT NULL,
-    currencyLAK FLOAT NOT NULL,
-    currencyTHB FLOAT NOT NULL,
-    currencyUSD FLOAT NOT NULL,
-    createdBy INT,
-    updatedBy INT,
-    createdAt DATETIME(0) DEFAULT CURRENT_TIMESTAMP,
-    updatedAt DATETIME(0) DEFAULT CURRENT_TIMESTAMP,
-    deletedAt DATETIME(0)
+create table projects
+(
+    projectId   int auto_increment
+        primary key,
+    companyId   int                                not null,
+    area        float                              not null,
+    code        varchar(50)                        null,
+    projectName varchar(200)                       not null,
+    address     varchar(100)                       null,
+    createdBy   int                                not null,
+    updatedBy   int                                null,
+    createdAt   datetime default CURRENT_TIMESTAMP null,
+    updatedAt   datetime default CURRENT_TIMESTAMP null,
+    deletedAt   datetime                           null,
+    deletedBy   int                                null,
+    constraint code
+        unique (code)
 );
 
-CREATE TABLE users (
-    userId INT PRIMARY KEY AUTO_INCREMENT,
-    companyId INT,
-    fullName VARCHAR(80) NOT NULL,
-    lastName VARCHAR(80) NOT NULL,
-    tel VARCHAR(8) UNIQUE NOT NULL,
-    password VARCHAR(255) NOT NULL,
-    role VARCHAR(10) DEFAULT 'CUSTOMER',
-    userStatus BOOLEAN DEFAULT TRUE,
-    createdAt DATETIME(0) DEFAULT CURRENT_TIMESTAMP,
-    updatedAt DATETIME(0) DEFAULT CURRENT_TIMESTAMP
+create table stores
+(
+    id           int auto_increment
+        primary key,
+    name         varchar(255)                       null,
+    opening_time datetime default CURRENT_TIMESTAMP null,
+    closing_time datetime default CURRENT_TIMESTAMP null,
+    closing_id   varchar(100)                       null
 );
 
-CREATE TABLE payment_method (
-    id INT PRIMARY KEY AUTO_INCREMENT,
-    companyId INT NOT NULL,
-    accountName VARCHAR(100) NOT NULL,
-    accountNumber VARCHAR(100) NOT NULL,
-    qrPath VARCHAR(255),
-    deletedAt DATETIME(0),
-    deletedBy INT
+create table transaction
+(
+    transactionId   int auto_increment
+        primary key,
+    ip              varchar(200)                       not null,
+    amount          float                              not null,
+    remark          varchar(255)                       null,
+    currency        varchar(5)                         not null,
+    pamentMethod    varchar(50)                        not null,
+    transactionUUID varchar(50)                        null,
+    contractId      int                                not null,
+    currencyLAK     float                              not null,
+    currencyTHB     float                              not null,
+    currencyUSD     float                              not null,
+    createdBy       int                                null,
+    updatedBy       int                                null,
+    createdAt       datetime default CURRENT_TIMESTAMP null,
+    updatedAt       datetime default CURRENT_TIMESTAMP null,
+    deletedAt       datetime                           null
 );
 
-CREATE TABLE stores (
-    id INT PRIMARY KEY AUTO_INCREMENT,
-    name VARCHAR(255),
-    opening_time DATETIME(0) DEFAULT CURRENT_TIMESTAMP,
-    closing_time DATETIME(0) DEFAULT CURRENT_TIMESTAMP,
-    closing_id VARCHAR(100)
+create table users
+(
+    userId     int auto_increment
+        primary key,
+    companyId  int                                   null,
+    fullName   varchar(80)                           not null,
+    lastName   varchar(80)                           not null,
+    tel        varchar(8)                            not null,
+    password   varchar(255)                          not null,
+    role       varchar(10) default 'CUSTOMER'        null,
+    userStatus tinyint(1)  default 1                 null,
+    createdAt  datetime    default CURRENT_TIMESTAMP null,
+    updatedAt  datetime    default CURRENT_TIMESTAMP null,
+    constraint tel
+        unique (tel)
 );
+
