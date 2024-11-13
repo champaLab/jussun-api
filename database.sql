@@ -220,3 +220,8 @@ create table users
         unique (tel)
 );
 
+
+-- -----------------------
+INSERT INTO company (companyId, companyName, logoPath, financeTel, fax, tel, email, whatsapp, address, createdBy, updatedBy, companyStatus, createdAt, updatedAt, deletedAt, deletedBy) VALUES (1, 'Champa LAB', '/company/20241113file8juvI55nVjsmOwbm5wwGhdsix.png', '91116465', '91116465', '91116465', 'sonephetmnlv@gmail.com', null, 'Bankok', 1, 1, 1, '2024-11-13 03:19:34', null, null, null);
+INSERT INTO users (userId, companyId, fullName, lastName, tel, password, role, userStatus, createdAt, updatedAt) VALUES (1, 1, 'Champa ', 'LAB', '91116465', '794b2bedd9fd5e5711d05aa991aededb:6d06748388bce01122cf4bd7fcd2cda2', 'ADMIN', 1, '2024-11-13 03:18:21', '2024-11-13 03:18:21');
+
