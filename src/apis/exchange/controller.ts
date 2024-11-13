@@ -1,3 +1,4 @@
+import { historyService } from './../../utils/createLog'
 import { Request, Response } from 'express'
 import { createExchangeService, readExchangeService, updateExchangeService } from './service'
 import { tokenPayloadService } from '../user/service'
@@ -7,8 +8,8 @@ import dayjs from 'dayjs'
 export const readExchangeController = async (req: Request, res: Response) => {
     const payload = tokenPayloadService(req)
     const companyId = Number(payload.companyId)
-    const dateStart = dayjs(req.body.dateStart).format('YYYY-MM-DD')
-    const dateEnd = dayjs(req.body.dateEnd).format('YYYY-MM-DD') + ' 23:59:59'
+    const dateStart = req.body.dateStart && dayjs(req.body.dateStart).format('YYYY-MM-DD')
+    const dateEnd = req.body.dateEnd && dayjs(req.body.dateEnd).format('YYYY-MM-DD') + ' 23:59:59'
     const page = Number(req.body.page ?? 0)
 
     const exc = await readExchangeService({
@@ -43,7 +44,7 @@ export const createExchangeController = async (req: Request, res: Response) => {
     const updatedBy = payload.userId
     const thb = parseFloat(req.body.thb)
     const usd = parseFloat(req.body.usd)
-
+    const description = 'ເພີ່ມອັດຕາແລກປ່ຽນ'
     const create = await createExchangeService({
         companyId,
         createdAt,
@@ -53,8 +54,11 @@ export const createExchangeController = async (req: Request, res: Response) => {
         thb,
         updatedAt,
         updatedBy,
-        usd
+        usd,
+        deletedBy: null
     })
+
+    console.log({ createdAt })
 
     if (!create) {
         return res.json({
@@ -62,6 +66,7 @@ export const createExchangeController = async (req: Request, res: Response) => {
             message: 'ການສ້າງ ອັດຕາແລກປ່ຽນ ຜິດພາດ ລອງໃໝ່ໃນພາຍຫຼັງ'
         })
     }
+    await historyService({ req, description })
     return res.json({
         status: 'success',
         message: 'ບັນທຶກ ຂໍ້ມູນສຳເລັດ'
@@ -80,6 +85,7 @@ export const updateExchangeController = async (req: Request, res: Response) => {
     const updatedBy = payload.userId
     const thb = parseFloat(req.body.thb)
     const usd = parseFloat(req.body.usd)
+    const description = 'ແກ້ໄຂອັດຕາເເລກປ່ຽນ'
 
     const update = await updateExchangeService({
         companyId,
@@ -90,7 +96,8 @@ export const updateExchangeController = async (req: Request, res: Response) => {
         thb,
         updatedAt,
         updatedBy,
-        usd
+        usd,
+        deletedBy: null
     })
     if (!update) {
         return res.json({
@@ -98,6 +105,7 @@ export const updateExchangeController = async (req: Request, res: Response) => {
             message: 'ອັບເດດ ອັດຕາແລກປ່ຽນ ຜິດພາດ ກະລຸນາ ລອງໃໝ່ໃນພາຍຫຼັງ'
         })
     }
+    await historyService({ req, description })
     return res.json({
         status: 'success',
         message: 'ອັບເດດ ຂໍ້ມູນສຳເລັດ'
