@@ -9,38 +9,36 @@ datasource db {
 }
 
 model company {
-  companyId     Int       @id @default(autoincrement())
-  companyName   String?   @unique(map: "companyName") @db.VarChar(255)
-  logoPath      String    @db.VarChar(255)
-  financeTel    String    @db.VarChar(10)
-  fax           String?   @db.VarChar(20)
-  tel           String    @db.VarChar(8)
-  email         String?   @db.VarChar(60)
-  whatsapp      String?   @db.VarChar(8)
-  address       String    @db.VarChar(100)
-  createdBy     Int
-  updatedBy     Int?
-  companyStatus Boolean?  @default(true)
-  createdAt     DateTime? @default(now()) @db.DateTime(0)
-  updatedAt     DateTime? @unique(map: "updatedAt") @db.DateTime(0)
-  deletedAt     DateTime? @db.DateTime(0)
-  deletedBy     Int?
+  companyId          Int       @id @default(autoincrement())
+  companyName        String?   @unique(map: "companyName") @db.VarChar(255)
+  logoPath           String?   @db.VarChar(255)
+  fax                String?   @db.VarChar(20)
+  tel                String?   @db.VarChar(8)
+  email              String?   @db.VarChar(60)
+  whatsapp           String?   @db.VarChar(8)
+  address            String?   @db.VarChar(100)
+  abbreviatedLetters String?   @db.VarChar(20)
+  createdBy          Int
+  updatedBy          Int?
+  companyStatus      Boolean?  @default(true)
+  createdAt          DateTime? @default(now()) @db.DateTime(0)
+  updatedAt          DateTime? @unique(map: "updatedAt") @db.DateTime(0)
 }
 
 model contracts {
   contractId          Int       @id @default(autoincrement())
   companyId           Int
-  docId               String    @db.VarChar(15)
+  docId               String?   @db.VarChar(15)
   createdBy           Int
   updatedBy           Int?
   projectId           Int
-  price               Float     @db.Float
-  totalPrice          Float     @db.Float
+  price               Float?    @db.Float
+  totalPrice          Float?    @db.Float
   currency            String?   @default("LAK") @db.VarChar(10)
   contractStatus      String?   @default("ACTIVE") @db.VarChar(20)
-  area                Float     @db.Float
+  area                Float?    @db.Float
   numberOfInstallment Int?      @default(1)
-  payDay              DateTime  @db.Date
+  payDay              Int
   modeOfPayment       String?   @default("monthly") @db.VarChar(20)
   payInAdvance        Float?    @default(0) @db.Float
   customerIdOne       Int
@@ -51,21 +49,18 @@ model contracts {
   cancelBy            Int?
   reason              String?   @db.VarChar(255)
   lastInvoice         Int?
-  deletedAt           DateTime? @db.DateTime(0)
-  deletedBy           Int?
 }
 
 model exchange {
   exchangeId Int       @id @default(autoincrement())
   companyId  Int
-  thb        Float     @db.Float
-  usd        Float     @db.Float
+  thb        Float?    @db.Float
+  usd        Float?    @db.Float
   createdBy  Int
   updatedBy  Int?
   createdAt  DateTime? @default(now()) @db.DateTime(0)
   updatedAt  DateTime? @default(now()) @db.DateTime(0)
   deletedAt  DateTime? @db.DateTime(0)
-  deletedBy  Int?
 }
 
 model invoice {
@@ -75,99 +70,31 @@ model invoice {
   debt             Float?    @default(0) @db.Float
   contractId       Int
   currency         String    @db.VarChar(30)
-  comment          String?   @db.VarChar(255)
-  monthly          String?   @db.VarChar(10)
   paymentMethod    String?   @db.VarChar(50)
   exchangeRate     Float?    @db.Float
   currencyExchange String?   @db.VarChar(5)
   invoiceStatus    String?   @default("PENDING") @db.VarChar(20)
-  billPath         String?   @db.VarChar(255)
   paidDate         DateTime? @db.DateTime(0)
   createdBy        Int?
   createdAt        DateTime? @default(now()) @db.DateTime(0)
   updatedAt        DateTime? @default(now()) @db.DateTime(0)
-  reservedBy       Int?
-  reservedAt       DateTime? @db.DateTime(0)
-  remindSentTime   Int?      @default(0)
-  remindSentDate   DateTime? @db.DateTime(0)
-}
-
-model logs {
-  logId       Int       @id @default(autoincrement())
-  description String?   @db.VarChar(200)
-  path        String    @db.VarChar(100)
-  body        String?   @db.Text
-  userId      Int
-  companyId   Int?
-  ip          String?   @db.VarChar(100)
-  createdAt   DateTime? @default(now()) @db.Timestamp(0)
-  deletedAt   DateTime? @db.DateTime(0)
-}
-
-model news {
-  nId         Int       @id @default(autoincrement())
-  content     String    @db.LongText
-  tel         String?   @db.Text
-  imagePath   String?   @db.VarChar(200)
-  ip          String?   @db.VarChar(50)
-  userId      Int
-  sentType    String    @db.VarChar(200)
-  sentStatus  String?   @default("PENDING") @db.VarChar(10)
-  dateForSent DateTime? @db.DateTime(0)
-  multi       String?   @default("YES") @db.VarChar(5)
-  sentDate    DateTime? @db.DateTime(0)
-  createdAt   DateTime? @default(now()) @db.DateTime(0)
-  deletedAt   DateTime? @db.DateTime(0)
-  deletedBy   Int?
-}
-
-model otp {
-  otpId     Int       @id @default(autoincrement())
-  tel       String    @db.VarChar(10)
-  code      String    @db.VarChar(10)
-  confirm   String?   @default("NO") @db.VarChar(5)
-  status    String?   @default("PENDING") @db.VarChar(10)
-  sentDate  DateTime? @db.DateTime(0)
-  retry     Int?      @default(0)
-  createdAt DateTime? @default(now()) @db.DateTime(0)
-}
-
-model payment_method {
-  id            Int       @id @default(autoincrement())
-  companyId     Int
-  accountName   String    @db.VarChar(100)
-  accountNumber String    @db.VarChar(100)
-  qrPath        String?   @db.VarChar(255)
-  deletedAt     DateTime? @db.DateTime(0)
-  deletedBy     Int?
 }
 
 model projects {
   projectId   Int       @id @default(autoincrement())
   companyId   Int
   area        Float     @db.Float
-  code        String?   @unique(map: "code") @db.VarChar(50)
-  projectName String    @db.VarChar(200)
+  projectName String?   @db.VarChar(200)
   address     String?   @db.VarChar(100)
   createdBy   Int
   updatedBy   Int?
   createdAt   DateTime? @default(now()) @db.DateTime(0)
   updatedAt   DateTime? @default(now()) @db.DateTime(0)
-  deletedAt   DateTime? @db.DateTime(0)
-  deletedBy   Int?
-}
-
-model stores {
-  id           Int       @id @default(autoincrement())
-  name         String?   @db.VarChar(255)
-  opening_time DateTime? @default(now()) @db.DateTime(0)
-  closing_time DateTime? @default(now()) @db.DateTime(0)
-  closing_id   String?   @db.VarChar(100)
 }
 
 model transaction {
   transactionId   Int       @id @default(autoincrement())
-  ip              String    @db.VarChar(200)
+  ip              String?   @db.VarChar(200)
   amount          Float     @db.Float
   remark          String?   @db.VarChar(255)
   currency        String    @db.VarChar(5)
