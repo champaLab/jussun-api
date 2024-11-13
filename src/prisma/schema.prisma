@@ -9,13 +9,13 @@ datasource db {
 
 model company {
   companyId          Int       @id @default(autoincrement())
-  companyName        String    @unique(map: "companyName") @db.VarChar(255)
-  logoPath           String    @db.VarChar(255)
+  companyName        String?   @unique(map: "companyName") @db.VarChar(255)
+  logoPath           String?   @db.VarChar(255)
   fax                String?   @db.VarChar(20)
-  tel                String    @db.VarChar(8)
+  tel                String?   @db.VarChar(8)
   email              String?   @db.VarChar(60)
   whatsapp           String?   @db.VarChar(8)
-  address            String    @db.VarChar(100)
+  address            String?   @db.VarChar(100)
   abbreviatedLetters String?   @db.VarChar(20)
   createdBy          Int
   updatedBy          Int?
@@ -28,15 +28,15 @@ model company {
 model contracts {
   contractId          Int       @id @default(autoincrement())
   companyId           Int
-  docId               String    @db.VarChar(15)
+  docId               String?   @db.VarChar(15)
   createdBy           Int
   updatedBy           Int?
   projectId           Int
-  price               Float     @db.Float
-  totalPrice          Float     @db.Float
+  price               Float?    @db.Float
+  totalPrice          Float?    @db.Float
   currency            String?   @default("LAK") @db.VarChar(10)
   contractStatus      String?   @default("ACTIVE") @db.VarChar(20)
-  area                Float     @db.Float
+  area                Float?    @db.Float
   numberOfInstallment Int?      @default(1)
   payDay              Int
   modeOfPayment       String?   @default("monthly") @db.VarChar(20)
@@ -54,8 +54,8 @@ model contracts {
 model exchange {
   exchangeId Int       @id @default(autoincrement())
   companyId  Int
-  thb        Float     @db.Float
-  usd        Float     @db.Float
+  thb        Float?    @db.Float
+  usd        Float?    @db.Float
   createdBy  Int
   updatedBy  Int?
   createdAt  DateTime? @default(now()) @db.DateTime(0)
@@ -85,7 +85,7 @@ model projects {
   projectId   Int       @id @default(autoincrement())
   companyId   Int
   area        Float     @db.Float
-  projectName String    @db.VarChar(200)
+  projectName String?   @db.VarChar(200)
   address     String?   @db.VarChar(100)
   createdBy   Int
   updatedBy   Int?
@@ -96,7 +96,7 @@ model projects {
 /// This model or at least one of its fields has comments in the database, and requires an additional setup for migrations: Read more: https://pris.ly/d/database-comments
 model transaction {
   transactionId   Int       @id @default(autoincrement())
-  ip              String    @db.VarChar(200)
+  ip              String?   @db.VarChar(200)
   amount          Float     @db.Float
   remark          String?   @db.VarChar(255)
   currency        String    @db.VarChar(5)
@@ -121,8 +121,8 @@ model users {
   lastName   String    @db.VarChar(80)
   tel        String    @unique(map: "tel") @db.VarChar(8)
   password   String    @db.VarChar(255)
-  role       String    @default("CUSTOMER") @db.VarChar(10)
-  userStatus Boolean   @default(true)
+  role       String?   @default("CUSTOMER") @db.VarChar(10)
+  userStatus Boolean?  @default(true)
   createdAt  DateTime? @default(now()) @db.DateTime(0)
   updatedAt  DateTime? @default(now()) @db.DateTime(0)
 }

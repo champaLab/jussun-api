@@ -1,5 +1,5 @@
 export interface TUserPayloadModel {
-     userId: number
+    userId: number
     tel: string
     role: string
     fullName: string
