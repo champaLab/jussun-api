@@ -7,7 +7,7 @@
     "scripts": {
         "dev": "nodemon --delay 800ms src/index.ts",
         "start": "ts-node src/index.ts",
-        "serve": "pm2-runtime ./dist/index.js --name jutsun-api",
+        "serve": "pm2-runtime ./dist/index.js",
         "prod": "yarn git:pull && rm -rf .env && cp -rp .env.prod .env && yarn && yarn db && yarn build && pm2 restart jutsun-api && pm2 save && pm2 logs && git add . && git commit -m 'pull'",
         "git:pull": "git fetch --all && git merge --no-edit origin/master",
         "git:reset": "git reset --hard origin/master",
