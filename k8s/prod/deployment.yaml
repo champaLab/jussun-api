@@ -65,6 +65,9 @@ spec:
             - name: vol-jussun-prod
               mountPath: /app/logs
               subPath: vol-jussun-prod/logs
+            - name: vol-jussun-prod
+              mountPath: /app/uploads
+              subPath: vol-jussun-prod/uploads
       volumes:
         - name: localtime
           hostPath:
