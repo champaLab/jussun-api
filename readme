@@ -36,3 +36,7 @@ sudo systemctl enable nodejs2
 sudo systemctl start nodejs3
 sudo systemctl enable nodejs3
 
+
+database 
+user: admin
+pass : Admin@8899
