@@ -17,10 +17,8 @@ import {
     verifyCodeService
 } from './service'
 import { findOneCompanyService } from '../company/service'
-import { company } from '../../prisma/prisma-client'
+import { company } from '../../prisma-client'
 import { dateFormatter } from '../../utils/dateFormat'
-import { responseData } from '../../utils/functions'
-import { count } from 'console'
 import { historyService } from '../../utils/createLog'
 
 export const findUserForResetController = async (req: Request, res: Response) => {
