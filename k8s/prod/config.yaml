@@ -4,7 +4,7 @@ metadata:
   name: jussun-api-config
   namespace: production
 data:
-  NODE_ENV: "development"
+  NODE_ENV: "production"
   NODE_HOST: "0.0.0.0"
   NODE_PORT: "1133"
   BASE_PATH: "/jutsun-api"
