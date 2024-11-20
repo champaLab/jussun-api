@@ -3,7 +3,7 @@ import logger from '../../configs/winston'
 import env from '../../env'
 import prismaClient from '../../prisma'
 import { TResponseModel } from './type'
-import { news, Prisma, PrismaClient } from '../../prisma-client'
+import { news, Prisma, PrismaClient } from '../../../prisma-client'
 import { dateDir, today } from '../../utils/dateFormat'
 import { table } from 'console'
 

@@ -1,4 +1,4 @@
-import { company } from '../../prisma-client'
+import { company } from '../../../prisma-client'
 import logger from '../../configs/winston'
 import prismaClient from '../../prisma'
 import { paginate } from '../../utils/functions'

@@ -1,4 +1,4 @@
-import { company, payment_method } from '../../prisma-client'
+import { company, payment_method } from '../../../prisma-client'
 import logger from '../../configs/winston'
 import prismaClient from '../../prisma'
 import { paginate } from '../../utils/functions'
