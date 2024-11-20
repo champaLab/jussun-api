@@ -1,4 +1,4 @@
-import { projects } from '@prisma/client'
+import { projects } from '../../prisma/prisma-client'
 import logger from '../../configs/winston'
 import prismaClient from '../../prisma'
 import dayjs from 'dayjs'

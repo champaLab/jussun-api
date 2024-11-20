@@ -1,4 +1,4 @@
-import { invoice } from '@prisma/client'
+import { invoice } from '../../prisma/prisma-client'
 
 export interface TUserPayloadModel {
     userId: number

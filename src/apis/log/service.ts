@@ -1,4 +1,4 @@
-import { Prisma } from '@prisma/client'
+import { Prisma } from '../../prisma/prisma-client'
 import logger from '../../configs/winston'
 import prismaClient from '../../prisma'
 import env from '../../env'

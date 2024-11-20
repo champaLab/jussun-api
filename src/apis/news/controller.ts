@@ -1,4 +1,4 @@
-import { news } from '@prisma/client'
+import { news } from '../../prisma/prisma-client'
 import { tokenPayloadService } from '../user/service'
 import { Request, Response } from 'express'
 import { createNewsService, deleteNewsService, getNewsService, updateNewsService } from './service'

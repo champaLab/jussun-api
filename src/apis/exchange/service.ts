@@ -1,4 +1,4 @@
-import { exchange } from '@prisma/client'
+import { exchange } from '../../prisma/prisma-client'
 import logger from '../../configs/winston'
 import prismaClient from '../../prisma'
 import env from '../../env'
@@ -8,7 +8,7 @@ export const readExchangeService = async (data: { companyId: number; dateStart: 
     const skip = (data.page - 1) * env.ROW_PER_PAGE
     const take = env.ROW_PER_PAGE
     const { companyId, dateStart, dateEnd } = data
-    console.log("@@@",data)
+    console.log('@@@', data)
     try {
         if (dateStart && dateEnd) {
             const totalPage: any[] = await prismaClient.$queryRaw`
