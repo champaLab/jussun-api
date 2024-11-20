@@ -2,7 +2,7 @@ kind: ConfigMap
 apiVersion: v1
 metadata:
   name: jussun-api-config
-  namespace: jussun-api
+  namespace: prod
 data:
   NODE_ENV: "development"
   NODE_HOST: "0.0.0.0"
