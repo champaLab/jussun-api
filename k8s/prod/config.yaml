@@ -1,0 +1,23 @@
+kind: ConfigMap
+apiVersion: v1
+metadata:
+  name: jussun-api-config
+  namespace: jussun-api
+data:
+  NODE_ENV: "development"
+  NODE_HOST: "0.0.0.0"
+  NODE_PORT: "1133"
+  BASE_PATH: "/jutsun-api"
+  TZ: "Asia/Bangkok"
+  SERVICE_NAME: "jutsun-api"
+  CRONTAB_SEND_REPORT_BY_SHOP: "false"
+  CRONTAB_SEND_REPORT_BY_SHOP_TIME: "'0 1 * * *'"
+  HOST_IMAGE: "http://0.0.0.0:1133"
+  DISCORD_WEBHOOK_IMAGE: "https://message.style/api/send-message/webhook"
+  DISCORD_WEBHOOK_TEXT: "https://discord.com/api/webhooks"
+  DISCORD_MONITORING_CHANNEL_HOOK: "1206874225995026482/drDlbhdhFtKch61Cfh1vthUutQXQzLfjjS2mL6jB2xvL319ibZ5cnELgY6gtyoHfBnnJ"
+  PUPPETEER_EXECUTABLE_PATH: "/usr/bin/chromium"
+  API_BOT_URL: "https://jussun.com/jutsun-bot-api/v1"
+  ROW_PER_PAGE: "25"
+  CONTACT_NUMBER: "'020 9111 6465'"
+  FOLDER_UPLOADS: "'/uploads'"
