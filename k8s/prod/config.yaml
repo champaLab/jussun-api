@@ -12,7 +12,7 @@ data:
   SERVICE_NAME: "jutsun-api"
   CRONTAB_SEND_REPORT_BY_SHOP: "false"
   CRONTAB_SEND_REPORT_BY_SHOP_TIME: "'0 1 * * *'"
-  HOST_IMAGE: "http://0.0.0.0:1133"
+  HOST_IMAGE: "https://jussun.com/jutsun-api"
   DISCORD_WEBHOOK_IMAGE: "https://message.style/api/send-message/webhook"
   DISCORD_WEBHOOK_TEXT: "https://discord.com/api/webhooks"
   DISCORD_MONITORING_CHANNEL_HOOK: "1206874225995026482/drDlbhdhFtKch61Cfh1vthUutQXQzLfjjS2mL6jB2xvL319ibZ5cnELgY6gtyoHfBnnJ"
