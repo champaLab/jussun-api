@@ -1,6 +1,6 @@
 import logger from '../../configs/winston'
 import prismaClient from '../../prisma'
-import { company, Prisma, users } from '../../../prisma-client'
+import { company, Prisma, users } from '@prisma/client'
 import { TResponseUserModel, TUserCreateModel, TUserPayloadModel } from './type'
 import { Request } from 'express'
 import env from '../../env'
