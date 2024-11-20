@@ -62,15 +62,15 @@ spec:
           volumeMounts:
             - name: localtime
               mountPath: /etc/localtime
-            - name: vol-jussun-prod
-              mountPath: /app/logs
-              subPath: vol-jussun-prod/logs
+            # - name: vol-jussun-prod
+            #   mountPath: /app/logs
+            #   subPath: vol-jussun-prod/logs
       volumes:
         - name: localtime
           hostPath:
             path: /usr/share/zoneinfo/Asia/Bangkok
         - name: vol-jussun-prod
-          nfs:
-            path: /mnt/vol-k8s
-            server: gfs-01
+          # nfs:
+          #   path: /mnt/vol-k8s
+          #   server: gfs-01
       restartPolicy: Always
