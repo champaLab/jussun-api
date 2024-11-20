@@ -19,6 +19,8 @@ COPY . .
 # Copy the production .env file
 COPY .env.prod .env
 
+RUN yarn db
+
 # Build the application
 RUN yarn build
 
