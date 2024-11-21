@@ -22,21 +22,4 @@
     "src/index.ts"  
   ]
 }
-
-// {
-//   "compilerOptions": {
-//   "module": "esnext",  
-//     "target": "esnext", 
-//     "rootDir": "./src",
-//     "outDir": "./dist",
-//     "strict": true,
-//     "esModuleInterop": true,
-//     "noImplicitUseStrict": false,
-//     "noImplicitAny": false,
-//   },
-   
-//   "exclude": [
-//     "node_modules",
-//     "**/*.spec.ts"
-//   ]
-// }
+ 

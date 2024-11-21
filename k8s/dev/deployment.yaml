@@ -1,15 +1,15 @@
 apiVersion: apps/v1
 kind: Deployment
 metadata:
-  name: demo-api
-  namespace: parking-dev
+  name: jussun-api
+  namespace: development
   labels:
-    app: demo-api
+    app: jussun-api
 spec:
   selector:
     matchLabels:
-      app: demo-api
-  replicas: 2
+      app: jussun-api
+  replicas: 1
   strategy:
     rollingUpdate:
       maxSurge: 25%
@@ -18,17 +18,13 @@ spec:
   template:
     metadata:
       labels:
-        app: demo-api
+        app: jussun-api
     spec:
-      # initContainers:
-      # Init containers are exactly like regular containers, except:
-      # - Init containers always run to completion.
-      # - Each init container must complete successfully before the next one starts.
       imagePullSecrets:
         - name: ghcr-secret
       containers:
-        - name: demo-api
-          image: ghcr.io/champalab/demo-api:72ec3411ee57b1d30fca0270021fae7431b0a701
+        - name: jussun-api
+          image: ghcr.io/champalab/jussun-api:4b2bb9484ea864cb655c982b29b034a57a52c95c
           imagePullPolicy: Always
           resources:
             requests:
@@ -39,7 +35,7 @@ spec:
               memory: 2048Mi
           livenessProbe:
             tcpSocket:
-              port: 3377
+              port: 8080
             initialDelaySeconds: 5
             timeoutSeconds: 5
             successThreshold: 1
@@ -47,40 +43,37 @@ spec:
             periodSeconds: 10
           readinessProbe:
             tcpSocket:
-              port: 3377
+              port: 8080
             initialDelaySeconds: 5
             timeoutSeconds: 2
             successThreshold: 1
             failureThreshold: 3
             periodSeconds: 10
-
-          # envFrom:
-          # - configMapRef:
-          #     name: demo-api-config
-          # - secretRef:
-          #     name: demo-api-secret
-
+          envFrom:
+            - configMapRef:
+                name: jussun-api-config
+            - secretRef:
+                name: database-parking-hub
+            - secretRef:
+                name: jwt-secret
           ports:
-            - containerPort: 3377
+            - containerPort: 8080
               name: http
           volumeMounts:
             - name: localtime
               mountPath: /etc/localtime
-            # - name: demo
-            #   mountPath: /app/uploads
-            #   subPath: demo/uploads
-      # hostAliases:
-      #   - ip: 10.2.100.197
-      #     hostnames:
-      #       - mxf.laoevisa.gov.la
+            - name: vol-jussun
+              mountPath: /app/logs
+              subPath: vol-jussun/logs-dev
+            - name: vol-jussun
+              mountPath: /app/uploads
+              subPath: vol-jussun/uploads-dev
       volumes:
         - name: localtime
           hostPath:
             path: /usr/share/zoneinfo/Asia/Bangkok
-        - name: demo
-          # nfs:
-          # path: /mnt/nfs/share
-          # server: 195.35.23.213
-          # path: /mnt/share
-          # server: 34.87.14.195
+        - name: vol-jussun
+          nfs:
+            path: /mnt/k8s
+            server: gfs-01
       restartPolicy: Always
