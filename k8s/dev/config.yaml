@@ -6,7 +6,7 @@ metadata:
 data:
   NODE_ENV: "production"
   NODE_HOST: "0.0.0.0"
-  NODE_PORT: "8080"
+  NODE_PORT: "1177"
   BASE_PATH: "/jutsun-api"
   TZ: "Asia/Bangkok"
   SERVICE_NAME: "jutsun-api"

@@ -35,7 +35,7 @@ spec:
               memory: 2048Mi
           livenessProbe:
             tcpSocket:
-              port: 8080
+              port: 1177
             initialDelaySeconds: 5
             timeoutSeconds: 5
             successThreshold: 1
@@ -43,7 +43,7 @@ spec:
             periodSeconds: 10
           readinessProbe:
             tcpSocket:
-              port: 8080
+              port: 1177
             initialDelaySeconds: 5
             timeoutSeconds: 2
             successThreshold: 1
@@ -57,7 +57,7 @@ spec:
             - secretRef:
                 name: jwt-secret
           ports:
-            - containerPort: 8080
+            - containerPort: 1177
               name: http
           volumeMounts:
             - name: localtime
