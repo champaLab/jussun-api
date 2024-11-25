@@ -35,7 +35,7 @@ export const contractController = async (req: Request, res: Response) => {
         createdAt: dateFormatter(item.createdAt),
         updatedAt: dateFormatter(item.updatedAt)
     }))
-    return res.json({
+    res.json({
         status: 'success',
         contracts,
         count: result.count
@@ -76,16 +76,16 @@ export const createContractController = async (req: Request, res: Response) => {
 
     const contract = await finOneContractService({ docId })
     if (contract) {
-        return res.json({
+        res.json({
             status: 'error',
             message: 'ເລກທີເອກະສານນີ້ ມີໃນລະບົບແລ້ວ'
         })
     }
 
-    const project = await finOneProjectService({ projectId })
+    const project: any = await finOneProjectService({ projectId })
 
     if (!project) {
-        return res.json({
+        res.json({
             status: 'error',
             message: 'ບໍ່ພົບຂໍ້ມູນ ໂຄງການ'
         })
@@ -93,7 +93,7 @@ export const createContractController = async (req: Request, res: Response) => {
 
     const newArea = project.area - area
     if (newArea < 0) {
-        return res.json({
+        res.json({
             status: 'error',
             message: `ເນື້ອທີ່ໂຄງການ ບໍ່ພຽງພໍ, ເນື້ອທີ່ທັງໝົດ ${(project.area - area).toLocaleString()}`
         })
@@ -101,13 +101,13 @@ export const createContractController = async (req: Request, res: Response) => {
 
     const projectArea = await updateProjectAreaService({ area: newArea, projectId })
     if (!projectArea) {
-        return res.json({
+        res.json({
             status: 'error',
             message: 'ແກ້ໄຂເນື້ອທີ່ ໂຄງການ ຜິດພາດ ລອງໃໝ່ໃນພາຍຫຼັງ'
         })
     }
 
-    const p = await createContractService({
+    const p: any = await createContractService({
         area,
         companyId,
         createdBy,
@@ -135,7 +135,7 @@ export const createContractController = async (req: Request, res: Response) => {
         deletedBy: null
     })
     if (!p) {
-        return res.json({
+        res.json({
             status: 'error',
             message: 'ສ້າງໂຄງການ ຜິດພາດ ລອງໃໝ່ໃນພາຍຫຼັງ'
         })
@@ -146,7 +146,7 @@ export const createContractController = async (req: Request, res: Response) => {
     console.log({ monthly })
     console.log('-'.repeat(100))
 
-    const createInv = await createInvoiceService({
+    const createInv: any = await createInvoiceService({
         amount,
         debt,
         contractId: p.contractId,
@@ -172,7 +172,7 @@ export const createContractController = async (req: Request, res: Response) => {
     })
 
     if (!createInv) {
-        return res.json({
+        res.json({
             status: 'error',
             message: 'ສ້າງໃບແຈ້ງໜີ້ ຜິດພາດ ລອງໃໝ່ໃນພາຍຫຼັງ'
         })
@@ -182,7 +182,7 @@ export const createContractController = async (req: Request, res: Response) => {
 
     await historyService({ req, description })
 
-    return res.json({
+    res.json({
         status: 'success',
         message: 'ສ້າງໂຄງການ ສຳເລັດແລ້ວ'
     })
@@ -224,10 +224,10 @@ export const updateContractController = async (req: Request, res: Response) => {
     const docId = req.body.docId
 
     if (oldArea != area || oldProjectId != projectId) {
-        const projectOld = await finOneProjectService({ projectId: oldProjectId })
-        const projectNew = await finOneProjectService({ projectId })
+        const projectOld: any = await finOneProjectService({ projectId: oldProjectId })
+        const projectNew: any = await finOneProjectService({ projectId })
         if (!projectOld || !projectNew) {
-            return res.json({
+            res.json({
                 status: 'error',
                 message: 'ບໍ່ພົບຂໍ້ມູນ ໂຄງການ'
             })
@@ -236,7 +236,7 @@ export const updateContractController = async (req: Request, res: Response) => {
         if (oldProjectId === projectId) {
             const newAre = projectOld.area + oldArea - area
             if (newAre < 0) {
-                return res.json({
+                res.json({
                     status: 'error',
                     message: `ເນື້ອທີ່ໂຄງການ ບໍ່ພຽງພໍ, ເນື້ອທີ່ທັງໝົດ ${(projectOld.area - area).toLocaleString()}`
                 })
@@ -248,7 +248,7 @@ export const updateContractController = async (req: Request, res: Response) => {
             const _oldArea = projectOld.area + oldArea
 
             if (_newAre < 0) {
-                return res.json({
+                res.json({
                     status: 'error',
                     message: `ເນື້ອທີ່ໂຄງການ ທີ່ທ່ານເລືອກ ບໍ່ພຽງພໍ, ເນື້ອທີ່ທັງໝົດ ${(projectNew.area - area).toLocaleString()}`
                 })
@@ -275,7 +275,7 @@ export const updateContractController = async (req: Request, res: Response) => {
     console.log('-'.repeat(150))
     console.error({ debt, numberOfInstallment, contractStatus, amount, invoiceStatus, paidNow, invoiceId })
 
-    const p = await updateContractService({
+    const p: any = await updateContractService({
         area,
         companyId,
         createdBy,
@@ -303,7 +303,7 @@ export const updateContractController = async (req: Request, res: Response) => {
         deletedBy: null
     })
     if (!p) {
-        return res.json({
+        res.json({
             status: 'error',
             message: 'ແກ້ໄຂຂໍ້ມູນສັນຍາ ຜິດພາດ ລອງໃໝ່ໃນພາຍຫຼັງ'
         })
@@ -335,7 +335,7 @@ export const updateContractController = async (req: Request, res: Response) => {
     })
 
     if (!createInv) {
-        return res.json({
+        res.json({
             status: 'error',
             message: 'ສ້າງໃບແຈ້ງໜີ້ ຜິດພາດ ລອງໃໝ່ໃນພາຍຫຼັງ'
         })
@@ -343,7 +343,7 @@ export const updateContractController = async (req: Request, res: Response) => {
 
     await historyService({ req, description })
 
-    return res.json({
+    res.json({
         status: 'success',
         message: 'ແກ້ໄຂຂໍ້ມູນສັນຍາ ສຳເລັດແລ້ວ'
     })
@@ -366,7 +366,7 @@ export const updateContractStatusController = async (req: Request, res: Response
         contractId
     })
     if (!p) {
-        return res.json({
+        res.json({
             status: 'error',
             message: 'ແກ້ໄຂຂໍ້ມູນສັນຍາ ຜິດພາດ ລອງໃໝ່ໃນພາຍຫຼັງ'
         })
@@ -374,7 +374,7 @@ export const updateContractStatusController = async (req: Request, res: Response
 
     await historyService({ req, description })
 
-    return res.json({
+    res.json({
         status: 'success',
         message: 'ແກ້ໄຂຂໍ້ມູນສັນຍາ ສຳເລັດແລ້ວ'
     })

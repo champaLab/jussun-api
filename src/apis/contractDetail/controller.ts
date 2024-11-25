@@ -11,9 +11,9 @@ export const historiesPayByContractController = async (req: Request, res: Respon
     const payload = tokenPayloadService(req)
     const contractId = Number(req.params.contractId)
 
-    const ct = await historiesPayByContractService({ contractId })
+    const ct: any = await historiesPayByContractService({ contractId })
     if (!ct) {
-        return res.json({
+        res.json({
             status: 'error',
             message: 'contract not found'
         })
@@ -35,7 +35,7 @@ export const historiesPayByContractController = async (req: Request, res: Respon
         updatedAt: dateFormatter(item.updatedAt)
     }))
 
-    return res.json({
+    res.json({
         status: 'success',
         contract,
         invoices

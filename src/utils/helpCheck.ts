@@ -1,8 +1,8 @@
 import { Request, Response } from 'express'
 import env from '../env'
 
-export const helpCheck = (req: Request, res: Response) => {
-    return res.json({
+export const helpCheck = (_: Request, res: Response) => {
+    res.json({
         status: 'OK',
         upTime: process.uptime(),
         timestamp: Date.now(),

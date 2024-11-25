@@ -20,7 +20,7 @@ export const findManyHistoryController = async (req: Request, res: Response) => 
         createdAt: dateFormatter(item.createdAt)
     }))
 
-    return res.json({
+    res.json({
         status: 'success',
         histories,
         count: hst.count

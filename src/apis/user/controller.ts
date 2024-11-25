@@ -17,7 +17,7 @@ import {
     verifyCodeService
 } from './service'
 import { findOneCompanyService } from '../company/service'
-import { company } from '@prisma/client'
+import { company, users } from '@prisma/client'
 import { dateFormatter } from '../../utils/dateFormat'
 import { historyService } from '../../utils/createLog'
 
@@ -26,14 +26,14 @@ export const findUserForResetController = async (req: Request, res: Response) =>
     const user = await findUserForResetService(tel)
 
     if (!user) {
-        return res.json({
+        res.json({
             status: 'error',
             message: 'ບໍ່ພົບບັນຊີ ທີ່ທ່ານຮ້ອງຂໍ'
         })
     }
 
     if (user && !user.userStatus) {
-        return res.json({
+        res.json({
             status: 'error',
             message: 'ບັນຊີຂອງທ່ານ ຖືກລະງັບການໃຊ້ງານ ຊົ່ວຄາວ'
         })
@@ -42,13 +42,13 @@ export const findUserForResetController = async (req: Request, res: Response) =>
     const code = `${Math.floor(Math.random() * 900000) + 100000}`
     const verifyCode = await sentCodeService({ tel, code })
     if (!verifyCode) {
-        return res.json({
+        res.json({
             status: 'error',
             message: 'ບໍ່ສາມາດສ້າງ ລະຫັດຢືນຢັນ ຜູ້ໃຊ້ງານໄດ້'
         })
     }
 
-    return res.json({
+    res.json({
         status: 'success',
         user
     })
@@ -59,10 +59,10 @@ export const verifyCodeController = async (req: Request, res: Response) => {
     const tel = `${req.body.tel}`.trim().slice(-8)
     const checkCode = await verifyCodeService({ code, tel })
     if (!checkCode || checkCode.count === 0) {
-        return res.json({ status: 'error', message: 'ການຢືນຢັນ ບໍ່ສຳເລັດ ລະຫັດຢືນຢັນ ບໍ່ຖືກຕ້ອງ' })
+        res.json({ status: 'error', message: 'ການຢືນຢັນ ບໍ່ສຳເລັດ ລະຫັດຢືນຢັນ ບໍ່ຖືກຕ້ອງ' })
     }
 
-    return res.json({ status: 'success', message: '' })
+    res.json({ status: 'success', message: '' })
 }
 
 export const resetPasswordCodeController = async (req: Request, res: Response) => {
@@ -72,13 +72,13 @@ export const resetPasswordCodeController = async (req: Request, res: Response) =
 
     const update = await resetPasswordService({ password, tel })
     if (!update) {
-        return res.json({
+        res.json({
             status: 'error',
             message: 'ບໍ່ສາມາດ ປ່ຽນລະຫັດຜ່ານໄດ້'
         })
     }
 
-    return res.json({
+    res.json({
         status: 'success',
         message: 'ປ່ຽນລະຫັດຜ່ານ ສຳເລັດແລ້ວ'
     })
@@ -91,54 +91,54 @@ export const loginController = async (req: Request, res: Response) => {
 
     console.log(encrypt(password))
 
-    const user = await findOneUserService({ tel })
+    const user: users | null = await findOneUserService({ tel })
     if (!user) {
-        return res.json({
+        res.json({
             status: 'error',
             message: 'ບໍ່ພົບຂໍ້ມູນຜູ້ໃຊ້ງານ'
         })
     } else if (!user.userStatus) {
-        return res.json({
+        res.json({
             status: 'error',
             message: 'ບັນຊີຂອງທ່ານ ຖືກລະງັບການໃຊ້ງານ'
         })
     }
-
-    if (decrypt(user.password) !== password) {
-        return res.json({
+    const decryptedPassword = decrypt(user!.password) // Assuming decrypt() returns the decrypted password as a string
+    if (decryptedPassword !== password) {
+        res.json({
             status: 'error',
-            message: 'ໝາຍເລກໂທລະສັບ ຫຼື ລະຫັດຜ່ານ ບໍ່ຖືກຕ້ອງ'
+            message: 'ໝາຍເລກໂທລະສັບ ຫຼື ລະຫັດຜ່າງ ບໍ່ຖືກຕ້ອງ'
         })
     }
 
     let company: company | null = null
-    if (user.role !== 'CUSTOMER') {
+    if (user && user.role !== 'CUSTOMER') {
         company = await findOneCompanyService({ companyId: Number(user.companyId) })
         if (!company) {
-            return res.json({
+            res.json({
                 status: 'error',
                 message: 'ບໍ່ພົບຂໍ້ມູນບໍລິສັດ'
             })
         }
 
-        if (!company.companyStatus) {
-            return res.json({
+        if (company && !company.companyStatus) {
+            res.json({
                 status: 'error',
                 message: 'ບໍລິສັດຂອງທ່ານ ຖືກລະງັບການໃຊ້ງານ'
             })
         }
     }
 
-    const payload = mergePayloadUserService(user, company)
+    const payload = mergePayloadUserService(user!, company)
     const token = await sign(payload)
     if (!token) {
-        return res.json({
+        res.json({
             status: 'error',
             message: 'Sign token error'
         })
     }
 
-    return res.json({
+    res.json({
         status: 'success',
         message: '',
         user: { ...payload, token }
@@ -148,47 +148,47 @@ export const loginController = async (req: Request, res: Response) => {
 export const meController = async (req: Request, res: Response) => {
     const tokenPayload = tokenPayloadService(req)
 
-    const user = await findOneUserService({ tel: tokenPayload.tel })
+    const user: users | null = await findOneUserService({ tel: tokenPayload.tel })
     if (!user) {
-        return res.json({
+        res.json({
             status: 'invalid',
             message: 'ບໍ່ພົບຂໍ້ມູນຜູ້ໃຊ້ງານ'
         })
     } else if (!user.userStatus) {
-        return res.json({
+        res.json({
             status: 'invalid',
             message: 'ບັນຊີຂອງທ່ານ ຖືກລະງັບການໃຊ້ງານ'
         })
     }
 
     let company: company | null = null
-    if (user.role !== 'CUSTOMER') {
+    if (user && user.role !== 'CUSTOMER') {
         company = await findOneCompanyService({ companyId: Number(user.companyId) })
         if (!company) {
-            return res.json({
+            res.json({
                 status: 'invalid',
                 message: 'ບໍ່ພົບຂໍ້ມູນບໍລິສັດ'
             })
         }
 
-        if (!company.companyStatus) {
-            return res.json({
+        if (company && !company.companyStatus) {
+            res.json({
                 status: 'invalid',
                 message: 'ບໍລິສັດຂອງທ່ານ ຖືກລະງັບການໃຊ້ງານ'
             })
         }
     }
 
-    const payload = mergePayloadUserService(user, company)
+    const payload = mergePayloadUserService(user!, company)
     const token = await sign(payload)
     if (!token) {
-        return res.json({
+        res.json({
             status: 'invalid',
             message: 'Sign token error'
         })
     }
 
-    return res.json({
+    res.json({
         status: 'success',
         message: '',
         user: { ...payload, token }
@@ -219,7 +219,7 @@ export const userController = async (req: Request, res: Response) => {
         updatedAt: dateFormatter(item.updatedAt)
     }))
 
-    return res.json({
+    res.json({
         status: 'success',
         users,
         count: u.count
@@ -247,7 +247,7 @@ export const createUserController = async (req: Request, res: Response) => {
 
     const user = await findOneUserService({ tel })
     if (user) {
-        return res.json({
+        res.json({
             status: 'error',
             message: 'ໝາຍເລກໂທລະສັບນີ້ມີໃນລະບົບແລ້ວ'
         })
@@ -256,7 +256,7 @@ export const createUserController = async (req: Request, res: Response) => {
     const password = encrypt(pass)
     const create = await createUserService({ tel, companyId, fullName, lastName, password, role, userStatus })
     if (!create) {
-        return res.json({
+        res.json({
             status: 'error',
             message: 'ການສ້າງຜູ້ໃຊ້ງານ ຜິດພາດ ລອງໃໝ່ໃນພາຍຫຼັງ'
         })
@@ -264,7 +264,7 @@ export const createUserController = async (req: Request, res: Response) => {
 
     await historyService({ req, description })
 
-    return res.json({
+    res.json({
         status: 'success',
         message: 'ການສ້າງຜູ້ໃຊ້ງານ ສຳເລັດແລ້ວ'
     })
@@ -296,7 +296,7 @@ export const updateUserController = async (req: Request, res: Response) => {
 
     const user = await findOneUserService({ tel })
     if (user && user.userId !== userId) {
-        return res.json({
+        res.json({
             status: 'error',
             message: 'ໝາຍເລກໂທລະສັບນີ້ມີໃນລະບົບແລ້ວ'
         })
@@ -306,7 +306,7 @@ export const updateUserController = async (req: Request, res: Response) => {
         const password = encrypt(pass)
         const updated = await updateUserAndPasswordService(userId, { tel, companyId, fullName, lastName, password, role, userStatus })
         if (!updated) {
-            return res.json({
+            res.json({
                 status: 'error',
                 message: 'ແກ້ໄຂຂໍ້ມູນຜູ້ໃຊ້ງານ ຜິດພາດ ລອງໃໝ່ໃນພາຍຫຼັງ'
             })
@@ -314,7 +314,7 @@ export const updateUserController = async (req: Request, res: Response) => {
     } else {
         const updated = await updateUserService(userId, { tel, companyId, fullName, lastName, password: '', role, userStatus })
         if (!updated) {
-            return res.json({
+            res.json({
                 status: 'error',
                 message: 'ແກ້ໄຂຂໍ້ມູນຜູ້ໃຊ້ງານ ຜິດພາດ ລອງໃໝ່ໃນພາຍຫຼັງ'
             })
@@ -323,7 +323,7 @@ export const updateUserController = async (req: Request, res: Response) => {
 
     await historyService({ req, description })
 
-    return res.json({
+    res.json({
         status: 'success',
         message: 'ແກ້ໄຂຂໍ້ມູນຜູ້ໃຊ້ງານ ສຳເລັດແລ້ວ'
     })
@@ -334,14 +334,14 @@ export const findOneUserController = async (req: Request, res: Response) => {
 
     const user = await findUserService({ key })
     if (!user) {
-        return res.json({
+        res.json({
             status: 'error',
             message: 'ບໍ່ພົບຂໍ້ມູນທີ່ຄົ້ນຫາ',
             user: null
         })
     }
 
-    return res.json({
+    res.json({
         status: 'success',
         message: 'ພົບຂໍ້ມູນ 1 ລາຍການ',
         user

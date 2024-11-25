@@ -43,7 +43,7 @@ export const responseData = async (data: any, page: number) => {
     const newData =
         data.length == 0
             ? []
-            : data.map((item, i) => ({
+            : data.map((item: any, i: number) => ({
                   ...item,
                   indexNo: (page - 1) * rowsPerPage + (i + 1),
                   createdAt: dateFormatter(item.createdAt),

@@ -14,7 +14,7 @@ export const companyForAutocompleteController = async (req: Request, res: Respon
 
     const company = await companyForAutocompleteService(companyId)
 
-    return res.json({
+    res.json({
         status: 'success',
         company
     })
@@ -42,7 +42,7 @@ export const companyController = async (req: Request, res: Response) => {
         updatedAt: dateFormatter(item.updatedAt)
     }))
 
-    return res.json({
+    res.json({
         status: 'success',
         company: companyRes,
         count: result.count
@@ -82,16 +82,16 @@ export const createCompanyController = async (req: Request, res: Response) => {
         deletedBy: null
     })
     if (!p) {
-        return res.json({
+        res.json({
             status: 'error',
             message: 'ສ້າງບໍລິສັດ ຜິດພາດ ລອງໃໝ່ໃນພາຍຫຼັງ'
         })
+    } else {
+        res.json({
+            status: 'success',
+            message: 'ສ້າງບໍລິສັດ ສຳເລັດແລ້ວ'
+        })
     }
-
-    return res.json({
-        status: 'success',
-        message: 'ສ້າງບໍລິສັດ ສຳເລັດແລ້ວ'
-    })
 }
 
 export const updateCompanyController = async (req: Request, res: Response) => {
@@ -129,13 +129,13 @@ export const updateCompanyController = async (req: Request, res: Response) => {
         deletedBy
     })
     if (!p) {
-        return res.json({
+        res.json({
             status: 'error',
             message: 'ແກ້ໄຂຂໍ້ມູນບໍລິສັດ ຜິດພາດ ລອງໃໝ່ໃນພາຍຫຼັງ'
         })
     }
 
-    return res.json({
+    res.json({
         status: 'success',
         message: 'ແກ້ໄຂຂໍ້ມູນບໍລິສັດ ສຳເລັດແລ້ວ'
     })

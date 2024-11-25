@@ -7,7 +7,7 @@ export const findManyPaidToDayController = async (req: Request, res: Response) =
     const lte = Number(req.body.dateEnd)
 
     if (!payload.companyId) {
-        return res.json({
+        res.json({
             status: 'error',
             message: 'ບໍ່ພົບຂໍ້ມູນ ບໍລິສັດ'
         })

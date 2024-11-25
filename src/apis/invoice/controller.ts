@@ -48,7 +48,7 @@ export const invoicePaydayController = async (req: Request, res: Response) => {
     }))
 
     const exchange = await findLastExchangeService({ companyId })
-    return res.json({
+    res.json({
         status: 'success',
         reports: {
             invoices,
@@ -71,25 +71,25 @@ export const invoicePaidController = async (req: Request, res: Response) => {
     let exchangeRate: number | null = parseFloat(req.body.exchangeRate)
     const paidDate = today()
 
-    const inv = await findOneInvoiceService({ invoiceId })
+    const inv: any = await findOneInvoiceService({ invoiceId })
     const billPath = getPhotoPath(req.file)
     console.log({ billPath })
 
     if (!inv) {
-        return res.json({
+        res.json({
             status: 'error',
             message: 'ບໍ່ພົບຂໍ້ມູນ ໃຈແຈ້ງໜີ້'
         })
     } else if ((inv && inv.paidDate) || inv.invoiceStatus === 'PAID') {
-        return res.json({
+        res.json({
             status: 'error',
             message: 'ໃຈແຈ້ງໜີ້ ທີ່ທ່ານແຈ້ງການຊຳລະ ແມ່ນໄດ້ຖືກຊຳລະກ່ອນໜ້ານີ້ແລ້ວ'
         })
     }
 
-    const contract = await findOneContractService(inv.contractId)
+    const contract: any = await findOneContractService(inv.contractId)
     if (!contract) {
-        return res.json({
+        res.json({
             status: 'error',
             message: 'ບໍ່ພົບຂໍ້ມູນສັນຍາ'
         })
@@ -124,7 +124,7 @@ export const invoicePaidController = async (req: Request, res: Response) => {
     })
 
     if (!paid) {
-        return res.json({
+        res.json({
             status: 'ຳerror',
             message: 'ແຈ້ງຊຳລະ ຜິດພາດ ລອງໃໝ່ໃນພາຍຫຼັງ'
         })
@@ -136,7 +136,7 @@ export const invoicePaidController = async (req: Request, res: Response) => {
         const numberOfInstallment = countInv > (contract.numberOfInstallment ?? 1) ? 1 : (contract.numberOfInstallment ?? 1) - countInv
         const amount = inv.amount / numberOfInstallment
 
-        const createInv = await createInvoiceService({
+        const createInv: any = await createInvoiceService({
             amount: amount,
             debt,
             contractId: inv.contractId,
@@ -161,7 +161,7 @@ export const invoicePaidController = async (req: Request, res: Response) => {
             numberOfInstallment
         })
         if (!createInv) {
-            return res.json({
+            res.json({
                 status: 'error',
                 message: 'ສ້າງໃບແຈ້ງໜີ້ ຜິດພາດ ລອງໃໝ່ໃນພາຍຫຼັງ'
             })
@@ -177,14 +177,14 @@ export const invoicePaidController = async (req: Request, res: Response) => {
         })
 
         if (!closeContract) {
-            return res.json({
+            res.json({
                 status: 'error',
                 message: 'ປິດສັນຍາ ຜິດພາດ ລອງໃໝ່ໃນພາຍຫຼັງ'
             })
         }
     }
 
-    return res.json({
+    res.json({
         status: 'success',
         message: 'ແຈ້ງຊຳລະ ສຳເລັດແລ້ວ'
     })
@@ -201,13 +201,13 @@ export const actionInvoiceController = async (req: Request, res: Response) => {
     const result = await actionInvoiceService({ invoiceId, reservedBy, reservedAt, action })
 
     if (!result) {
-        return res.json({
+        res.json({
             status: 'error',
             message: 'ບໍ່ສາມາດຈ່ອງເອກະສານໄດ້'
         })
     }
 
-    return res.json({
+    res.json({
         status: 'success',
         message: ''
     })
@@ -221,13 +221,13 @@ export const addCommentInvoiceController = async (req: Request, res: Response) =
     const result = await addCommentInvoiceService({ invoiceId, comment })
 
     if (!result) {
-        return res.json({
+        res.json({
             status: 'error',
             message: 'ບັນທຶກຂໍ້ມູນຜິດພາດ ລອງໃໝ່ໃນພາຍຫຼັງ'
         })
     }
 
-    return res.json({
+    res.json({
         status: 'success',
         message: 'ບັນທຶກຂໍ້ມູນ ສຳເລັດແລ້ວ'
     })

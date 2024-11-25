@@ -36,7 +36,7 @@ app.use(`${env.BASE_PATH}`, express.static(join(env.PWD, 'uploads')))
 
 app.get('/metrics', async (req: Request, res: Response) => {
     res.set('Content-Type', register.contentType)
-    return res.send(await register.metrics())
+    res.send(await register.metrics())
 })
 
 app.get('/', helpCheck)

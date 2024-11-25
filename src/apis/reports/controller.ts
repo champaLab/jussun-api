@@ -17,7 +17,7 @@ export const readReportController = async (req: Request, res: Response) => {
         createdAt: dateFormatter(item.createdAt)
     }))
 
-    return res.json({
+    res.json({
         status: 'success',
         reports
     })
@@ -32,7 +32,7 @@ export const getReportsController = async (req: Request, res: Response) => {
 
     const payday = await summaryContractPaydayService({ payDay, monthly, contractStatus, invoiceStatus, companyId: payload.companyId! })
 
-    return res.json({
+    res.json({
         status: 'success',
         ...payday
     })

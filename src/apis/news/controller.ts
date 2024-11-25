@@ -44,7 +44,7 @@ export const getNewsController = async (req: Request, res: Response) => {
             sentDate: dateFormatter(item.sentDate)
         })
     }
-    return res.json({
+    res.json({
         status: 'success',
         news,
         count: readNews.count
@@ -89,12 +89,12 @@ export const createNewsController = async (req: Request, res: Response) => {
         userId
     })
     if (!create) {
-        return res.json({
+        res.json({
             status: 'error',
             message: 'ການປະກາດຂ່າວ ຜີດພາດ ລອງໃໝ່ໃນພາຍຫຼັງ'
         })
     }
-    return res.json({
+    res.json({
         status: 'success',
         message: 'ປະກາດຂ່າວສຳເລັດ'
     })
@@ -133,7 +133,7 @@ export const updateNewsController = async (req: Request, res: Response) => {
         tel,
         userId
     })
-    return res.json({
+    res.json({
         status: 'success',
         message: 'ແກ້ໄຂຂໍ້ມູນຂ່າວ ສຳເລັດ',
         upNews
@@ -145,7 +145,7 @@ export const deleteNewsController = async (req: Request, res: Response) => {
     const payload = tokenPayloadService(req)
     const dNews = await deleteNewsService(nId, payload.userId)
 
-    return res.json({
+    res.json({
         status: 'success',
         message: 'ລົບຂໍ້ມູນ ສຳເລັດແລ້ວ',
         dNews

@@ -22,7 +22,7 @@ export const readReceiveController = async (req: Request, res: Response) => {
         indexNo: i + 1
     }))
 
-    return res.json({
+    res.json({
         status: 'success',
         receives,
         summary

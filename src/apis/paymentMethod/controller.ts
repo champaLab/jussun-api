@@ -22,7 +22,7 @@ export const paymentMethodController = async (req: Request, res: Response) => {
         qrPathOriginal: item.qrPath
     }))
 
-    return res.json({
+    res.json({
         status: 'success',
         payments,
         count: 1
@@ -46,13 +46,13 @@ export const createPaymentMethodController = async (req: Request, res: Response)
     })
 
     if (!p) {
-        return res.json({
+        res.json({
             status: 'error',
             message: 'ບັນທຶກ ຂໍ້ມູນ ຜິດພາດ ກະລຸນາລອງອີກຄັ້ງ'
         })
     }
 
-    return res.json({
+    res.json({
         status: 'success',
         message: 'ບັນທຶກຂໍ້ມູນ ສຳເລັດແລ້ວ'
     })
@@ -76,13 +76,13 @@ export const updatePaymentMethodController = async (req: Request, res: Response)
     })
 
     if (!p) {
-        return res.json({
+        res.json({
             status: 'error',
             message: 'ບັນທຶກ ຂໍ້ມູນ ຜິດພາດ ກະລຸນາລອງອີກຄັ້ງ'
         })
     }
 
-    return res.json({
+    res.json({
         status: 'success',
         message: 'ບັນທຶກຂໍ້ມູນ ສຳເລັດແລ້ວ'
     })
@@ -107,7 +107,7 @@ export const deletePaymentMethodController = async (req: Request, res: Response)
         logger.error(err)
     }
 
-    return res.json({
+    res.json({
         status: 'success',
         message: 'ລົບຂໍ້ມູນ ສຳເລັດແລ້ວ'
     })

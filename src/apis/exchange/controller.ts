@@ -24,7 +24,7 @@ export const readExchangeController = async (req: Request, res: Response) => {
         createdAt: dateFormatter(item.createdAt),
         updatedAt: dateFormatter(item.updatedAt)
     }))
-    return res.json({
+    res.json({
         status: 'success',
         reports: {
             exchanges,
@@ -61,13 +61,13 @@ export const createExchangeController = async (req: Request, res: Response) => {
     console.log({ createdAt })
 
     if (!create) {
-        return res.json({
+        res.json({
             status: 'error',
             message: 'ການສ້າງ ອັດຕາແລກປ່ຽນ ຜິດພາດ ລອງໃໝ່ໃນພາຍຫຼັງ'
         })
     }
     await historyService({ req, description })
-    return res.json({
+    res.json({
         status: 'success',
         message: 'ບັນທຶກ ຂໍ້ມູນສຳເລັດ'
     })
@@ -100,13 +100,13 @@ export const updateExchangeController = async (req: Request, res: Response) => {
         deletedBy: null
     })
     if (!update) {
-        return res.json({
+        res.json({
             status: 'error',
             message: 'ອັບເດດ ອັດຕາແລກປ່ຽນ ຜິດພາດ ກະລຸນາ ລອງໃໝ່ໃນພາຍຫຼັງ'
         })
     }
     await historyService({ req, description })
-    return res.json({
+    res.json({
         status: 'success',
         message: 'ອັບເດດ ຂໍ້ມູນສຳເລັດ'
     })

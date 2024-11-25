@@ -8,7 +8,7 @@ export const projectsForAutocompleteController = async (req: Request, res: Respo
     const payload = tokenPayloadService(req)
     const projects = await projectsForAutocompleteService(payload.companyId!)
 
-    return res.json({
+    res.json({
         status: 'success',
         projects
     })
@@ -34,7 +34,7 @@ export const projectsController = async (req: Request, res: Response) => {
         updatedAt: dateFormatter(item.updatedAt)
     }))
 
-    return res.json({
+    res.json({
         status: 'success',
         projects,
         count: result.count
@@ -56,7 +56,7 @@ export const createProjectController = async (req: Request, res: Response) => {
     const updatedBy = null
 
     if (!companyId) {
-        return res.json({
+        res.json({
             status: 'error',
             message: 'Company ID is required'
         })
@@ -66,7 +66,7 @@ export const createProjectController = async (req: Request, res: Response) => {
         address,
         area,
         code,
-        companyId,
+        companyId: companyId!,
         createdAt,
         createdBy,
         projectId,
@@ -78,13 +78,13 @@ export const createProjectController = async (req: Request, res: Response) => {
     })
 
     if (!p) {
-        return res.json({
+        res.json({
             status: 'error',
             message: 'ລະຫັດໂຄງການນີ້ ມີໃນລະບົບແລ້ວ'
         })
     }
     await historyService({ req, description })
-    return res.json({
+    res.json({
         status: 'success',
         message: 'ສ້າງໂຄງການ ສຳເລັດແລ້ວ'
     })
@@ -119,14 +119,14 @@ export const updateProjectController = async (req: Request, res: Response) => {
         deletedBy: null
     })
     if (!p) {
-        return res.json({
+        res.json({
             status: 'error',
             message: 'ແກ້ໄຂໂຄງການ ຜິດພາດ ລອງໃໝ່ໃນພາຍຫຼັງ'
         })
     }
     await historyService({ req, description })
 
-    return res.json({
+    res.json({
         status: 'success',
         message: 'ແກ້ໄຂໂຄງການ ສຳເລັດແລ້ວ'
     })
@@ -143,14 +143,14 @@ export const deleteProjectController = async (req: Request, res: Response) => {
     })
 
     if (!p) {
-        return res.json({
+        res.json({
             status: 'error',
             message: 'ລົບຂໍ້ມູນໂຄງການ ຜິດພາດ ລອງໃໝ່ໃນພາຍຫຼັງ'
         })
     }
     await historyService({ req, description })
 
-    return res.json({
+    res.json({
         status: 'success',
         message: 'ແກ້ໄຂໂຄງການ ສຳເລັດແລ້ວ'
     })
