@@ -34,7 +34,7 @@ app.use((req: Request, res: Response, next: NextFunction) => logRequestResponse(
 app.use(`${env.BASE_PATH}/v1`, router)
 app.use(`${env.BASE_PATH}`, express.static(join(env.PWD, 'uploads')))
 
-app.get('/metrics', async (req, res) => {
+app.get('/metrics', async (req: Request, res: Response) => {
     res.set('Content-Type', register.contentType)
     return res.send(await register.metrics())
 })
