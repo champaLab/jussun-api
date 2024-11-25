@@ -6,6 +6,9 @@ WORKDIR /app
 RUN apt update -y
 RUN apt install -y iputils-ping telnet
 
+# Install pnpm
+RUN npm install -g pnpm
+
 # Install PM2 globally
 RUN pnpm global add pm2
 
