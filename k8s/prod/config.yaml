@@ -19,5 +19,5 @@ data:
   PUPPETEER_EXECUTABLE_PATH: "/usr/bin/chromium"
   API_BOT_URL: "https://jussun.com/jutsun-bot-api/v1"
   ROW_PER_PAGE: "25"
-  CONTACT_NUMBER: "'020 9111 6465'"
-  FOLDER_UPLOADS: "'/uploads'"
+  CONTACT_NUMBER: "020 9111 6465"
+  FOLDER_UPLOADS: "/uploads"
