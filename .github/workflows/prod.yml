@@ -2,7 +2,7 @@ name: Prod environment CI and CD
 
 on:
     push:
-        branches: ['main']
+        branches: ['main', 'hotfix']
 
 jobs:
     # ==============
