@@ -13,7 +13,7 @@ RUN npm install -g pnpm
 RUN pnpm global add pm2
 
 # Copy package.json and install dependencies
-COPY package.json .
+COPY package.json pnpm-lock.yaml ./
 RUN pnpm 
 
 # Copy the rest of the application code
