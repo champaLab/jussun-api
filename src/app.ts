@@ -1,5 +1,5 @@
 import cors from 'cors'
-import express from 'express'
+import express, { NextFunction, Request, Response } from 'express'
 import prom from 'prom-client'
 import { logRequestResponse } from './middlewares/logger-middleware'
 import router from './router'
@@ -29,7 +29,7 @@ app.set('trust proxy', 'loopback')
 app.use(limiter)
 app.use(requestIp.mw())
 
-app.use((req, res, next) => logRequestResponse(req, res, next, ['excel', 'users', 'metrics']))
+app.use((req: Request, res: Response, next: NextFunction) => logRequestResponse(req, res, next, ['excel', 'users', 'metrics']))
 
 app.use(`${env.BASE_PATH}/v1`, router)
 app.use(`${env.BASE_PATH}`, express.static(join(env.PWD, 'uploads')))
