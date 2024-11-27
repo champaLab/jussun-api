@@ -80,6 +80,7 @@ export const createContractController = async (req: Request, res: Response) => {
             status: 'error',
             message: 'ເລກທີເອກະສານນີ້ ມີໃນລະບົບແລ້ວ'
         })
+        return
     }
 
     const project: any = await finOneProjectService({ projectId })
@@ -89,6 +90,7 @@ export const createContractController = async (req: Request, res: Response) => {
             status: 'error',
             message: 'ບໍ່ພົບຂໍ້ມູນ ໂຄງການ'
         })
+        return
     }
 
     const newArea = project.area - area
@@ -97,6 +99,7 @@ export const createContractController = async (req: Request, res: Response) => {
             status: 'error',
             message: `ເນື້ອທີ່ໂຄງການ ບໍ່ພຽງພໍ, ເນື້ອທີ່ທັງໝົດ ${(project.area - area).toLocaleString()}`
         })
+        return
     }
 
     const projectArea = await updateProjectAreaService({ area: newArea, projectId })
@@ -105,6 +108,7 @@ export const createContractController = async (req: Request, res: Response) => {
             status: 'error',
             message: 'ແກ້ໄຂເນື້ອທີ່ ໂຄງການ ຜິດພາດ ລອງໃໝ່ໃນພາຍຫຼັງ'
         })
+        return
     }
 
     const p: any = await createContractService({
@@ -139,6 +143,7 @@ export const createContractController = async (req: Request, res: Response) => {
             status: 'error',
             message: 'ສ້າງໂຄງການ ຜິດພາດ ລອງໃໝ່ໃນພາຍຫຼັງ'
         })
+        return
     }
 
     const monthly = dayjs().format('MM/YYYY')
@@ -176,6 +181,7 @@ export const createContractController = async (req: Request, res: Response) => {
             status: 'error',
             message: 'ສ້າງໃບແຈ້ງໜີ້ ຜິດພາດ ລອງໃໝ່ໃນພາຍຫຼັງ'
         })
+        return
     }
 
     await updateContractInvoiceIdService(p.contractId, createInv.invoiceId)
@@ -231,6 +237,7 @@ export const updateContractController = async (req: Request, res: Response) => {
                 status: 'error',
                 message: 'ບໍ່ພົບຂໍ້ມູນ ໂຄງການ'
             })
+            return
         }
 
         if (oldProjectId === projectId) {
@@ -240,6 +247,7 @@ export const updateContractController = async (req: Request, res: Response) => {
                     status: 'error',
                     message: `ເນື້ອທີ່ໂຄງການ ບໍ່ພຽງພໍ, ເນື້ອທີ່ທັງໝົດ ${(projectOld.area - area).toLocaleString()}`
                 })
+                return
             }
 
             await updateProjectAreaService({ area: newAre, projectId })
@@ -252,6 +260,7 @@ export const updateContractController = async (req: Request, res: Response) => {
                     status: 'error',
                     message: `ເນື້ອທີ່ໂຄງການ ທີ່ທ່ານເລືອກ ບໍ່ພຽງພໍ, ເນື້ອທີ່ທັງໝົດ ${(projectNew.area - area).toLocaleString()}`
                 })
+                return
             }
             console.log({ _newAre, _oldArea })
             console.log('-'.repeat(200))
@@ -307,6 +316,7 @@ export const updateContractController = async (req: Request, res: Response) => {
             status: 'error',
             message: 'ແກ້ໄຂຂໍ້ມູນສັນຍາ ຜິດພາດ ລອງໃໝ່ໃນພາຍຫຼັງ'
         })
+        return
     }
 
     const createInv = await updateInvoiceService({
@@ -339,6 +349,7 @@ export const updateContractController = async (req: Request, res: Response) => {
             status: 'error',
             message: 'ສ້າງໃບແຈ້ງໜີ້ ຜິດພາດ ລອງໃໝ່ໃນພາຍຫຼັງ'
         })
+        return
     }
 
     await historyService({ req, description })
@@ -370,6 +381,7 @@ export const updateContractStatusController = async (req: Request, res: Response
             status: 'error',
             message: 'ແກ້ໄຂຂໍ້ມູນສັນຍາ ຜິດພາດ ລອງໃໝ່ໃນພາຍຫຼັງ'
         })
+        return
     }
 
     await historyService({ req, description })

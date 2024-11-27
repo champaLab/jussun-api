@@ -65,7 +65,9 @@ export const createExchangeController = async (req: Request, res: Response) => {
             status: 'error',
             message: 'ການສ້າງ ອັດຕາແລກປ່ຽນ ຜິດພາດ ລອງໃໝ່ໃນພາຍຫຼັງ'
         })
+        return
     }
+
     await historyService({ req, description })
     res.json({
         status: 'success',
@@ -104,6 +106,7 @@ export const updateExchangeController = async (req: Request, res: Response) => {
             status: 'error',
             message: 'ອັບເດດ ອັດຕາແລກປ່ຽນ ຜິດພາດ ກະລຸນາ ລອງໃໝ່ໃນພາຍຫຼັງ'
         })
+        return
     }
     await historyService({ req, description })
     res.json({

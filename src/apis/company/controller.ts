@@ -133,6 +133,7 @@ export const updateCompanyController = async (req: Request, res: Response) => {
             status: 'error',
             message: 'ແກ້ໄຂຂໍ້ມູນບໍລິສັດ ຜິດພາດ ລອງໃໝ່ໃນພາຍຫຼັງ'
         })
+        return
     }
 
     res.json({

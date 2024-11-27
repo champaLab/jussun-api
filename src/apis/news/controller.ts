@@ -93,6 +93,7 @@ export const createNewsController = async (req: Request, res: Response) => {
             status: 'error',
             message: 'ການປະກາດຂ່າວ ຜີດພາດ ລອງໃໝ່ໃນພາຍຫຼັງ'
         })
+        return
     }
     res.json({
         status: 'success',

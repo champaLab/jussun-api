@@ -5,6 +5,8 @@ export const valResult = async (req: Request, res: Response, next: NextFunction)
     const errors = validationResult(req)
     if (!errors.isEmpty()) {
         res.json({ status: 'error', messages: errors.array() })
+
+        return
     }
     next()
 }

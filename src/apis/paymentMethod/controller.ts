@@ -50,6 +50,7 @@ export const createPaymentMethodController = async (req: Request, res: Response)
             status: 'error',
             message: 'ບັນທຶກ ຂໍ້ມູນ ຜິດພາດ ກະລຸນາລອງອີກຄັ້ງ'
         })
+        return
     }
 
     res.json({
@@ -80,6 +81,7 @@ export const updatePaymentMethodController = async (req: Request, res: Response)
             status: 'error',
             message: 'ບັນທຶກ ຂໍ້ມູນ ຜິດພາດ ກະລຸນາລອງອີກຄັ້ງ'
         })
+        return
     }
 
     res.json({

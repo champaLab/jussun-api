@@ -30,6 +30,7 @@ export const findUserForResetController = async (req: Request, res: Response) =>
             status: 'error',
             message: 'ບໍ່ພົບບັນຊີ ທີ່ທ່ານຮ້ອງຂໍ'
         })
+        return
     }
 
     if (user && !user.userStatus) {
@@ -37,6 +38,7 @@ export const findUserForResetController = async (req: Request, res: Response) =>
             status: 'error',
             message: 'ບັນຊີຂອງທ່ານ ຖືກລະງັບການໃຊ້ງານ ຊົ່ວຄາວ'
         })
+        return
     }
 
     const code = `${Math.floor(Math.random() * 900000) + 100000}`
@@ -46,6 +48,7 @@ export const findUserForResetController = async (req: Request, res: Response) =>
             status: 'error',
             message: 'ບໍ່ສາມາດສ້າງ ລະຫັດຢືນຢັນ ຜູ້ໃຊ້ງານໄດ້'
         })
+        return
     }
 
     res.json({
@@ -60,6 +63,7 @@ export const verifyCodeController = async (req: Request, res: Response) => {
     const checkCode = await verifyCodeService({ code, tel })
     if (!checkCode || checkCode.count === 0) {
         res.json({ status: 'error', message: 'ການຢືນຢັນ ບໍ່ສຳເລັດ ລະຫັດຢືນຢັນ ບໍ່ຖືກຕ້ອງ' })
+        return
     }
 
     res.json({ status: 'success', message: '' })
@@ -76,6 +80,7 @@ export const resetPasswordCodeController = async (req: Request, res: Response) =
             status: 'error',
             message: 'ບໍ່ສາມາດ ປ່ຽນລະຫັດຜ່ານໄດ້'
         })
+        return
     }
 
     res.json({
@@ -97,11 +102,13 @@ export const loginController = async (req: Request, res: Response) => {
             status: 'error',
             message: 'ບໍ່ພົບຂໍ້ມູນຜູ້ໃຊ້ງານ'
         })
+        return
     } else if (!user.userStatus) {
         res.json({
             status: 'error',
             message: 'ບັນຊີຂອງທ່ານ ຖືກລະງັບການໃຊ້ງານ'
         })
+        return
     }
     const decryptedPassword = decrypt(user!.password) // Assuming decrypt() returns the decrypted password as a string
     if (decryptedPassword !== password) {
@@ -109,6 +116,7 @@ export const loginController = async (req: Request, res: Response) => {
             status: 'error',
             message: 'ໝາຍເລກໂທລະສັບ ຫຼື ລະຫັດຜ່າງ ບໍ່ຖືກຕ້ອງ'
         })
+        return
     }
 
     let company: company | null = null
@@ -119,6 +127,7 @@ export const loginController = async (req: Request, res: Response) => {
                 status: 'error',
                 message: 'ບໍ່ພົບຂໍ້ມູນບໍລິສັດ'
             })
+            return
         }
 
         if (company && !company.companyStatus) {
@@ -126,6 +135,7 @@ export const loginController = async (req: Request, res: Response) => {
                 status: 'error',
                 message: 'ບໍລິສັດຂອງທ່ານ ຖືກລະງັບການໃຊ້ງານ'
             })
+            return
         }
     }
 
@@ -136,6 +146,7 @@ export const loginController = async (req: Request, res: Response) => {
             status: 'error',
             message: 'Sign token error'
         })
+        return
     }
 
     res.json({
@@ -154,11 +165,13 @@ export const meController = async (req: Request, res: Response) => {
             status: 'invalid',
             message: 'ບໍ່ພົບຂໍ້ມູນຜູ້ໃຊ້ງານ'
         })
+        return
     } else if (!user.userStatus) {
         res.json({
             status: 'invalid',
             message: 'ບັນຊີຂອງທ່ານ ຖືກລະງັບການໃຊ້ງານ'
         })
+        return
     }
 
     let company: company | null = null
@@ -169,6 +182,7 @@ export const meController = async (req: Request, res: Response) => {
                 status: 'invalid',
                 message: 'ບໍ່ພົບຂໍ້ມູນບໍລິສັດ'
             })
+            return
         }
 
         if (company && !company.companyStatus) {
@@ -186,6 +200,7 @@ export const meController = async (req: Request, res: Response) => {
             status: 'invalid',
             message: 'Sign token error'
         })
+        return
     }
 
     res.json({
@@ -251,6 +266,7 @@ export const createUserController = async (req: Request, res: Response) => {
             status: 'error',
             message: 'ໝາຍເລກໂທລະສັບນີ້ມີໃນລະບົບແລ້ວ'
         })
+        return
     }
 
     const password = encrypt(pass)
@@ -260,6 +276,7 @@ export const createUserController = async (req: Request, res: Response) => {
             status: 'error',
             message: 'ການສ້າງຜູ້ໃຊ້ງານ ຜິດພາດ ລອງໃໝ່ໃນພາຍຫຼັງ'
         })
+        return
     }
 
     await historyService({ req, description })
@@ -300,6 +317,7 @@ export const updateUserController = async (req: Request, res: Response) => {
             status: 'error',
             message: 'ໝາຍເລກໂທລະສັບນີ້ມີໃນລະບົບແລ້ວ'
         })
+        return
     }
 
     if (pass) {
@@ -310,6 +328,7 @@ export const updateUserController = async (req: Request, res: Response) => {
                 status: 'error',
                 message: 'ແກ້ໄຂຂໍ້ມູນຜູ້ໃຊ້ງານ ຜິດພາດ ລອງໃໝ່ໃນພາຍຫຼັງ'
             })
+            return
         }
     } else {
         const updated = await updateUserService(userId, { tel, companyId, fullName, lastName, password: '', role, userStatus })
@@ -318,6 +337,8 @@ export const updateUserController = async (req: Request, res: Response) => {
                 status: 'error',
                 message: 'ແກ້ໄຂຂໍ້ມູນຜູ້ໃຊ້ງານ ຜິດພາດ ລອງໃໝ່ໃນພາຍຫຼັງ'
             })
+
+            return
         }
     }
 
@@ -330,20 +351,21 @@ export const updateUserController = async (req: Request, res: Response) => {
 }
 
 export const findOneUserController = async (req: Request, res: Response) => {
-    const key = req.body.key
+    try {
+        const key = req.body.key
 
-    const user = await findUserService({ key })
-    if (!user) {
+        const user = await findUserService({ key })
+
+        res.json({
+            status: 'success',
+            message: 'ພົບຂໍ້ມູນ 1 ລາຍການ',
+            user
+        })
+    } catch (error) {
         res.json({
             status: 'error',
             message: 'ບໍ່ພົບຂໍ້ມູນທີ່ຄົ້ນຫາ',
             user: null
         })
     }
-
-    res.json({
-        status: 'success',
-        message: 'ພົບຂໍ້ມູນ 1 ລາຍການ',
-        user
-    })
 }

@@ -17,6 +17,7 @@ export const historiesPayByContractController = async (req: Request, res: Respon
             status: 'error',
             message: 'contract not found'
         })
+        return
     }
     const result = await invoicesByContractService({ contractId })
 

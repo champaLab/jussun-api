@@ -60,6 +60,7 @@ export const createProjectController = async (req: Request, res: Response) => {
             status: 'error',
             message: 'Company ID is required'
         })
+        return
     }
 
     const p = await createProjectService({
@@ -82,7 +83,9 @@ export const createProjectController = async (req: Request, res: Response) => {
             status: 'error',
             message: 'ລະຫັດໂຄງການນີ້ ມີໃນລະບົບແລ້ວ'
         })
+        return
     }
+
     await historyService({ req, description })
     res.json({
         status: 'success',
@@ -123,6 +126,7 @@ export const updateProjectController = async (req: Request, res: Response) => {
             status: 'error',
             message: 'ແກ້ໄຂໂຄງການ ຜິດພາດ ລອງໃໝ່ໃນພາຍຫຼັງ'
         })
+        return
     }
     await historyService({ req, description })
 
@@ -147,6 +151,7 @@ export const deleteProjectController = async (req: Request, res: Response) => {
             status: 'error',
             message: 'ລົບຂໍ້ມູນໂຄງການ ຜິດພາດ ລອງໃໝ່ໃນພາຍຫຼັງ'
         })
+        return
     }
     await historyService({ req, description })
 

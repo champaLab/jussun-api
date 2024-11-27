@@ -80,11 +80,13 @@ export const invoicePaidController = async (req: Request, res: Response) => {
             status: 'error',
             message: 'ບໍ່ພົບຂໍ້ມູນ ໃຈແຈ້ງໜີ້'
         })
+        return
     } else if ((inv && inv.paidDate) || inv.invoiceStatus === 'PAID') {
         res.json({
             status: 'error',
             message: 'ໃຈແຈ້ງໜີ້ ທີ່ທ່ານແຈ້ງການຊຳລະ ແມ່ນໄດ້ຖືກຊຳລະກ່ອນໜ້ານີ້ແລ້ວ'
         })
+        return
     }
 
     const contract: any = await findOneContractService(inv.contractId)
@@ -93,6 +95,7 @@ export const invoicePaidController = async (req: Request, res: Response) => {
             status: 'error',
             message: 'ບໍ່ພົບຂໍ້ມູນສັນຍາ'
         })
+        return
     }
 
     let debt: number = inv.debt ?? 0
@@ -128,6 +131,7 @@ export const invoicePaidController = async (req: Request, res: Response) => {
             status: 'ຳerror',
             message: 'ແຈ້ງຊຳລະ ຜິດພາດ ລອງໃໝ່ໃນພາຍຫຼັງ'
         })
+        return
     }
     const monthly = dayjs().add(1, 'month').format('MM/YYYY')
 
@@ -181,6 +185,7 @@ export const invoicePaidController = async (req: Request, res: Response) => {
                 status: 'error',
                 message: 'ປິດສັນຍາ ຜິດພາດ ລອງໃໝ່ໃນພາຍຫຼັງ'
             })
+            return
         }
     }
 
@@ -205,6 +210,7 @@ export const actionInvoiceController = async (req: Request, res: Response) => {
             status: 'error',
             message: 'ບໍ່ສາມາດຈ່ອງເອກະສານໄດ້'
         })
+        return
     }
 
     res.json({
@@ -225,6 +231,7 @@ export const addCommentInvoiceController = async (req: Request, res: Response) =
             status: 'error',
             message: 'ບັນທຶກຂໍ້ມູນຜິດພາດ ລອງໃໝ່ໃນພາຍຫຼັງ'
         })
+        return
     }
 
     res.json({
