@@ -76,7 +76,7 @@ model invoice {
   debt                Float?    @default(0) @db.Float
   contractId          Int
   currency            String    @db.VarChar(30)
-  numberOfInstallment Int       @default(0)
+  numberOfInstallment Int?      @default(0)
   comment             String?   @db.VarChar(255)
   monthly             String?   @db.VarChar(10)
   paymentMethod       String?   @db.VarChar(50)
@@ -102,7 +102,7 @@ model logs {
   userId      Int
   companyId   Int?
   ip          String?   @db.VarChar(100)
-  createdAt   DateTime? @default(now()) @db.Timestamp(0)
+  createdAt   DateTime? @default(now()) @db.DateTime(0)
   deletedAt   DateTime? @db.DateTime(0)
 }
 
