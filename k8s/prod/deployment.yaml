@@ -35,7 +35,7 @@ spec:
               memory: 2048Mi
           livenessProbe:
             tcpSocket:
-              port: 1177
+              port: 1188
             initialDelaySeconds: 5
             timeoutSeconds: 5
             successThreshold: 1
@@ -43,7 +43,7 @@ spec:
             periodSeconds: 10
           readinessProbe:
             tcpSocket:
-              port: 1177
+              port: 1188
             initialDelaySeconds: 5
             timeoutSeconds: 2
             successThreshold: 1
@@ -57,22 +57,22 @@ spec:
             - secretRef:
                 name: jwt-secret
           ports:
-            - containerPort: 1177
+            - containerPort: 1188
               name: http
           volumeMounts:
             - name: localtime
               mountPath: /etc/localtime
-            - name: vol-jussun
+            - name: vol-jussun-api
               mountPath: /app/logs
-              subPath: vol-jussun/logs-prod
-            - name: vol-jussun
+              subPath: vol-jussun-api/logs-prod
+            - name: vol-jussun-api
               mountPath: /app/uploads
-              subPath: vol-jussun/uploads-prod
+              subPath: vol-jussun-api/uploads-prod
       volumes:
         - name: localtime
           hostPath:
             path: /usr/share/zoneinfo/Asia/Bangkok
-        - name: vol-jussun
+        - name: vol-jussun-api
           nfs:
             path: /mnt/k8s
             server: gfs-01

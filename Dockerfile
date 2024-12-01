@@ -25,7 +25,7 @@ RUN yarn db
 RUN yarn build
 
 # Expose the desired port
-EXPOSE 1177
+EXPOSE 1188
 
 # Start the application
 CMD ["yarn", "serve"]

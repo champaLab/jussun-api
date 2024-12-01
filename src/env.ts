@@ -6,7 +6,7 @@ export default {
     SERVICE_NAME: process.env.SERVICE_NAME,
     NODE_ENV: process.env.NODE_ENV,
     NODE_HOST: process.env.NODE_HOST || '0.0.0.0',
-    NODE_PORT: parseInt(`${process.env.NODE_PORT}`) || 1177,
+    NODE_PORT: parseInt(`${process.env.NODE_PORT}`) || 1188,
     TZ: process.env.TZ || 'Aisa/Bangkok',
     PWD: process.env.PWD || process.cwd(),
     ENCRYPTION_KEY: process.env.ENCRYPTION_KEY,

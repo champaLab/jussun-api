@@ -14,5 +14,5 @@ spec:
     - name: jussun-api-port
       protocol: TCP
       port: 80
-      targetPort: 1177
+      targetPort: 1188
       nodePort: 30001
