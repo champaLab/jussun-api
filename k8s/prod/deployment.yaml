@@ -24,7 +24,7 @@ spec:
         - name: ghcr-secret
       containers:
         - name: jussun-api
-          image: ghcr.io/champalab/jussun-api:79c711ea16208f9edd62c50fc54ac4e4848b9e30
+          image: ghcr.io/champalab/jussun-api:2931e84e7d4c2fe7ce095e5ae2b4ef94af58f808
           imagePullPolicy: Always
           resources:
             requests:
