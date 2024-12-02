@@ -2,7 +2,7 @@ apiVersion: apps/v1
 kind: Deployment
 metadata:
   name: jussun-api
-  namespace: production
+  namespace: prod
   labels:
     app: jussun-api
 spec:
@@ -53,7 +53,7 @@ spec:
             - configMapRef:
                 name: jussun-api-config
             - secretRef:
-                name: database-jussun-api
+                name: jussun-api-database
             - secretRef:
                 name: jwt-secret
           ports:

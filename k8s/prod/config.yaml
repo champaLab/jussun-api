@@ -2,14 +2,14 @@ kind: ConfigMap
 apiVersion: v1
 metadata:
   name: jussun-api-config
-  namespace: production
+  namespace: prod
 data:
   NODE_ENV: "production"
   NODE_HOST: "0.0.0.0"
   NODE_PORT: "1188"
-  BASE_PATH: "/jutsun-api"
+  BASE_PATH: "/jussun-api"
   TZ: "Asia/Bangkok"
-  SERVICE_NAME: "jutsun-api"
+  SERVICE_NAME: "jussun-api"
   CRONTAB_SEND_REPORT_BY_SHOP: "false"
   CRONTAB_SEND_REPORT_BY_SHOP_TIME: "'0 1 * * *'"
   HOST_IMAGE: "https://jussun.com"
