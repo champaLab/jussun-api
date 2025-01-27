@@ -53,7 +53,7 @@ spec:
             - configMapRef:
                 name: jussun-api-config
             - secretRef:
-                name: jussun-api-database
+                name: database-jussun-api
             - secretRef:
                 name: jwt-secret
           ports:
