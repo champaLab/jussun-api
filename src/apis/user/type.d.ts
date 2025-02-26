@@ -5,7 +5,7 @@ export interface TUserPayloadModel {
     fullName: string
     userStatus: boolean
     companyTel: string | null
-    companyId: number | null
+    companyId: number
     fax: string | null
     logoPath: string | null
     companyName: string | null

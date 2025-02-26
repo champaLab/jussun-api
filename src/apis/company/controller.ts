@@ -7,7 +7,7 @@ import env from '../../env'
 
 export const companyForAutocompleteController = async (req: Request, res: Response) => {
     const payload = tokenPayloadService(req)
-    let companyId = payload.companyId
+    let companyId: any = payload.companyId
     if (payload.role === 'ADMIN' || payload.role === 'SUPERADMIN') {
         companyId = null
     }

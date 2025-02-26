@@ -47,6 +47,14 @@ import {
 import { createNewsController, deleteNewsController, getNewsController, updateNewsController } from './apis/news/controller'
 import { valNews } from './apis/news/validatotr'
 import { noticePaymentController } from './apis/payment/controller'
+import {
+    createProjectItemController,
+    deleteProjectItemController,
+    projectItemController,
+    projectItemForAutocompleteController,
+    updateProjectItemController
+} from './apis/projectsItem/controller'
+import { valProjectItemCreate } from './apis/projectsItem/validate'
 
 const router = Router()
 
@@ -70,8 +78,14 @@ router.post('/projects', verify, projectsController)
 router.post('/projects/create', verify, valProjectCreate, valResult, createProjectController)
 router.post('/projects/update', verify, valProjectUpdate, valResult, updateProjectController)
 router.delete('/projects/delete/:projectId', verify, deleteProjectController)
-
 router.get('/projects/autocomplete', verify, projectsForAutocompleteController)
+
+// Endpoint project item
+router.post('/project/items', verify, projectItemController)
+router.post('/project/items/create', verify, valProjectItemCreate, valResult, createProjectItemController)
+router.post('/project/items/update', verify, valProjectUpdate, valResult, updateProjectItemController)
+router.delete('/project/items/delete/:id', verify, deleteProjectItemController)
+router.get('/projects/items/autocomplete', verify, projectItemForAutocompleteController)
 
 router.post('/contracts', verify, valContract, valResult, contractController)
 router.post('/contracts/create', verify, valContractCreate, valResult, createContractController)

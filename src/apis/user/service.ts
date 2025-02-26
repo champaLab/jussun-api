@@ -152,7 +152,7 @@ export const mergePayloadUserService = (user: users, company: company | null) =>
         role: user.role ?? 'CUSTOMER',
         userStatus: user.userStatus ?? false,
         fullName: user.fullName,
-        companyId: user.companyId,
+        companyId: user.companyId ?? 0,
         fax: company ? company.fax : null,
         companyTel: company ? company.tel : null,
         logoPath: company ? company.logoPath : null,
