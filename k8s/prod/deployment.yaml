@@ -24,7 +24,7 @@ spec:
         - name: ghcr-secret
       containers:
         - name: jussun-api
-          image: ghcr.io/champalab/jussun-api:fcf116c29b45a78b76bc0ae5503d98e7ee93e17e
+          image: ghcr.io/champalab/jussun-api:a5fd9dde06ad5d06fd810b59a300c9ef1face960
           imagePullPolicy: Always
           resources:
             requests:
@@ -53,7 +53,7 @@ spec:
             - configMapRef:
                 name: jussun-api-config
             - secretRef:
-                name: jussun-api-database
+                name: database-jussun-api
             - secretRef:
                 name: jwt-secret
           ports:
