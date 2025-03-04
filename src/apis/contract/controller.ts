@@ -11,11 +11,13 @@ import {
     createInvoiceService,
     updateInvoiceService,
     finOneContractService,
-    updateContractInvoiceIdService
+    updateContractInvoiceIdService,
+    createContractWithCustomerService
 } from './service'
 import dayjs from 'dayjs'
 import { dateFormatter } from '../../utils/dateFormat'
 import { historyService } from '../../utils/createLog'
+import { contract_customer } from '@prisma/client'
 
 export const contractController = async (req: Request, res: Response) => {
     const payload = tokenPayloadService(req)
@@ -57,6 +59,7 @@ export const createContractController = async (req: Request, res: Response) => {
     const payDay = dayjs(req.body.payDay).add(7, 'hours').toDate()
     const price = Number(req.body.price)
     const projectId = Number(req.body.projectId)
+    const customers: any[] = req.body.customers
     const customerIdOne = Number(req.body.customerIdOne)
     const customerIdTwo = req.body.customerIdTwo ? Number(req.body.customerIdTwo) : null
     const totalPrice = price * area
@@ -74,124 +77,145 @@ export const createContractController = async (req: Request, res: Response) => {
     const invoiceStatus = 'PENDING'
     const paidNow = null
 
-    const contract = await finOneContractService({ docId })
-    if (contract) {
-        res.json({
-            status: 'error',
-            message: 'ເລກທີເອກະສານນີ້ ມີໃນລະບົບແລ້ວ'
+    try {
+        const contract = await finOneContractService({ docId })
+        if (contract) {
+            res.json({
+                status: 'error',
+                message: 'ເລກທີເອກະສານນີ້ ມີໃນລະບົບແລ້ວ'
+            })
+            return
+        }
+
+        const project: any = await finOneProjectService({ projectId })
+
+        if (!project) {
+            res.json({
+                status: 'error',
+                message: 'ບໍ່ພົບຂໍ້ມູນ ໂຄງການ'
+            })
+            return
+        }
+
+        const newArea = project.area - area
+        if (newArea < 0) {
+            res.json({
+                status: 'error',
+                message: `ເນື້ອທີ່ໂຄງການ ບໍ່ພຽງພໍ, ເນື້ອທີ່ທັງໝົດ ${(project.area - area).toLocaleString()}`
+            })
+            return
+        }
+
+        const projectArea = await updateProjectAreaService({ area: newArea, projectId })
+        if (!projectArea) {
+            res.json({
+                status: 'error',
+                message: 'ແກ້ໄຂເນື້ອທີ່ ໂຄງການ ຜິດພາດ ລອງໃໝ່ໃນພາຍຫຼັງ'
+            })
+            return
+        }
+
+        const p: any = await createContractService({
+            area,
+            companyId,
+            createdBy,
+            contractId,
+            createdAt,
+            currency,
+            docId,
+            modeOfPayment,
+            numberOfInstallment,
+            payInAdvance,
+            payDay,
+            price,
+            projectId,
+            totalPrice,
+            updatedAt,
+            updatedBy,
+            customerIdOne,
+            customerIdTwo,
+            contractStatus,
+            cancelAt: null,
+            cancelBy: null,
+            reason: null,
+            lastInvoice: null,
+            deletedAt: null,
+            deletedBy: null
         })
-        return
-    }
+        if (!p) {
+            res.json({
+                status: 'error',
+                message: 'ສ້າງໂຄງການ ຜິດພາດ ລອງໃໝ່ໃນພາຍຫຼັງ'
+            })
+            return
+        }
 
-    const project: any = await finOneProjectService({ projectId })
+        const monthly = dayjs().format('MM/YYYY')
 
-    if (!project) {
-        res.json({
-            status: 'error',
-            message: 'ບໍ່ພົບຂໍ້ມູນ ໂຄງການ'
+        console.log({ monthly })
+        console.log('-'.repeat(100))
+
+        const createInv: any = await createInvoiceService({
+            amount,
+            debt,
+            contractId: p.contractId,
+            createdAt,
+            currency: p.currency ?? 'LAK',
+            fines: 0,
+            invoiceId: 1,
+            invoiceStatus,
+            paidDate: paidNow,
+            updatedAt: paidNow,
+            paymentMethod,
+            currencyExchange: null,
+            exchangeRate: null,
+            createdBy: null,
+            reservedAt: null,
+            reservedBy: null,
+            comment: null,
+            monthly,
+            billPath,
+            remindSentDate: null,
+            remindSentTime: null,
+            numberOfInstallment
         })
-        return
-    }
 
-    const newArea = project.area - area
-    if (newArea < 0) {
+        const contractCus: Pick<contract_customer, 'companyId' | 'contractId' | 'customerId' | 'createdAt'>[] = []
+
+        for (const cus in customers) {
+            contractCus.push({
+                contractId: p.contractId,
+                customerId: cus['customerId'],
+                createdAt,
+                companyId
+            })
+        }
+
+        await createContractWithCustomerService(contractCus)
+
+        if (!createInv) {
+            res.json({
+                status: 'error',
+                message: 'ສ້າງໃບແຈ້ງໜີ້ ຜິດພາດ ລອງໃໝ່ໃນພາຍຫຼັງ'
+            })
+            return
+        }
+
+        await updateContractInvoiceIdService(p.contractId, createInv.invoiceId)
+
+        await historyService({ req, description })
+
         res.json({
-            status: 'error',
-            message: `ເນື້ອທີ່ໂຄງການ ບໍ່ພຽງພໍ, ເນື້ອທີ່ທັງໝົດ ${(project.area - area).toLocaleString()}`
+            status: 'success',
+            message: 'ສ້າງໂຄງການ ສຳເລັດແລ້ວ'
         })
-        return
-    }
-
-    const projectArea = await updateProjectAreaService({ area: newArea, projectId })
-    if (!projectArea) {
+    } catch (error) {
+        console.log(error)
         res.json({
-            status: 'error',
-            message: 'ແກ້ໄຂເນື້ອທີ່ ໂຄງການ ຜິດພາດ ລອງໃໝ່ໃນພາຍຫຼັງ'
+            status: 'success',
+            message: 'ສ້າງໂຄງການ ສຳເລັດແລ້ວ'
         })
-        return
     }
-
-    const p: any = await createContractService({
-        area,
-        companyId,
-        createdBy,
-        contractId,
-        createdAt,
-        currency,
-        docId,
-        modeOfPayment,
-        numberOfInstallment,
-        payInAdvance,
-        payDay,
-        price,
-        projectId,
-        totalPrice,
-        updatedAt,
-        updatedBy,
-        customerIdOne,
-        customerIdTwo,
-        contractStatus,
-        cancelAt: null,
-        cancelBy: null,
-        reason: null,
-        lastInvoice: null,
-        deletedAt: null,
-        deletedBy: null
-    })
-    if (!p) {
-        res.json({
-            status: 'error',
-            message: 'ສ້າງໂຄງການ ຜິດພາດ ລອງໃໝ່ໃນພາຍຫຼັງ'
-        })
-        return
-    }
-
-    const monthly = dayjs().format('MM/YYYY')
-
-    console.log({ monthly })
-    console.log('-'.repeat(100))
-
-    const createInv: any = await createInvoiceService({
-        amount,
-        debt,
-        contractId: p.contractId,
-        createdAt,
-        currency: p.currency ?? 'LAK',
-        fines: 0,
-        invoiceId: 1,
-        invoiceStatus,
-        paidDate: paidNow,
-        updatedAt: paidNow,
-        paymentMethod,
-        currencyExchange: null,
-        exchangeRate: null,
-        createdBy: null,
-        reservedAt: null,
-        reservedBy: null,
-        comment: null,
-        monthly,
-        billPath,
-        remindSentDate: null,
-        remindSentTime: null,
-        numberOfInstallment
-    })
-
-    if (!createInv) {
-        res.json({
-            status: 'error',
-            message: 'ສ້າງໃບແຈ້ງໜີ້ ຜິດພາດ ລອງໃໝ່ໃນພາຍຫຼັງ'
-        })
-        return
-    }
-
-    await updateContractInvoiceIdService(p.contractId, createInv.invoiceId)
-
-    await historyService({ req, description })
-
-    res.json({
-        status: 'success',
-        message: 'ສ້າງໂຄງການ ສຳເລັດແລ້ວ'
-    })
 }
 
 export const updateContractController = async (req: Request, res: Response) => {

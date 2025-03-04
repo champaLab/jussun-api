@@ -4,23 +4,23 @@ import prismaClient from '../../prisma'
 import env from '../../env'
 import { today } from '../../utils/dateFormat'
 
-export const projectsForAutocompleteService = async ({ companyId }: { companyId: number }) => {
+export const projectsForAutocompleteService = async ({ companyId, projectId }: { companyId: number; projectId: number }) => {
     console.log({ companyId })
     try {
         const p = await prismaClient.project_item.findMany({
-            where: { companyId, deletedAt: null },
+            where: { companyId, deletedAt: null, projectId },
             select: {
                 title: true,
                 code: true,
                 id: true
             },
-            orderBy: { area: 'desc' }
+            orderBy: { createdAt: 'desc' }
         })
 
         return p
     } catch (err) {
         logger.error(err)
-        return { count: 1, projects: [] }
+        return []
     } finally {
         prismaClient.$disconnect()
     }

@@ -1,4 +1,4 @@
-import { contracts, invoice, Prisma, projects } from '@prisma/client'
+import { contract_customer, contracts, invoice, Prisma, projects } from '@prisma/client'
 import logger from '../../configs/winston'
 import prismaClient from '../../prisma'
 import env from '../../env'
@@ -18,6 +18,18 @@ export const finOneProjectService = async (data: { projectId: number }) => {
     } catch (err) {
         logger.error(err)
         return null
+    }
+}
+
+export const createContractWithCustomerService = async (data: Pick<contract_customer, 'companyId' | 'contractId' | 'customerId' | 'createdAt'>[]) => {
+    try {
+        const p = await prismaClient.contract_customer.createMany({
+            data: data
+        })
+        return p
+    } catch (err) {
+        logger.error(err)
+        throw err
     }
 }
 

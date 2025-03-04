@@ -7,7 +7,8 @@ import { historyService } from '../../utils/createLog'
 export const projectItemForAutocompleteController = async (req: Request, res: Response) => {
     const payload = tokenPayloadService(req)
     const companyId = payload.companyId
-    const projects = await projectsForAutocompleteService({ companyId })
+    const projectId = Number(req.params.projectId)
+    const projects = await projectsForAutocompleteService({ companyId, projectId })
 
     res.json(projects)
 }

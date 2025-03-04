@@ -85,7 +85,7 @@ router.post('/project/items', verify, projectItemController)
 router.post('/project/items/create', verify, valProjectItemCreate, valResult, createProjectItemController)
 router.post('/project/items/update', verify, valProjectUpdate, valResult, updateProjectItemController)
 router.delete('/project/items/delete/:id', verify, deleteProjectItemController)
-router.get('/projects/items/autocomplete', verify, projectItemForAutocompleteController)
+router.get('/projects/items/autocomplete/:projectId', verify, projectItemForAutocompleteController)
 
 router.post('/contracts', verify, valContract, valResult, contractController)
 router.post('/contracts/create', verify, valContractCreate, valResult, createContractController)

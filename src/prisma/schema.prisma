@@ -150,7 +150,7 @@ model payment_method {
 model projects {
   projectId    Int            @id @default(autoincrement())
   companyId    Int
-  area         Float          @db.Float
+  area         Float?         @db.Float
   code         String?        @unique(map: "code") @db.VarChar(50)
   projectName  String         @db.VarChar(200)
   address      String?        @db.VarChar(100)
@@ -206,16 +206,16 @@ model users {
 
 model contract_customer {
   id         Int       @id @default(autoincrement())
-  comapnyId  Int
+  companyId  Int
   customerId Int
   contractId Int
   createdAt  DateTime? @db.DateTime(0)
   updatedAt  DateTime? @db.DateTime(0)
-  company    company   @relation(fields: [comapnyId], references: [companyId], onUpdate: Restrict, map: "contract_customer_company_companyId_fk")
+  company    company   @relation(fields: [companyId], references: [companyId], onUpdate: Restrict, map: "contract_customer_company_companyId_fk")
   contracts  contracts @relation(fields: [contractId], references: [contractId], onUpdate: Restrict, map: "contract_customer_contracts_contractId_fk")
   users      users     @relation(fields: [customerId], references: [userId], onUpdate: Restrict, map: "contract_customer_users_userId_fk")
 
-  @@index([comapnyId], map: "contract_customer_company_companyId_fk")
+  @@index([companyId], map: "contract_customer_company_companyId_fk")
   @@index([contractId], map: "contract_customer_contracts_contractId_fk")
   @@index([customerId], map: "contract_customer_users_userId_fk")
 }
@@ -228,8 +228,9 @@ model project_item {
   companyId Int
   area      Float
   code      String               @db.VarChar(50)
-  createdAt DateTime             @db.DateTime(0)
-  status    project_item_status?
+  price     Float?
+  createdAt DateTime             @default(now()) @db.DateTime(0)
+  status    project_item_status? @default(ACTIVE)
   updatedAt DateTime?            @db.DateTime(0)
   deletedAt DateTime?            @db.DateTime(0)
   company   company              @relation(fields: [companyId], references: [companyId], onUpdate: Restrict, map: "project_item_company_companyId_fk")
