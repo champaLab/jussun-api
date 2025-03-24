@@ -5,34 +5,57 @@ import env from '../../env'
 import dayjs from 'dayjs'
 import { ResInvoice, ResContract } from './type'
 
-export const historiesPayByContractService = async (data: { contractId: number }): Promise<ResContract | null> => {
+export const historiesPayByContractService = async (data: { contractId: number }) => {
     const { contractId } = data
 
     console.log({ contractId })
 
     try {
-        const result: ResContract[] = await prismaClient.$queryRaw`
-            SELECT c.*,
-                CONCAT(u1.fullName, ' ', u1.lastName) customerOne,
-                u1.tel  telCustomerOne,
-                CONCAT(u2.fullName, ' ', u2.lastName) customerTwo,
-                u1.tel  telCustomerTwo,
-                pj.projectName,
-                cp.companyName,
-                cp.address,
-                cp.tel companyContact,
-                cp.logoPath,
-                CONCAT(u3.fullName, ' ', u3.lastName) createdBy
-            FROM contracts c
-                    LEFT JOIN users u1 on u1.userId = c.customerIdOne
-                    LEFT JOIN users u2 on u2.userId = c.customerIdTwo
-                    LEFT JOIN users u3 on u3.userId = c.createdBy
-                    LEFT JOIN projects pj on pj.projectId = c.projectId
-                    LEFT JOIN company cp on cp.companyId = c.companyId
-            WHERE c.contractId = ${contractId}
-        `
+        const result = await prismaClient.contracts.findFirst({
+            where: {
+                contractId
+            },
+            include: {
+                contract_customer: {
+                    select: {
+                        users: {
+                            select: { fullName: true, lastName: true }
+                        }
+                    }
+                },
+                company: {
+                    select: {
+                        companyName: true,
+                        address: true,
+                        logoPath: true,
+                        tel: true
+                    }
+                },
+                schedules: true,
+                users_contracts_customerIdTousers: {
+                    select: { fullName: true, lastName: true }
+                },
+                project_item: {
+                    select: {
+                        title: true,
+                        code: true
+                    }
+                },
+                projects: {
+                    select: {
+                        projectName: true
+                    }
+                },
+                users_contracts_createdByTousers: {
+                    select: {
+                        fullName: true,
+                        lastName: true
+                    }
+                }
+            }
+        })
 
-        return result[0]
+        return result
     } catch (err) {
         logger.error(err)
         return null
@@ -41,16 +64,22 @@ export const historiesPayByContractService = async (data: { contractId: number }
     }
 }
 
-export const invoicesByContractService = async (data: { contractId: number }) => {
-    const { contractId } = data
+export const invoicesByContractService = async ({ contractId }: { contractId: number }) => {
     try {
-        const p: ResInvoice[] = await prismaClient.$queryRaw`
-            SELECT inv.*,
-                CONCAT(u1.fullName, ' ', u1.lastName) receiptBy
-            FROM invoice inv
-                    LEFT JOIN users u1 on u1.userId = inv.createdBy
-            WHERE inv.contractId = ${contractId}
-        `
+        // const p: ResInvoice[] = await prismaClient.$queryRaw`
+        //     SELECT inv.*,
+        //         CONCAT(u1.fullName, ' ', u1.lastName) receiptBy
+        //     FROM invoice inv
+        //             LEFT JOIN users u1 on u1.userId = inv.createdBy
+        //     WHERE inv.contractId = ${contractId}
+        // `
+
+        const p = await prismaClient.invoice.findMany({
+            where: {
+                contractId
+            },
+            include: {}
+        })
         return p
     } catch (err) {
         logger.error(err)

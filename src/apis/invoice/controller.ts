@@ -140,38 +140,39 @@ export const invoicePaidController = async (req: Request, res: Response) => {
         const numberOfInstallment = countInv > (contract.numberOfInstallment ?? 1) ? 1 : (contract.numberOfInstallment ?? 1) - countInv
         const amount = inv.amount / numberOfInstallment
 
-        const createInv: any = await createInvoiceService({
-            amount: amount,
-            debt,
-            contractId: inv.contractId,
-            createdAt: paidDate,
-            currency: inv.currency,
-            fines: 0,
-            invoiceId: 1,
-            invoiceStatus: 'PENDING',
-            paidDate: null,
-            updatedAt: null,
-            paymentMethod: null,
-            currencyExchange: null,
-            exchangeRate: null,
-            createdBy: null,
-            reservedAt: null,
-            reservedBy: null,
-            comment: null,
-            monthly,
-            billPath,
-            remindSentDate: null,
-            remindSentTime: null,
-            numberOfInstallment
-        })
-        if (!createInv) {
-            res.json({
-                status: 'error',
-                message: 'ສ້າງໃບແຈ້ງໜີ້ ຜິດພາດ ລອງໃໝ່ໃນພາຍຫຼັງ'
-            })
-        }
+        // const createInv: any = await createInvoiceService({
+        //     amount: amount,
+        //     debt,
+        //     contractId: inv.contractId,
+        //     createdAt: paidDate,
+        //     currency: inv.currency,
+        //     fines: 0,
+        //     invoiceId: 1,
+        //     invoiceStatus: 'PENDING',
+        //     paidDate: null,
+        //     updatedAt: null,
+        //     paymentMethod: null,
+        //     currencyExchange: null,
+        //     exchangeRate: null,
+        //     createdBy: null,
+        //     reservedAt: null,
+        //     reservedBy: null,
+        //     comment: null,
+        //     monthly,
+        //     billPath,
+        //     remindSentDate: null,
+        //     remindSentTime: null,
+        //     numberOfInstallment,
+        //     projectId: contract.projectId
+        // })
+        // if (!createInv) {
+        //     res.json({
+        //         status: 'error',
+        //         message: 'ສ້າງໃບແຈ້ງໜີ້ ຜິດພາດ ລອງໃໝ່ໃນພາຍຫຼັງ'
+        //     })
+        // }
 
-        await updateContractInvoiceIdService(inv.contractId, createInv.invoiceId)
+        // await updateContractInvoiceIdService(inv.contractId, createInv.invoiceId)
     } else {
         const closeContract = await closeContractService({
             contractId: inv.contractId,

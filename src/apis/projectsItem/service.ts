@@ -8,11 +8,13 @@ export const projectsForAutocompleteService = async ({ companyId, projectId }: {
     console.log({ companyId })
     try {
         const p = await prismaClient.project_item.findMany({
-            where: { companyId, deletedAt: null, projectId },
+            where: { companyId, deletedAt: null, contractId: null, projectId },
             select: {
                 title: true,
                 code: true,
-                id: true
+                id: true,
+                area: true,
+                price: true
             },
             orderBy: { createdAt: 'desc' }
         })

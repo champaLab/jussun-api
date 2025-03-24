@@ -29,7 +29,7 @@ import { valProjectCreate, valProjectUpdate } from './apis/projects/validate'
 import { valResult } from './utils/validateResult'
 import { valInvoicePaidToday } from './apis/payment/validate'
 import { actionInvoiceController, addCommentInvoiceController, invoicePaidController, invoicePaydayController } from './apis/invoice/controller'
-import { createExchangeController, readExchangeController, updateExchangeController } from './apis/exchange/controller'
+import { createExchangeController, readExchangeController, readExchangeTodayController, updateExchangeController } from './apis/exchange/controller'
 import { valCreateExchange, valReadExchange, valUpdateExchange } from './apis/exchange/validate'
 import { valUpdateInvoice } from './apis/invoice/validate'
 import { getReportsController, readReportController } from './apis/reports/controller'
@@ -85,7 +85,7 @@ router.post('/project/items', verify, projectItemController)
 router.post('/project/items/create', verify, valProjectItemCreate, valResult, createProjectItemController)
 router.post('/project/items/update', verify, valProjectUpdate, valResult, updateProjectItemController)
 router.delete('/project/items/delete/:id', verify, deleteProjectItemController)
-router.get('/projects/items/autocomplete/:projectId', verify, projectItemForAutocompleteController)
+router.get('/project/items/autocomplete/:projectId', verify, projectItemForAutocompleteController)
 
 router.post('/contracts', verify, valContract, valResult, contractController)
 router.post('/contracts/create', verify, valContractCreate, valResult, createContractController)
@@ -103,6 +103,7 @@ router.post('/remind-to-pay', verify, valRemind, valResult, sentRemindToPayContr
 
 // TODO:Exchange endpoint
 router.post('/exchanges', verify, valReadExchange, valResult, readExchangeController)
+router.get('/exchanges/today', verify, readExchangeTodayController)
 router.post('/exchanges/create', verify, valCreateExchange, valResult, createExchangeController)
 router.post('/exchanges/update', verify, valUpdateExchange, valResult, updateExchangeController)
 

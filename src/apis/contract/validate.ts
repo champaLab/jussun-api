@@ -23,9 +23,19 @@ export const valContractCreate = [
             return true
         }),
     body('payDay').not().isEmpty().withMessage('ກະລຸນາປ້ອນ ວັນທີນັດຊຳລະ').isISO8601().withMessage('ວັນທີນັດຊຳລະຕ້ອງເປັນວັນທີ'),
-    body('price').not().isEmpty().withMessage('ກະລຸນາປ້ອນ ຍອດເງິນ'),
+    body('price').not().isEmpty().withMessage('ກະລຸນາປ້ອນ ລາຄາ'),
     body('projectId').not().isEmpty().withMessage('ກະລຸນາເລືອກ ໂຄງການ'),
-    body('customerIdOne').not().isEmpty().withMessage('ກະລຸນາເລືອກ ລູກຄ້າ')
+
+    body('customers')
+        .isArray({ min: 1 })
+        .withMessage('ກະລຸນາເລືອກ ລູກຄ້າ')
+        .bail()
+        .custom((value) => {
+            if (!value.every((item: any) => item)) {
+                throw new Error('ກະລຸນາເລືອກ ລູກຄ້າ ຢ່າງໜ້ອຍ 1 ຄົນ')
+            }
+            return true
+        })
 ]
 
 export const valContractUpdate = [

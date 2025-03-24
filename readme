@@ -1,42 +1,7 @@
-# pull data from github
-git pull --no-rebase
-
-
-#Create new branch
-git checkout -b feat/...
-
-
-#Merge data from another branch
-git merge  Branch-name --no-ff
-
-
-#step create API 
-1 create Service 
-2 create controller
-3 validater
-4 add router 
-
-
-docker-compose build 
-docker-compose up -d --build
-docker-compose logs -f
-docker ps
-docker-compose down
-
-
-
-
-sudo systemctl daemon-reload
-sudo systemctl start nodejs1
-sudo systemctl enable nodejs1
-
-sudo systemctl start nodejs2
-sudo systemctl enable nodejs2
-
-sudo systemctl start nodejs3
-sudo systemctl enable nodejs3
-
-
-database 
-user: admin
-pass : Admin@8899
+CREATE USER 'jussun' @'%' IDENTIFIED BY 'jussun@^9999';
+ALTER USER 'jussun' @'%' IDENTIFIED BY 'jussun@^9999';
+FLUSH PRIVILEGES;
+GRANT ALL PRIVILEGES ON jussun.* TO 'jussun' @'%';
+FLUSH PRIVILEGES;
+TODO: - create customer_contract -
+update project_item - create customer_contract - create invoice

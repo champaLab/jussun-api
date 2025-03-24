@@ -1,8 +1,10 @@
-import { contract_customer, contracts, invoice, Prisma, projects } from '@prisma/client'
+import { contract_customer, contracts, invoice, Prisma, projects, schedules } from '@prisma/client'
 import logger from '../../configs/winston'
 import prismaClient from '../../prisma'
 import env from '../../env'
 import dayjs from 'dayjs'
+import { PrismaTSX } from './type'
+import { today } from '../../utils/dateFormat'
 
 export const finOneProjectService = async (data: { projectId: number }) => {
     try {
@@ -21,11 +23,28 @@ export const finOneProjectService = async (data: { projectId: number }) => {
     }
 }
 
-export const createContractWithCustomerService = async (data: Pick<contract_customer, 'companyId' | 'contractId' | 'customerId' | 'createdAt'>[]) => {
+export const createContractWithCustomerService = async (
+    prisma: PrismaTSX,
+    data: Pick<contract_customer, 'companyId' | 'contractId' | 'customerId' | 'createdAt'>[]
+) => {
     try {
-        const p = await prismaClient.contract_customer.createMany({
+        const p = await prisma.contract_customer.createMany({
             data: data
         })
+
+        return p
+    } catch (err) {
+        logger.error(err)
+        throw err
+    }
+}
+
+export const createScheduleService = async (prisma: PrismaTSX, data: Pick<schedules, 'date' | 'contractId' | 'modeOfPayment'>[]) => {
+    try {
+        const p = await prisma.schedules.createMany({
+            data: data
+        })
+
         return p
     } catch (err) {
         logger.error(err)
@@ -50,23 +69,20 @@ export const finOneContractService = async (data: { docId: string }) => {
     }
 }
 
-export const updateProjectAreaService = async (data: { projectId: number; area: number }) => {
-    console.log('updateProjectAreaService == ', data)
+export const updateProjectItemService = async ({ prisma, projectId, contractId }: { projectId: number[]; contractId: number; prisma: PrismaTSX }) => {
+    console.log('updateProjectAreaService == ', projectId, contractId)
     try {
-        const p = await prismaClient.projects.update({
-            where: {
-                projectId: data.projectId
-            },
+        const p = await prisma.project_item.updateMany({
+            where: { id: { in: projectId } },
             data: {
-                area: data.area
+                contractId: contractId,
+                status: 'SOLD',
+                updatedAt: today()
             }
         })
         return p
     } catch (err) {
-        logger.error(err)
-        return null
-    } finally {
-        await prismaClient.$disconnect()
+        throw err
     }
 }
 
@@ -91,9 +107,6 @@ export const contractService = async (data: {
                 OR u.fullName LIKE ${_key}
                 OR u.lastName LIKE ${_key}
                 OR u.tel = ${key}
-                OR u2.fullName LIKE ${_key}
-                OR u2.lastName LIKE ${_key}
-                OR u2.tel = ${key}
                 OR inv.invoiceId = ${key}
             )
         `
@@ -104,14 +117,12 @@ export const contractService = async (data: {
 
     const query = Prisma.sql`
         SELECT c.*, p.projectName, 
-            u.fullName AS fullNameOne, u.lastName AS lastNameOne,
-            u2.fullName AS fullNameTwo, u2.lastName AS lastNameTwo,
-            u.tel AS telCustomerOne, u2.tel AS telCustomerTwo,
-            inv.*
+            CONCAT(u.fullName, ' ', u.lastName) fullName,
+            u.tel AS tel, 
+            inv.invoiceId
         FROM contracts c
         LEFT JOIN projects p ON c.projectId = p.projectId
-        LEFT JOIN users u ON c.customerIdOne = u.userId
-        LEFT JOIN users u2 ON c.customerIdTwo = u2.userId
+        LEFT JOIN users u ON c.customerId = u.userId
         LEFT JOIN invoice inv ON c.lastInvoice = inv.invoiceId
         ${whereConditions}
         ORDER BY c.createdAt DESC
@@ -122,8 +133,7 @@ export const contractService = async (data: {
         SELECT COUNT(*) AS totalCount
         FROM contracts c
         LEFT JOIN projects p ON c.projectId = p.projectId
-        LEFT JOIN users u ON c.customerIdOne = u.userId
-        LEFT JOIN users u2 ON c.customerIdTwo = u2.userId
+        LEFT JOIN users u ON c.customerId = u.userId
         LEFT JOIN invoice inv ON c.lastInvoice = inv.invoiceId
         ${whereConditions}
         GROUP BY c.contractId
@@ -144,24 +154,43 @@ export const contractService = async (data: {
     }
 }
 
-export const createContractService = async (data: contracts) => {
-    const { contractId, ...newData } = data
-    console.log(data)
+export const createContractService = async (
+    prisma: PrismaTSX,
+    data: Pick<
+        contracts,
+        | 'companyId'
+        | 'projectId'
+        | 'docId'
+        | 'createdAt'
+        | 'area'
+        | 'currency'
+        | 'modeOfPayment'
+        | 'numberOfInstallment'
+        | 'createdBy'
+        | 'payInAdvance'
+        | 'totalPrice'
+        | 'payDay'
+        | 'price'
+        | 'customerId'
+    >
+) => {
     try {
-        const p = await prismaClient.contracts.create({
-            data: newData
+        const p = await prisma.contracts.create({
+            data: data,
+            select: { contractId: true }
         })
         return p
     } catch (err) {
         logger.error(err)
         console.error(err)
-        return null
+        throw err
     }
 }
 
-export const updateContractInvoiceIdService = async (contract: number, invoiceId: number) => {
+export const updateContractInvoiceIdService = async (contract: number, invoiceId: number, prisma?: PrismaTSX) => {
     try {
-        const p = await prismaClient.contracts.update({
+        if (!prisma) prisma = prismaClient
+        const p = await prisma.contracts.update({
             where: { contractId: contract },
             data: { lastInvoice: invoiceId }
         })
@@ -173,15 +202,31 @@ export const updateContractInvoiceIdService = async (contract: number, invoiceId
     }
 }
 
-export const updateContractService = async (data: contracts) => {
-    const { cancelAt, createdAt, ...newData } = data
-
+export const updateContractService = async (
+    data: Pick<
+        contracts,
+        | 'contractId'
+        | 'companyId'
+        | 'projectId'
+        | 'docId'
+        | 'createdAt'
+        | 'area'
+        | 'currency'
+        | 'modeOfPayment'
+        | 'numberOfInstallment'
+        | 'createdBy'
+        | 'payInAdvance'
+        | 'totalPrice'
+        | 'payDay'
+        | 'price'
+    >
+) => {
     try {
         const p = await prismaClient.contracts.update({
             where: {
                 contractId: data.contractId
             },
-            data: newData
+            data: data
         })
         return p
     } catch (err) {
@@ -191,21 +236,17 @@ export const updateContractService = async (data: contracts) => {
     }
 }
 
-export const createInvoiceService = async (data: invoice) => {
-    const { invoiceId, ...newData } = data
-    console.log({ newData })
-
+export const createInvoiceService = async (
+    prisma: PrismaTSX,
+    data: Pick<invoice, 'amount' | 'billPath' | 'contractId' | 'createdAt' | 'currency' | 'debt' | 'fines' | 'monthly' | 'projectId'>
+) => {
     try {
-        const p = await prismaClient.invoice.create({
-            data: newData
+        const p = await prisma.invoice.create({
+            data: data
         })
         return p
     } catch (err) {
-        logger.error(err)
-        console.log(err)
-        return null
-    } finally {
-        await prismaClient.$disconnect()
+        throw err
     }
 }
 

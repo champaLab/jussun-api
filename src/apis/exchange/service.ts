@@ -3,12 +3,28 @@ import logger from '../../configs/winston'
 import prismaClient from '../../prisma'
 import env from '../../env'
 
+export const readExchangeTodayService = async (data: { companyId: number }) => {
+    try {
+        const p = await prismaClient.exchange.findFirstOrThrow({
+            where: { companyId: data.companyId },
+            orderBy: { createdAt: 'desc' }
+        })
+
+        return p
+    } catch (err) {
+        logger.error(err)
+        console.log(err)
+        throw err
+    } finally {
+        await prismaClient.$disconnect()
+    }
+}
 export const readExchangeService = async (data: { companyId: number; dateStart: string; dateEnd: string; page: number }) => {
     console.log('readExchangeService', data)
     const skip = (data.page - 1) * env.ROW_PER_PAGE
     const take = env.ROW_PER_PAGE
     const { companyId, dateStart, dateEnd } = data
-    console.log('@@@', data)
+
     try {
         if (dateStart && dateEnd) {
             const totalPage: any[] = await prismaClient.$queryRaw`

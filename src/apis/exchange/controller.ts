@@ -1,10 +1,28 @@
 import { historyService } from './../../utils/createLog'
 import { Request, Response } from 'express'
-import { createExchangeService, readExchangeService, updateExchangeService } from './service'
+import { createExchangeService, readExchangeService, readExchangeTodayService, updateExchangeService } from './service'
 import { tokenPayloadService } from '../user/service'
 import { dateFormatter, today } from '../../utils/dateFormat'
 import dayjs from 'dayjs'
 
+export const readExchangeTodayController = async (req: Request, res: Response) => {
+    const payload = tokenPayloadService(req)
+    const companyId = Number(payload.companyId)
+
+    try {
+        const exchange = await readExchangeTodayService({ companyId })
+
+        res.json({
+            status: 'success',
+            exchange
+        })
+    } catch (error) {
+        res.json({
+            status: 'error',
+            exchange: null
+        })
+    }
+}
 export const readExchangeController = async (req: Request, res: Response) => {
     const payload = tokenPayloadService(req)
     const companyId = Number(payload.companyId)
@@ -44,6 +62,7 @@ export const createExchangeController = async (req: Request, res: Response) => {
     const updatedBy = payload.userId
     const thb = parseFloat(req.body.thb)
     const usd = parseFloat(req.body.usd)
+    const chy = parseFloat(req.body.chy)
     const description = 'ເພີ່ມອັດຕາແລກປ່ຽນ'
     const create = await createExchangeService({
         companyId,
@@ -52,6 +71,7 @@ export const createExchangeController = async (req: Request, res: Response) => {
         deletedAt,
         exchangeId,
         thb,
+        chy,
         updatedAt,
         updatedBy,
         usd,
@@ -87,6 +107,7 @@ export const updateExchangeController = async (req: Request, res: Response) => {
     const updatedBy = payload.userId
     const thb = parseFloat(req.body.thb)
     const usd = parseFloat(req.body.usd)
+    const chy = parseFloat(req.body.chy)
     const description = 'ແກ້ໄຂອັດຕາເເລກປ່ຽນ'
 
     const update = await updateExchangeService({
@@ -96,6 +117,7 @@ export const updateExchangeController = async (req: Request, res: Response) => {
         deletedAt,
         exchangeId,
         thb,
+        chy,
         updatedAt,
         updatedBy,
         usd,

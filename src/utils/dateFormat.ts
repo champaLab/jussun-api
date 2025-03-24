@@ -18,7 +18,8 @@ export function dateTimeFormat(date: Date | string | any): string {
     return result
 }
 
-export const today = (date = new Date()) => {
+export const today = (date?: Date | string) => {
+    if (!date) return dayjs().toDate()
     return dayjs(dayjs(date).add(7, 'hours').format()).toDate()
 }
 
