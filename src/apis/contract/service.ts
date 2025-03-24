@@ -238,7 +238,7 @@ export const updateContractService = async (
 
 export const createInvoiceService = async (
     prisma: PrismaTSX,
-    data: Pick<invoice, 'amount' | 'billPath' | 'contractId' | 'createdAt' | 'currency' | 'debt' | 'fines' | 'monthly' | 'projectId'>
+    data: Pick<invoice, 'amount' | 'billPath' | 'contractId' | 'createdAt' | 'currency' | 'debt' | 'fines' | 'monthly' | 'projectId'|"companyId">
 ) => {
     try {
         const p = await prisma.invoice.create({

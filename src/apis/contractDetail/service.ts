@@ -66,19 +66,21 @@ export const historiesPayByContractService = async (data: { contractId: number }
 
 export const invoicesByContractService = async ({ contractId }: { contractId: number }) => {
     try {
-        // const p: ResInvoice[] = await prismaClient.$queryRaw`
-        //     SELECT inv.*,
-        //         CONCAT(u1.fullName, ' ', u1.lastName) receiptBy
-        //     FROM invoice inv
-        //             LEFT JOIN users u1 on u1.userId = inv.createdBy
-        //     WHERE inv.contractId = ${contractId}
-        // `
-
+         
         const p = await prismaClient.invoice.findMany({
             where: {
                 contractId
             },
-            include: {}
+            include: {
+                company:{
+                    select: {
+                        address: true,
+                        companyName: true,
+                        tel: true,
+                        logoPath: true
+                    }
+                }
+            }
         })
         return p
     } catch (err) {

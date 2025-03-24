@@ -137,7 +137,8 @@ export const createContractController = async (req: Request, res: Response) => {
                 fines: 0,
                 monthly,
                 billPath,
-                projectId: projectId
+                projectId: projectId,
+                companyId
             })
 
             const contractCus: Pick<contract_customer, 'companyId' | 'contractId' | 'customerId' | 'createdAt'>[] = []
@@ -315,7 +316,8 @@ export const updateContractController = async (req: Request, res: Response) => {
         remindSentDate: null,
         remindSentTime: null,
         numberOfInstallment,
-        projectId
+        projectId,
+        companyId
     })
 
     if (!createInv) {

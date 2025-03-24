@@ -29,8 +29,10 @@ export const historiesPayByContractController = async (req: Request, res: Respon
 
     const invoices = result.map((item, i) => ({
         ...item,
+        ...item.company,
         indexNo: i + 1,
-        billPath: item.co.billPath ? `${env.HOST_IMAGE}${env.BASE_PATH}${item.billPath}` : null,
+        billPath: item.billPath ? `${env.HOST_IMAGE}${env.BASE_PATH}${item.billPath}` : null,
+        logoPath: item.company.logoPath ? `${env.HOST_IMAGE}${env.BASE_PATH}${item.company.logoPath}` : null,
         paidDate: dateFormatter(item.paidDate),
         createdAt: dateFormatter(item.createdAt),
         updatedAt: dateFormatter(item.updatedAt)

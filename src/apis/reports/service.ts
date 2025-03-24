@@ -42,7 +42,7 @@ export const summaryContractPaydayService = async (data: {
             LEFT JOIN invoice inv ON inv.contractId = c.contractId
             WHERE c.payDay = DATE(CURDATE()) AND
             inv.monthly = ${monthly} AND
-            companyId = ${companyId} AND
+            inv.companyId = ${companyId} AND
             c.contractStatus = 'ACTIVE' AND
             inv.invoiceStatus = 'PENDING'
         `

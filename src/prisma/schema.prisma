@@ -28,6 +28,7 @@ model company {
   deletedBy         Int?
   contract_customer contract_customer[]
   contracts         contracts[]
+  invoice           invoice[]
   project_item      project_item[]
 }
 
@@ -120,6 +121,7 @@ model invoice {
   amount              Float     @db.Float
   debt                Float?    @default(0) @db.Float
   contractId          Int
+  companyId           Int
   currency            String    @db.VarChar(30)
   projectId           Int
   numberOfInstallment Int?      @default(0)
@@ -138,9 +140,13 @@ model invoice {
   reservedAt          DateTime? @db.DateTime(0)
   remindSentTime      Int?      @default(0)
   remindSentDate      DateTime? @db.DateTime(0)
+  company             company   @relation(fields: [companyId], references: [companyId], onUpdate: Restrict, map: "invoice_company_companyId_fk")
   projects            projects  @relation(fields: [projectId], references: [projectId], onUpdate: Restrict, map: "invoice_projects_projectId_fk")
+  users               users?    @relation(fields: [createdBy], references: [userId], onDelete: Restrict, onUpdate: Restrict, map: "invoice_users_userId_fk")
 
   @@index([projectId], map: "invoice_projects_projectId_fk")
+  @@index([createdBy], map: "invoice_users_userId_fk")
+  @@index([companyId], map: "invoice_company_companyId_fk")
 }
 
 model logs {
@@ -287,6 +293,7 @@ model users {
   contract_customer                     contract_customer[]
   contracts_contracts_customerIdTousers contracts[]         @relation("contracts_customerIdTousers")
   contracts_contracts_createdByTousers  contracts[]         @relation("contracts_createdByTousers")
+  invoice                               invoice[]
 }
 
 enum project_item_status {
