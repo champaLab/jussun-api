@@ -27,6 +27,7 @@ model company {
   deletedAt         DateTime?           @db.DateTime(0)
   deletedBy         Int?
   contract_customer contract_customer[]
+  contract_items    contract_items[]
   contracts         contracts[]
   invoice           invoice[]
   project_item      project_item[]
@@ -59,7 +60,7 @@ model contracts {
   customerId                        Int
   totalPrice                        Float               @db.Float
   currency                          String?             @default("LAK") @db.VarChar(10)
-  contractStatus                    String?             @default("ACTIVE") @db.VarChar(20)
+  contractStatus                    String?             @default("ACTIVE") @db.VarChar(30)
   area                              Float               @db.Float
   numberOfInstallment               Int?                @default(1)
   payDay                            DateTime?           @db.Date
@@ -74,6 +75,7 @@ model contracts {
   deletedAt                         DateTime?           @db.DateTime(0)
   deletedBy                         Int?
   contract_customer                 contract_customer[]
+  contract_items                    contract_items[]
   company                           company             @relation(fields: [companyId], references: [companyId], onUpdate: Restrict, map: "contracts_company_companyId_fk")
   users_contracts_customerIdTousers users               @relation("contracts_customerIdTousers", fields: [customerId], references: [userId], onUpdate: Restrict, map: "contracts_customerId_userId_fk")
   projects                          projects            @relation(fields: [projectId], references: [projectId], onUpdate: Restrict, map: "contracts_projects_projectId_fk")
@@ -200,22 +202,22 @@ model payment_method {
 }
 
 model project_item {
-  id         Int                  @id @unique(map: "project_item_pk_2") @default(autoincrement())
-  title      String               @db.VarChar(100)
-  content    String?              @db.VarChar(255)
-  projectId  Int
-  companyId  Int
-  area       Float
-  code       String               @db.VarChar(50)
-  price      Float?
-  createdAt  DateTime             @default(now()) @db.DateTime(0)
-  status     project_item_status? @default(ACTIVE)
-  contractId Int?
-  updatedAt  DateTime?            @db.DateTime(0)
-  deletedAt  DateTime?            @db.DateTime(0)
-  company    company              @relation(fields: [companyId], references: [companyId], onUpdate: Restrict, map: "project_item_company_companyId_fk")
-  contracts  contracts?           @relation(fields: [contractId], references: [contractId], onDelete: Restrict, onUpdate: Restrict, map: "project_item_contracts_contractId_fk")
-  projects   projects             @relation(fields: [projectId], references: [projectId], onUpdate: Restrict, map: "project_item_projects_projectId_fk")
+  id             Int              @id @unique(map: "project_item_pk_2") @default(autoincrement())
+  title          String           @db.VarChar(100)
+  content        String?          @db.VarChar(255)
+  projectId      Int
+  companyId      Int
+  area           Float
+  code           String           @db.VarChar(50)
+  price          Float?
+  createdAt      DateTime         @default(now()) @db.DateTime(0)
+  contractId     Int?
+  updatedAt      DateTime?        @db.DateTime(0)
+  deletedAt      DateTime?        @db.DateTime(0)
+  contract_items contract_items[]
+  company        company          @relation(fields: [companyId], references: [companyId], onUpdate: Restrict, map: "project_item_company_companyId_fk")
+  contracts      contracts?       @relation(fields: [contractId], references: [contractId], onDelete: Restrict, onUpdate: Restrict, map: "project_item_contracts_contractId_fk")
+  projects       projects         @relation(fields: [projectId], references: [projectId], onUpdate: Restrict, map: "project_item_projects_projectId_fk")
 
   @@index([companyId], map: "project_item_company_companyId_fk")
   @@index([contractId], map: "project_item_contracts_contractId_fk")
@@ -296,7 +298,19 @@ model users {
   invoice                               invoice[]
 }
 
-enum project_item_status {
-  ACTIVE
-  SOLD
+model contract_items {
+  id            Int          @id @unique(map: "contract_items_pk_2") @default(autoincrement())
+  companyId     Int
+  contractId    Int
+  projectItemId Int
+  createdAt     DateTime?    @db.DateTime(0)
+  updatedAt     DateTime?    @db.DateTime(0)
+  deletedAt     DateTime?    @db.DateTime(0)
+  company       company      @relation(fields: [companyId], references: [companyId], onUpdate: Restrict, map: "contract_items_company_companyId_fk")
+  contracts     contracts    @relation(fields: [contractId], references: [contractId], onUpdate: Restrict, map: "contract_items_contracts_contractId_fk")
+  project_item  project_item @relation(fields: [projectItemId], references: [id], onUpdate: Restrict, map: "contract_items_project_item_id_fk")
+
+  @@index([companyId], map: "contract_items_company_companyId_fk")
+  @@index([projectItemId], map: "contract_items_project_item_id_fk")
+  @@index([contractId], map: "contract_items_contracts_contractId_fk")
 }

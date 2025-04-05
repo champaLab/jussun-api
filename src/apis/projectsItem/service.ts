@@ -5,16 +5,37 @@ import env from '../../env'
 import { today } from '../../utils/dateFormat'
 
 export const projectsForAutocompleteService = async ({ companyId, projectId }: { companyId: number; projectId: number }) => {
-    console.log({ companyId })
+
     try {
         const p = await prismaClient.project_item.findMany({
-            where: { companyId, deletedAt: null, contractId: null, projectId },
+            where: {
+                companyId,
+                deletedAt: null,
+                projectId,
+                OR: [
+                    {
+                        contract_items: {
+                            none: {},
+                        },
+                    },
+                    {
+                        contract_items: {
+                            every: {
+                                deletedAt: {
+                                    not: null,
+                                },
+                            },
+                        },
+                    },
+                ],
+            },
             select: {
                 title: true,
                 code: true,
                 id: true,
                 area: true,
-                price: true
+                price: true,
+
             },
             orderBy: { createdAt: 'desc' }
         })
@@ -76,7 +97,7 @@ export const projectItemService = async (data: {
 }
 
 export const createProjectItemService = async (
-    data: Pick<project_item, 'area' | 'code' | 'companyId' | 'content' | 'createdAt' | 'projectId' | 'title' | 'status' | 'deletedAt'>
+    data: Pick<project_item, 'area' | 'code' | 'companyId' | 'content' | 'createdAt' | 'projectId' | 'title' | 'deletedAt'>
 ) => {
     console.log(data)
     try {
@@ -93,7 +114,7 @@ export const createProjectItemService = async (
 }
 
 export const updateProjectItemService = async (
-    data: Pick<project_item, 'id' | 'area' | 'code' | 'companyId' | 'content' | 'updatedAt' | 'projectId' | 'title' | 'status'>
+    data: Pick<project_item, 'id' | 'area' | 'code' | 'companyId' | 'content' | 'updatedAt' | 'projectId' | 'title'>
 ) => {
     const { id, ...newData } = data
 

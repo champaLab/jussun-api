@@ -1,4 +1,4 @@
-import { contract_customer, contracts, invoice, Prisma, projects, schedules } from '@prisma/client'
+import { contract_customer, contract_items, contracts, invoice, Prisma, projects, schedules } from '@prisma/client'
 import logger from '../../configs/winston'
 import prismaClient from '../../prisma'
 import env from '../../env'
@@ -29,6 +29,22 @@ export const createContractWithCustomerService = async (
 ) => {
     try {
         const p = await prisma.contract_customer.createMany({
+            data: data
+        })
+
+        return p
+    } catch (err) {
+        logger.error(err)
+        throw err
+    }
+}
+
+export const createContractItemService = async (
+    prisma: PrismaTSX,
+    data: Pick<contract_items, 'companyId' | 'projectItemId' | 'createdAt' | 'contractId'>[]
+) => {
+    try {
+        const p = await prisma.contract_items.createMany({
             data: data
         })
 
@@ -76,7 +92,6 @@ export const updateProjectItemService = async ({ prisma, projectId, contractId }
             where: { id: { in: projectId } },
             data: {
                 contractId: contractId,
-                status: 'SOLD',
                 updatedAt: today()
             }
         })
@@ -238,7 +253,7 @@ export const updateContractService = async (
 
 export const createInvoiceService = async (
     prisma: PrismaTSX,
-    data: Pick<invoice, 'amount' | 'billPath' | 'contractId' | 'createdAt' | 'currency' | 'debt' | 'fines' | 'monthly' | 'projectId'|"companyId">
+    data: Pick<invoice, 'amount' | 'billPath' | 'contractId' | 'createdAt' | 'currency' | 'debt' | 'fines' | 'monthly' | 'projectId' | "companyId">
 ) => {
     try {
         const p = await prisma.invoice.create({
@@ -286,7 +301,13 @@ export const updateContractStatusService = async (data: {
                 cancelAt: data.cancelAt,
                 cancelBy: data.cancelBy,
                 reason: data.reason,
-                contractStatus: data.contractStatus
+                contractStatus: data.contractStatus,
+                contract_items: {
+                    updateMany: {
+                        where: { contractId: data.contractId },
+                        data: { deletedAt: data.cancelAt }
+                    }
+                }
             }
         })
         return p

@@ -13,12 +13,13 @@ import {
     finOneContractService,
     updateContractInvoiceIdService,
     createContractWithCustomerService,
-    createScheduleService
+    createScheduleService,
+    createContractItemService
 } from './service'
 import dayjs from 'dayjs'
 import { dateFormatter, today } from '../../utils/dateFormat'
 import { historyService } from '../../utils/createLog'
-import { contract_customer, Prisma, PrismaClient, project_item, schedules, users } from '@prisma/client'
+import { contract_customer, contract_items, Prisma, PrismaClient, project_item, schedules, users } from '@prisma/client'
 import prismaClient from '../../prisma'
 import { DefaultArgs } from '@prisma/client/runtime/library'
 import { PrismaTSX } from './type'
@@ -160,8 +161,19 @@ export const createContractController = async (req: Request, res: Response) => {
                     modeOfPayment
                 })
             }
+
+            const contractItems: Pick<contract_items, 'companyId' | 'projectItemId' | 'createdAt' | 'contractId'>[] = []
+            for (const item of projectItem) {
+                contractItems.push({
+                    companyId,
+                    projectItemId: item.id,
+                    createdAt,
+                    contractId: p.contractId
+                })
+            }
+
             await createScheduleService(prisma, schedulesData)
-            await updateContractInvoiceIdService(p.contractId, createInv.invoiceId, prisma)
+            await createContractItemService(prisma, contractItems)
         })
 
         await historyService({ req, description })

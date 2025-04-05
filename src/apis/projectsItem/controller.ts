@@ -69,7 +69,6 @@ export const createProjectItemController = async (req: Request, res: Response) =
             createdAt,
             projectId,
             content,
-            status,
             title,
             deletedAt: null
         })
@@ -115,7 +114,6 @@ export const updateProjectItemController = async (req: Request, res: Response) =
         updatedAt,
         projectId,
         content,
-        status,
         title
     })
     if (!p) {
