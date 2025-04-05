@@ -1,4 +1,4 @@
-import { project_item } from '@prisma/client'
+import { Prisma, project_item } from '@prisma/client'
 import logger from '../../configs/winston'
 import prismaClient from '../../prisma'
 import env from '../../env'
@@ -48,7 +48,6 @@ export const projectsForAutocompleteService = async ({ companyId, projectId }: {
         prismaClient.$disconnect()
     }
 }
-
 export const projectItemService = async (data: {
     companyId: number
     key: string | null
@@ -57,44 +56,67 @@ export const projectItemService = async (data: {
 }): Promise<{ count: number; projects: any }> => {
     const skip = data.key ? 0 : (data.page - 1) * env.ROW_PER_PAGE
     const take = env.ROW_PER_PAGE
-    const key = data.key ? `%${data.key}%` : null
+    const key = data.key?.trim() || null
 
     try {
-        let projects: any[] = []
-        if (!key) {
-            projects = await prismaClient.$queryRaw`
-                SELECT p.* FROM project_item p 
-                WHERE p.companyId = ${data.companyId} 
-                AND p.deletedAt IS NULL  
-                AND p.projectId = ${data.projectId}
-                ORDER BY p.status ASC 
-                LIMIT ${take} OFFSET ${skip} 
-                `
-        } else {
-            projects = await prismaClient.$queryRaw`
-                SELECT p.* FROM project_item p 
-                WHERE p.companyId = ${data.companyId} 
-                AND p.deletedAt IS NULL  
-                AND p.projectId = ${data.projectId}
-                AND (
-                    p.projectName LIKE ${key}  OR 
-                    p.address LIKE ${key} 
-                ) ORDER BY p.status ASC 
-                LIMIT ${take} OFFSET ${skip} 
-            `
+        const whereClause: Prisma.project_itemScalarWhereInput = {
+            companyId: data.companyId,
+            deletedAt: null,
         }
 
-        const counter = await prismaClient.projects.count({ where: { companyId: data.companyId, deletedAt: null } })
-        const count = Math.ceil(counter / take)
+        if (data.projectId) {
+            whereClause.projectId = {
+                equals: data.projectId
+            }
+        }
+
+        if (key) {
+            whereClause.OR = [
+                {
+                    title: {
+                        contains: key,
+                    },
+                },
+                {
+                    content: {
+                        contains: key,
+                    },
+                },
+            ]
+        }
+
+        const [projects, total] = await prismaClient.$transaction([
+            prismaClient.project_item.findMany({
+                where: whereClause,
+                include: {
+                    contract_items: {
+                        select: {
+                            deletedAt: true
+                        }
+                    }
+                },
+                skip,
+                take,
+                orderBy: {
+                    createdAt: 'desc',
+                },
+            }),
+            prismaClient.project_item.count({
+                where: whereClause,
+            }),
+        ])
+
+        const count = Math.ceil(total / take)
 
         return { count, projects }
     } catch (err) {
         logger.error(err)
         return { count: 0, projects: [] }
     } finally {
-        prismaClient.$disconnect()
+        await prismaClient.$disconnect()
     }
 }
+
 
 export const createProjectItemService = async (
     data: Pick<project_item, 'area' | 'code' | 'companyId' | 'content' | 'createdAt' | 'projectId' | 'title' | 'deletedAt'>
