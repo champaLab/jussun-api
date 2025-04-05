@@ -40,6 +40,7 @@ export const contractController = async (req: Request, res: Response) => {
         ...item,
         indexNo: (i + 1) * page,
         createdAt: dateFormatter(item.createdAt),
+        cancelAt: item.cancelAt ? dateFormatter(item.cancelAt) : null,
         updatedAt: dateFormatter(item.updatedAt)
     }))
     res.json({
