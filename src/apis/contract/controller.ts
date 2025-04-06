@@ -39,9 +39,9 @@ export const contractController = async (req: Request, res: Response) => {
     const contracts = result.contracts.map((item, i) => ({
         ...item,
         indexNo: (i + 1) * page,
-        createdAt: dateFormatter(item.createdAt),
-        cancelAt: item.cancelAt ? dateFormatter(item.cancelAt) : null,
-        updatedAt: dateFormatter(item.updatedAt)
+        createdAt: dateFormatter({ date: item.createdAt }),
+        cancelAt: dateFormatter({ date: item.cancelAt }),
+        updatedAt: dateFormatter({ date: item.updatedAt })
     }))
     res.json({
         status: 'success',

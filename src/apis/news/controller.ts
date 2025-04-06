@@ -39,9 +39,9 @@ export const getNewsController = async (req: Request, res: Response) => {
             indexNo: (i + 1) * page,
             sentType: sentTypeParsed,
             logoPath: item.imagePath ? `${env.HOST_IMAGE}${env.BASE_PATH}${item.imagePath}` : null,
-            createdAt: dateFormatter(item.createdAt),
-            dateForSent: dateFormatter(item.dateForSent),
-            sentDate: dateFormatter(item.sentDate)
+            createdAt: dateFormatter({ date: item.createdAt }),
+            dateForSent: dateFormatter({ date: item.dateForSent }),
+            sentDate: dateFormatter({ date: item.sentDate })
         })
     }
     res.json({

@@ -39,8 +39,8 @@ export const readExchangeController = async (req: Request, res: Response) => {
     const exchanges = exc.exchange.map((item, i) => ({
         ...item,
         indexNo: (i + 1) * page,
-        createdAt: dateFormatter(item.createdAt),
-        updatedAt: dateFormatter(item.updatedAt)
+        createdAt: dateFormatter({ date: item.createdAt }),
+        updatedAt: dateFormatter({ date: item.updatedAt })
     }))
     res.json({
         status: 'success',

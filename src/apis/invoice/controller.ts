@@ -20,42 +20,49 @@ import dayjs from 'dayjs'
 import { getPhotoPath } from '../../utils/fileUrl'
 
 export const invoicePaydayController = async (req: Request, res: Response) => {
-    const payload = tokenPayloadService(req)
-    let companyId = req.body.companyId
-    const key = req.body.key
-    const monthly = req.body.monthly
-    const page = req.body.page ? Number(req.body.page) : 1
-    const invoiceStatus = req.body.invoiceStatus
-    const date = dayjs(req.body.date).add(7, 'hours').format('DD')
-    const projectId = req.body.projectId ? parseInt(req.body.projectId) : null
+    try {
+        const payload = tokenPayloadService(req)
+        let companyId = req.body.companyId
+        const key = req.body.key
+        const monthly = req.body.monthly
+        const page = req.body.page ? Number(req.body.page) : 1
+        const invoiceStatus = req.body.invoiceStatus
+        const date = dayjs(req.body.date).add(7, 'hours').format('DD')
+        const projectId = req.body.projectId ? parseInt(req.body.projectId) : null
 
-    if ((payload.role === 'ADMIN' || payload.role === 'SUPERADMIN') && companyId) {
-        companyId = Number(companyId)
-    } else {
-        companyId = payload.companyId
-    }
-
-    const inv = await findInvoicePaydayService({ invoiceStatus, companyId, key, page, projectId, date, monthly })
-    const invoices = inv.invoices.map((item, i) => ({
-        ...item,
-        indexNo: (i + 1) * page,
-        logoPath: item.logoPath ? `${env.HOST_IMAGE}${env.BASE_PATH}${item.logoPath}` : null,
-        remindSentDate: dateFormatter(item.remindSentDate),
-        paidDate: dateFormatter(item.paidDate),
-        createdAt: dateFormatter(item.createdAt),
-        updatedAt: dateFormatter(item.updatedAt),
-        reservedAt: dateFormatter(item.reservedAt)
-    }))
-
-    const exchange = await findLastExchangeService({ companyId })
-    res.json({
-        status: 'success',
-        reports: {
-            invoices,
-            count: inv.count,
-            exchange: { ...exchange, updatedAt: dateFormatter(exchange?.updatedAt) }
+        if ((payload.role === 'ADMIN' || payload.role === 'SUPERADMIN') && companyId) {
+            companyId = Number(companyId)
+        } else {
+            companyId = payload.companyId
         }
-    })
+
+        const inv = await findInvoicePaydayService({ invoiceStatus, companyId, key, page, projectId, date, monthly })
+        const invoices = inv.invoices.map((item, i) => ({
+            ...item,
+            indexNo: (i + 1) * page,
+            logoPath: item.logoPath ? `${env.HOST_IMAGE}${env.BASE_PATH}${item.logoPath}` : null,
+            remindSentDate: dateFormatter(item.remindSentDate),
+            paidDate: dateFormatter(item.paidDate),
+            createdAt: dateFormatter(item.createdAt),
+            updatedAt: dateFormatter(item.updatedAt),
+            reservedAt: dateFormatter(item.reservedAt)
+        }))
+
+        const exchange = await findLastExchangeService({ companyId })
+        res.json({
+            status: 'success',
+            reports: {
+                invoices,
+                count: inv.count,
+                exchange: { ...exchange, updatedAt: dateFormatter({ date: exchange.updatedAt }) }
+            }
+        })
+    } catch (error) {
+        res.json({
+            status: 'error',
+            message: 'ບໍ່ພົບຂໍ້ມູນສັນຍາ'
+        })
+    }
 }
 
 export const invoicePaidController = async (req: Request, res: Response) => {

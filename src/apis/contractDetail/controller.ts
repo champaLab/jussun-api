@@ -33,9 +33,9 @@ export const historiesPayByContractController = async (req: Request, res: Respon
         indexNo: i + 1,
         billPath: item.billPath ? `${env.HOST_IMAGE}${env.BASE_PATH}${item.billPath}` : null,
         logoPath: item.company.logoPath ? `${env.HOST_IMAGE}${env.BASE_PATH}${item.company.logoPath}` : null,
-        paidDate: dateFormatter(item.paidDate),
-        createdAt: dateFormatter(item.createdAt),
-        updatedAt: dateFormatter(item.updatedAt)
+        paidDate: dateFormatter({ date: item.paidDate }),
+        createdAt: dateFormatter({ date: item.createdAt }),
+        updatedAt: dateFormatter({ date: item.updatedAt })
     }))
 
     res.json({

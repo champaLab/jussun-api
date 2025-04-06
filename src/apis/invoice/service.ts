@@ -94,7 +94,8 @@ export const findInvoicePaydayService = async (data: {
 
 export const findLastExchangeService = async (data: { companyId: number }) => {
     try {
-        const exchange = await prismaClient.exchange.findFirst({
+        const exchange = await prismaClient.exchange.findFirstOrThrow({
+            where: { companyId: data.companyId },
             orderBy: {
                 createdAt: 'desc'
             }
@@ -102,9 +103,7 @@ export const findLastExchangeService = async (data: { companyId: number }) => {
 
         return exchange
     } catch (err) {
-        logger.error(err)
-        console.error(err)
-        return null
+        throw err
     } finally {
         prismaClient.$disconnect()
     }

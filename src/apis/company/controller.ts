@@ -38,8 +38,8 @@ export const companyController = async (req: Request, res: Response) => {
         indexNo: (i + 1) * page,
         logoPath: item.logoPath ? `${env.HOST_IMAGE}${env.BASE_PATH}${item.logoPath}` : null,
         logoOriginal: item.logoPath,
-        createdAt: dateFormatter(item.createdAt),
-        updatedAt: dateFormatter(item.updatedAt)
+        createdAt: dateFormatter({ date: item.createdAt }),
+        updatedAt: dateFormatter({ date: item.updatedAt })
     }))
 
     res.json({
