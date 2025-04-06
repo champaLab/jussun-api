@@ -23,7 +23,7 @@ export const today = (date?: Date | string) => {
     return dayjs(dayjs(date).add(7, 'hours').format()).toDate()
 }
 
-export const dateFormatter = ({ date, format = 'DD MMM YYYY HH:mm' }: { date: Date | null; format?: string }) => {
+export const dateFormatter = ({ date, format = 'DD MMM YYYY HH:mm' }: { date: Date | null | undefined; format?: string }) => {
     if (date) return dayjs(date).locale('lo').format(format)
     return ''
 }

@@ -24,7 +24,8 @@ export const findManyExpenseService = async (data: { projectId: number | null; c
             },
 
             skip,
-            take
+            take,
+            orderBy: [{ createdAt: 'desc' }]
         })
 
         const total = await prismaClient.expenses.count({

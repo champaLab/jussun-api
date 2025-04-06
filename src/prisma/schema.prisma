@@ -81,6 +81,7 @@ model contracts {
   users_contracts_customerIdTousers users               @relation("contracts_customerIdTousers", fields: [customerId], references: [userId], onUpdate: Restrict, map: "contracts_customerId_userId_fk")
   projects                          projects            @relation(fields: [projectId], references: [projectId], onUpdate: Restrict, map: "contracts_projects_projectId_fk")
   users_contracts_createdByTousers  users               @relation("contracts_createdByTousers", fields: [createdBy], references: [userId], onUpdate: Restrict, map: "contracts_users_userId_fk")
+  invoice                           invoice[]
   project_item                      project_item[]
   schedules                         schedules[]
 
@@ -125,37 +126,41 @@ model expenses {
 }
 
 model invoice {
-  invoiceId           Int       @id @default(autoincrement())
-  fines               Float?    @default(0) @db.Float
-  amount              Float     @db.Float
-  debt                Float?    @default(0) @db.Float
-  contractId          Int
-  companyId           Int
-  currency            String    @db.VarChar(30)
-  projectId           Int
-  numberOfInstallment Int?      @default(0)
-  comment             String?   @db.VarChar(255)
-  monthly             String?   @db.VarChar(10)
-  paymentMethod       String?   @db.VarChar(50)
-  exchangeRate        Float?    @db.Float
-  currencyExchange    String?   @db.VarChar(5)
-  invoiceStatus       String?   @default("PENDING") @db.VarChar(20)
-  billPath            String?   @db.VarChar(255)
-  paidDate            DateTime? @db.DateTime(0)
-  createdBy           Int?
-  createdAt           DateTime? @default(now()) @db.DateTime(0)
-  updatedAt           DateTime? @default(now()) @db.DateTime(0)
-  reservedBy          Int?
-  reservedAt          DateTime? @db.DateTime(0)
-  remindSentTime      Int?      @default(0)
-  remindSentDate      DateTime? @db.DateTime(0)
-  company             company   @relation(fields: [companyId], references: [companyId], onUpdate: Restrict, map: "invoice_company_companyId_fk")
-  projects            projects  @relation(fields: [projectId], references: [projectId], onUpdate: Restrict, map: "invoice_projects_projectId_fk")
-  users               users?    @relation(fields: [createdBy], references: [userId], onDelete: Restrict, onUpdate: Restrict, map: "invoice_users_userId_fk")
+  invoiceId                       Int       @id @default(autoincrement())
+  fines                           Float?    @default(0) @db.Float
+  amount                          Float     @db.Float
+  debt                            Float?    @default(0) @db.Float
+  contractId                      Int
+  companyId                       Int
+  currency                        String    @db.VarChar(30)
+  projectId                       Int
+  numberOfInstallment             Int?      @default(0)
+  comment                         String?   @db.VarChar(255)
+  monthly                         String?   @db.VarChar(10)
+  paymentMethod                   String?   @db.VarChar(50)
+  exchangeRate                    Float?    @db.Float
+  currencyExchange                String?   @db.VarChar(5)
+  invoiceStatus                   String?   @default("PENDING") @db.VarChar(20)
+  billPath                        String?   @db.VarChar(255)
+  paidDate                        DateTime? @db.DateTime(0)
+  createdBy                       Int?
+  createdAt                       DateTime? @default(now()) @db.DateTime(0)
+  updatedAt                       DateTime? @default(now()) @db.DateTime(0)
+  reservedBy                      Int?
+  reservedAt                      DateTime? @db.DateTime(0)
+  remindSentTime                  Int?      @default(0)
+  remindSentDate                  DateTime? @db.DateTime(0)
+  company                         company   @relation(fields: [companyId], references: [companyId], onUpdate: Restrict, map: "invoice_company_companyId_fk")
+  contracts                       contracts @relation(fields: [contractId], references: [contractId], onUpdate: Restrict, map: "invoice_contracts_contractId_fk")
+  projects                        projects  @relation(fields: [projectId], references: [projectId], onUpdate: Restrict, map: "invoice_projects_projectId_fk")
+  users                           users?    @relation(fields: [createdBy], references: [userId], onDelete: Restrict, onUpdate: Restrict, map: "invoice_users_userId_fk")
+  users_invoice_reservedByTousers users?    @relation("invoice_reservedByTousers", fields: [reservedBy], references: [userId], onDelete: Restrict, onUpdate: Restrict, map: "invoice_users_userId_fk_3")
 
   @@index([projectId], map: "invoice_projects_projectId_fk")
-  @@index([createdBy], map: "invoice_users_userId_fk")
   @@index([companyId], map: "invoice_company_companyId_fk")
+  @@index([contractId], map: "invoice_contracts_contractId_fk")
+  @@index([createdBy], map: "invoice_users_userId_fk_2")
+  @@index([reservedBy], map: "invoice_users_userId_fk_3")
 }
 
 model logs {
@@ -304,6 +309,7 @@ model users {
   contracts_contracts_createdByTousers  contracts[]         @relation("contracts_createdByTousers")
   expenses                              expenses[]
   invoice                               invoice[]
+  invoice_invoice_reservedByTousers     invoice[]           @relation("invoice_reservedByTousers")
 }
 
 model contract_items {

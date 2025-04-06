@@ -4,6 +4,7 @@ import { company, invoice, Prisma, users } from '@prisma/client'
 import { TPaidInvoice, TResponseModel } from './type'
 import { Request } from 'express'
 import env from '../../env'
+import { dateFormatter } from '../../utils/dateFormat'
 export const findInvoicePaydayService = async (data: {
     companyId: number
     page: number
@@ -84,9 +85,87 @@ export const findInvoicePaydayService = async (data: {
 
         return { invoices, count }
     } catch (err) {
-        logger.error(err)
-        console.error(err)
-        return { invoices: [], count: 0 }
+        throw err
+    } finally {
+        await prismaClient.$disconnect()
+    }
+}
+
+export const findInvoicePaydayServices = async (data: {
+    companyId: number
+    page: number
+    key: string | null
+    projectId: number | null
+    invoiceStatus: string | null
+    date: string
+    monthly: string
+}): Promise<TResponseModel> => {
+    const skip = (data.page - 1) * env.ROW_PER_PAGE
+    const take = env.ROW_PER_PAGE
+    const { invoiceStatus, companyId, key, projectId, monthly } = data
+
+    try {
+        const totalCountResult = await prismaClient.invoice.findMany({
+            where: {
+                monthly: monthly,
+                invoiceStatus: invoiceStatus
+            },
+            include: {
+                users: {
+                    select: {
+                        fullName: true,
+                        lastName: true
+                    }
+                },
+                company: {
+                    select: {
+                        companyName: true,
+                        address: true,
+                        logoPath: true,
+                        tel: true,
+                        fax: true,
+                        whatsapp: true,
+                        email: true
+                    }
+                },
+                users_invoice_reservedByTousers: {
+                    select: {
+                        fullName: true,
+                        lastName: true
+                    }
+                },
+                contracts: {
+                    select: {
+                        docId: true,
+                        contract_customer: {
+                            select: {
+                                users: {
+                                    select: {
+                                        fullName: true,
+                                        lastName: true
+                                    }
+                                }
+                            }
+                        }
+                    }
+                }
+            }
+        })
+
+        const invoices = totalCountResult.map((item, i) => ({
+            ...item,
+            indexNo: (i + 1) * data.page,
+            logoPath: item.company.logoPath ? `${env.HOST_IMAGE}${env.BASE_PATH}${item.company.logoPath}` : null,
+            remindSentDate: dateFormatter({ date: item.remindSentDate }),
+            paidDate: dateFormatter({ date: item.paidDate }),
+            createdAt: dateFormatter({ date: item.createdAt }),
+            updatedAt: dateFormatter({ date: item.updatedAt }),
+            reservedAt: dateFormatter({ date: item.reservedAt })
+        }))
+
+        return { invoices: totalCountResult, count: 1 }
+    } catch (err) {
+        throw err
     } finally {
         await prismaClient.$disconnect()
     }

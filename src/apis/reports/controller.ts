@@ -14,7 +14,8 @@ export const readReportController = async (req: Request, res: Response) => {
     const reports = rp.map((item, i) => ({
         ...item,
         indexNo: i + 1,
-        createdAt: dateFormatter(item.createdAt)
+        createdAt: dateFormatter({ date: item.createdAt }),
+        updatedAt: dateFormatter({ date: item.updatedAt })
     }))
 
     res.json({

@@ -5,6 +5,7 @@ import {
     closeContractService,
     findCountInvoiceService,
     findInvoicePaydayService,
+    findInvoicePaydayServices,
     findLastExchangeService,
     findOneContractService,
     findOneInvoiceService,
@@ -18,6 +19,7 @@ import { createInvoiceService, updateContractInvoiceIdService } from '../contrac
 import { TResponseModel } from './type'
 import dayjs from 'dayjs'
 import { getPhotoPath } from '../../utils/fileUrl'
+import { handlerResponse } from '../../utils/handlerResponse'
 
 export const invoicePaydayController = async (req: Request, res: Response) => {
     try {
@@ -36,32 +38,19 @@ export const invoicePaydayController = async (req: Request, res: Response) => {
             companyId = payload.companyId
         }
 
-        const inv = await findInvoicePaydayService({ invoiceStatus, companyId, key, page, projectId, date, monthly })
-        const invoices = inv.invoices.map((item, i) => ({
-            ...item,
-            indexNo: (i + 1) * page,
-            logoPath: item.logoPath ? `${env.HOST_IMAGE}${env.BASE_PATH}${item.logoPath}` : null,
-            remindSentDate: dateFormatter(item.remindSentDate),
-            paidDate: dateFormatter(item.paidDate),
-            createdAt: dateFormatter(item.createdAt),
-            updatedAt: dateFormatter(item.updatedAt),
-            reservedAt: dateFormatter(item.reservedAt)
-        }))
+        const inv = await findInvoicePaydayServices({ invoiceStatus, companyId, key, page, projectId, date, monthly })
 
         const exchange = await findLastExchangeService({ companyId })
         res.json({
             status: 'success',
             reports: {
-                invoices,
+                invoices: inv.invoices,
                 count: inv.count,
                 exchange: { ...exchange, updatedAt: dateFormatter({ date: exchange.updatedAt }) }
             }
         })
     } catch (error) {
-        res.json({
-            status: 'error',
-            message: 'ບໍ່ພົບຂໍ້ມູນສັນຍາ'
-        })
+        handlerResponse({ res, error })
     }
 }
 
