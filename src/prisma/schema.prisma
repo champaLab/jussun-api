@@ -29,6 +29,7 @@ model company {
   contract_customer contract_customer[]
   contract_items    contract_items[]
   contracts         contracts[]
+  expenses          expenses[]
   invoice           invoice[]
   project_item      project_item[]
 }
@@ -109,12 +110,18 @@ model expenses {
   amount      Decimal   @db.Decimal(10, 2)
   projectId   Int
   expenseDate DateTime  @db.Date
+  companyId   Int
   createdAt   DateTime  @default(now()) @db.Timestamp(0)
+  userId      Int
   updatedAt   DateTime? @db.Timestamp(0)
   deletedAt   DateTime? @db.Timestamp(0)
+  company     company   @relation(fields: [companyId], references: [companyId], onUpdate: Restrict, map: "expenses_company_companyId_fk")
   projects    projects  @relation(fields: [projectId], references: [projectId], onUpdate: Restrict, map: "expenses_projects_projectId_fk")
+  users       users     @relation(fields: [userId], references: [userId], onUpdate: Restrict, map: "expenses_users_userId_fk")
 
   @@index([projectId], map: "expenses_projects_projectId_fk")
+  @@index([userId], map: "expenses_users_userId_fk")
+  @@index([companyId], map: "expenses_company_companyId_fk")
 }
 
 model invoice {
@@ -295,6 +302,7 @@ model users {
   contract_customer                     contract_customer[]
   contracts_contracts_customerIdTousers contracts[]         @relation("contracts_customerIdTousers")
   contracts_contracts_createdByTousers  contracts[]         @relation("contracts_createdByTousers")
+  expenses                              expenses[]
   invoice                               invoice[]
 }
 

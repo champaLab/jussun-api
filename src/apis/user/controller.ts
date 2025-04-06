@@ -157,57 +157,64 @@ export const loginController = async (req: Request, res: Response) => {
 }
 
 export const meController = async (req: Request, res: Response) => {
-    const tokenPayload = tokenPayloadService(req)
+    try {
+        const tokenPayload = tokenPayloadService(req)
 
-    const user: users | null = await findOneUserService({ tel: tokenPayload.tel })
-    if (!user) {
-        res.json({
-            status: 'invalid',
-            message: 'ບໍ່ພົບຂໍ້ມູນຜູ້ໃຊ້ງານ'
-        })
-        return
-    } else if (!user.userStatus) {
-        res.json({
-            status: 'invalid',
-            message: 'ບັນຊີຂອງທ່ານ ຖືກລະງັບການໃຊ້ງານ'
-        })
-        return
-    }
-
-    let company: company | null = null
-    if (user && user.role !== 'CUSTOMER') {
-        company = await findOneCompanyService({ companyId: Number(user.companyId) })
-        if (!company) {
+        const user: users | null = await findOneUserService({ tel: tokenPayload.tel })
+        if (!user) {
             res.json({
                 status: 'invalid',
-                message: 'ບໍ່ພົບຂໍ້ມູນບໍລິສັດ'
+                message: 'ບໍ່ພົບຂໍ້ມູນຜູ້ໃຊ້ງານ'
+            })
+            return
+        } else if (!user.userStatus) {
+            res.json({
+                status: 'invalid',
+                message: 'ບັນຊີຂອງທ່ານ ຖືກລະງັບການໃຊ້ງານ'
             })
             return
         }
 
-        if (company && !company.companyStatus) {
+        let company: company | null = null
+        if (user && user.role !== 'CUSTOMER') {
+            company = await findOneCompanyService({ companyId: Number(user.companyId) })
+            if (!company) {
+                res.json({
+                    status: 'invalid',
+                    message: 'ບໍ່ພົບຂໍ້ມູນບໍລິສັດ'
+                })
+                return
+            }
+
+            if (company && !company.companyStatus) {
+                res.json({
+                    status: 'invalid',
+                    message: 'ບໍລິສັດຂອງທ່ານ ຖືກລະງັບການໃຊ້ງານ'
+                })
+            }
+        }
+
+        const payload = mergePayloadUserService(user!, company)
+        const token = await sign(payload)
+        if (!token) {
             res.json({
                 status: 'invalid',
-                message: 'ບໍລິສັດຂອງທ່ານ ຖືກລະງັບການໃຊ້ງານ'
+                message: 'Sign token error'
             })
+            return
         }
-    }
 
-    const payload = mergePayloadUserService(user!, company)
-    const token = await sign(payload)
-    if (!token) {
         res.json({
-            status: 'invalid',
-            message: 'Sign token error'
+            status: 'success',
+            message: '',
+            user: { ...payload, token }
         })
-        return
+    } catch (error) {
+        res.json({
+            status: 'error',
+            message: '',
+        })
     }
-
-    res.json({
-        status: 'success',
-        message: '',
-        user: { ...payload, token }
-    })
 }
 
 export const userController = async (req: Request, res: Response) => {

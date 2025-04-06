@@ -55,6 +55,7 @@ import {
     updateProjectItemController
 } from './apis/projectsItem/controller'
 import { valProjectItemCreate } from './apis/projectsItem/validate'
+import { createExpenseController, deleteExpenseController, findManyExpenseController, updateExpenseController } from './apis/expenses/controller'
 
 const router = Router()
 
@@ -127,4 +128,12 @@ router.post('/news/create', verify, upload('news', true).single('file'), valNews
 router.post('/news/update', verify, upload('news', true).single('file'), updateNewsController)
 router.post('/news/delete', verify, deleteNewsController)
 router.post('/news', verify, getNewsController)
+
+
+router.post('/expenses', verify, findManyExpenseController)
+router.post('/expenses/create', verify, createExpenseController)
+router.put('/expenses/update', verify, updateExpenseController)
+router.delete('/expenses/id', verify, deleteExpenseController)
+
+
 export default router
