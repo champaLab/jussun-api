@@ -52,10 +52,10 @@ spec:
           envFrom:
             - configMapRef:
                 name: jussun-api-config
-            - secretRef:
-                name: database-jussun-api
-            - secretRef:
-                name: jwt-secret
+            # - secretRef:
+            #     name: database-jussun-api
+            # - secretRef:
+            #     name: jwt-secret
           ports:
             - containerPort: 1188
               name: http
