@@ -9,7 +9,7 @@ spec:
   selector:
     matchLabels:
       app: jussun-api
-  replicas: 1
+  # replicas: 1
   strategy:
     rollingUpdate:
       maxSurge: 25%
@@ -31,8 +31,8 @@ spec:
               cpu: 500m
               memory: 100Mi
             limits:
-              cpu: 2000m
-              memory: 2048Mi
+              cpu: 1000m
+              memory: 1048Mi
           livenessProbe:
             tcpSocket:
               port: 1188
@@ -64,10 +64,10 @@ spec:
               mountPath: /etc/localtime
             - name: vol-jussun-api
               mountPath: /app/logs
-              subPath: vol-jussun-api/logs-prod
+              subPath: vol-jussun-api/logs
             - name: vol-jussun-api
               mountPath: /app/uploads
-              subPath: vol-jussun-api/uploads-prod
+              subPath: vol-jussun-api/uploads
       volumes:
         - name: localtime
           hostPath:
