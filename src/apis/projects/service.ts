@@ -11,7 +11,6 @@ export const projectsForAutocompleteService = async (companyId: number) => {
         const p = await prismaClient.projects.findMany({
             where: {
                 companyId,
-
             }, orderBy: { area: 'desc' }
         })
 
