@@ -112,6 +112,7 @@ model expenses {
   projectId   Int
   expenseDate DateTime  @db.Date
   companyId   Int
+  currency    String    @default("LAK") @db.VarChar(10)
   createdAt   DateTime  @default(now()) @db.Timestamp(0)
   userId      Int
   updatedAt   DateTime? @db.Timestamp(0)
@@ -127,20 +128,20 @@ model expenses {
 
 model invoice {
   invoiceId                       Int       @id @default(autoincrement())
+  invoiceStatus                   String?   @default("PENDING") @db.VarChar(20)
   fines                           Float     @default(0) @db.Float
+  paymentMethod                   String?   @db.VarChar(50)
+  exchangeRate                    Float?    @db.Float
+  currencyExchange                String?   @db.VarChar(5)
   amount                          Float     @db.Float
   debt                            Float     @default(0) @db.Float
+  currency                        String    @db.VarChar(30)
   contractId                      Int
   companyId                       Int
-  currency                        String    @db.VarChar(30)
   projectId                       Int
   numberOfInstallment             Int?      @default(0)
   comment                         String?   @db.VarChar(255)
   monthly                         String?   @db.VarChar(10)
-  paymentMethod                   String?   @db.VarChar(50)
-  exchangeRate                    Float?    @db.Float
-  currencyExchange                String?   @db.VarChar(5)
-  invoiceStatus                   String?   @default("PENDING") @db.VarChar(20)
   billPath                        String?   @db.VarChar(255)
   paidDate                        DateTime? @db.DateTime(0)
   createdBy                       Int?
