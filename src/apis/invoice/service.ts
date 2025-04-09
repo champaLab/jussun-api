@@ -168,7 +168,7 @@ export const findInvoicePaydayServices = async (data: {
             reservedAt: dateFormatter({ date: item.reservedAt })
         }))
 
-        return { invoices: totalCountResult, count: 1 }
+        return { invoices, count: 1 }
     } catch (err) {
         throw err
     } finally {
