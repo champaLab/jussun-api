@@ -35,16 +35,17 @@ export const findManyExpenseController = async (req: Request, res: Response) => 
         if (accounting == 'all' || accounting == 'expense') {
             const expenseResult = await findManyExpenseService({ companyId, projectId, skip, take, dateStart, dateEnd })
             expenses = expenseResult.expenses
+            count = expenseResult.count
         }
 
         if (accounting == 'all' || accounting == 'income') {
             const invoiceResult = await findManyInvoiceService({ companyId, projectId, skip, take, dateStart, dateEnd })
             incomes = invoiceResult.invoices
+            if (count <= invoiceResult.count) count = invoiceResult.count
         }
 
         const totalExpense = await findManyExpenseSummaryService({ companyId, projectId, dateStart, dateEnd })
         const incomeTotal = await findManyInvoiceSummaryService({ companyId, projectId, dateStart, dateEnd })
-
 
         res.json({
             status: 'success',
