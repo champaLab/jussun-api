@@ -22,7 +22,7 @@ import {
     verifyCodeController
 } from './apis/user/controller'
 import { valLogin, valResetPasswordCode, valSentCode, valUserCreate, valUserFind, valUserUpdate, valVerifyCode } from './apis/user/validate'
-import { contractController, createContractController, updateContractController, updateContractStatusController } from './apis/contract/controller'
+import { addContractUserController, contractController, createContractController, removeContractUserController, updateContractController, updateContractStatusController } from './apis/contract/controller'
 import { valCompany, valCompanyCreate, valCompanyUpdate } from './apis/company/validate'
 import { valAddComment, valContract, valContractCreate, valContractUpdate } from './apis/contract/validate'
 import { valProjectCreate, valProjectUpdate } from './apis/projects/validate'
@@ -92,8 +92,9 @@ router.post('/contracts', verify, valContract, valResult, contractController)
 router.post('/contracts/create', verify, valContractCreate, valResult, createContractController)
 router.post('/contracts/update', verify, valContractUpdate, valResult, updateContractController)
 router.post('/contracts/update/status', verify, updateContractStatusController)
-
 router.get('/contract/:contractId', verify, historiesPayByContractController)
+router.delete('/contract/customer/:id', verify, removeContractUserController)
+router.post('/contract/customer/create', verify, addContractUserController)
 
 // TODO: PAYMENT
 router.post('/invoices/action', verify, actionInvoiceController)

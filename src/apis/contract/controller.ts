@@ -14,7 +14,10 @@ import {
     updateContractInvoiceIdService,
     createContractWithCustomerService,
     createScheduleService,
-    createContractItemService
+    createContractItemService,
+    removeContractUserService,
+    addContractUserService,
+    checkContractUserService
 } from './service'
 import dayjs from 'dayjs'
 import { dateFormatter, today } from '../../utils/dateFormat'
@@ -23,6 +26,7 @@ import { contract_customer, contract_items, Prisma, PrismaClient, project_item, 
 import prismaClient from '../../prisma'
 import { DefaultArgs } from '@prisma/client/runtime/library'
 import { PrismaTSX } from './type'
+import { handlerResponse } from '../../utils/handlerResponse'
 
 export const contractController = async (req: Request, res: Response) => {
     const payload = tokenPayloadService(req)
@@ -101,15 +105,6 @@ export const createContractController = async (req: Request, res: Response) => {
             return
         }
 
-        // const project: any = await finOneProjectService({ projectId })
-
-        // if (!project) {
-        //     res.json({
-        //         status: 'error',
-        //         message: 'ບໍ່ພົບຂໍ້ມູນ ໂຄງການ'
-        //     })
-        //     return
-        // }
 
         await prismaClient.$transaction(async (prisma: PrismaTSX) => {
             const p = await createContractService(prisma, {
@@ -385,4 +380,58 @@ export const updateContractStatusController = async (req: Request, res: Response
         status: 'success',
         message: 'ແກ້ໄຂຂໍ້ມູນສັນຍາ ສຳເລັດແລ້ວ'
     })
+}
+
+
+
+export const removeContractUserController = async (req: Request, res: Response) => {
+    try {
+        const payload = tokenPayloadService(req)
+        const id = Number(req.params.id)
+
+        const description = `ຍົກເລີກ ລູກຄ້າທີ່ຜູ້ກັບສັນຍາສະບັບ id: ${id}`
+
+        await removeContractUserService({ id, companyId: payload.companyId, deletedBy: payload.userId })
+        await historyService({ req, description })
+
+        res.json({
+            status: 'success',
+            message: 'ຍົກເລີກ ສຳເລັດແລ້ວ'
+        })
+    } catch (error) {
+        handlerResponse({ error, res, })
+    }
+}
+
+export const addContractUserController = async (req: Request, res: Response) => {
+    try {
+        const payload = tokenPayloadService(req)
+        const customers: users[] = (req.body.customers)
+        const contractId = Number(req.body.contractId)
+
+        const description = `ເພີ່ມ ລູກຄ້າ ເຂົ້າສັນຍາສະບັບ contractId: ${contractId}`
+
+        for (const customer of customers) {
+            const cus = {
+                contractId: contractId,
+                customerId: customer.userId,
+                createdAt: today(),
+                companyId: payload.companyId
+            }
+
+            const check = await checkContractUserService({ customerId: cus.customerId, companyId: payload.companyId, contractId })
+            if (!check) {
+                await addContractUserService(cus)
+            }
+        }
+
+        await historyService({ req, description })
+
+        res.json({
+            status: 'success',
+            message: 'ເພີ່ມລູກຄ້າເຂົ້າສັນຍາ ສຳເລັດແລ້ວ'
+        })
+    } catch (error) {
+        handlerResponse({ error, res, })
+    }
 }

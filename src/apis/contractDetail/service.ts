@@ -8,16 +8,19 @@ import { ResInvoice, ResContract } from './type'
 export const historiesPayByContractService = async (data: { contractId: number }) => {
     const { contractId } = data
 
-    console.log({ contractId })
-
     try {
         const result = await prismaClient.contracts.findFirst({
             where: {
-                contractId
+                contractId,
+
             },
             include: {
                 contract_customer: {
+                    where: {
+                        deletedAt: null
+                    },
                     select: {
+                        id: true,
                         users: {
                             select: { fullName: true, lastName: true }
                         }
@@ -57,8 +60,7 @@ export const historiesPayByContractService = async (data: { contractId: number }
 
         return result
     } catch (err) {
-        logger.error(err)
-        return null
+        throw err
     } finally {
         await prismaClient.$disconnect()
     }
@@ -66,13 +68,13 @@ export const historiesPayByContractService = async (data: { contractId: number }
 
 export const invoicesByContractService = async ({ contractId }: { contractId: number }) => {
     try {
-         
+
         const p = await prismaClient.invoice.findMany({
             where: {
                 contractId
             },
             include: {
-                company:{
+                company: {
                     select: {
                         address: true,
                         companyName: true,

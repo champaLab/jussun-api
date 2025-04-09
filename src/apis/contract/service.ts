@@ -323,3 +323,54 @@ export const updateContractStatusService = async (data: {
         await prismaClient.$disconnect()
     }
 }
+
+
+
+export const removeContractUserService = async ({ id, companyId, deletedBy }: { id: number, companyId: number, deletedBy: number }) => {
+    try {
+        const p = await prismaClient.contract_customer.update({
+            where: { id, companyId },
+            data: {
+                deletedAt: today(),
+                deletedBy: deletedBy
+            }
+        })
+        return p
+    } catch (err) {
+        throw err
+    } finally {
+        await prismaClient.$disconnect()
+    }
+}
+
+
+
+export const checkContractUserService = async ({ customerId, companyId, contractId }: { customerId: number, companyId: number, contractId: number }) => {
+    try {
+        const p = await prismaClient.contract_customer.findFirst({
+            where: {
+                companyId,
+                contractId,
+                customerId
+            }
+        })
+        return p
+    } catch (err) {
+        throw err
+    } finally {
+        await prismaClient.$disconnect()
+    }
+}
+
+export const addContractUserService = async (data: Pick<contract_customer, 'companyId' | 'contractId' | 'customerId' | 'createdAt'>) => {
+    try {
+        const p = await prismaClient.contract_customer.create({
+            data: data
+        })
+        return p
+    } catch (err) {
+        throw err
+    } finally {
+        await prismaClient.$disconnect()
+    }
+}

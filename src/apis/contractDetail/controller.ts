@@ -8,39 +8,45 @@ import { historyService } from '../../utils/createLog'
 import env from '../../env'
 
 export const historiesPayByContractController = async (req: Request, res: Response) => {
-    const payload = tokenPayloadService(req)
-    const contractId = Number(req.params.contractId)
+    try {
+        const payload = tokenPayloadService(req)
+        const contractId = Number(req.params.contractId)
 
-    const ct: any = await historiesPayByContractService({ contractId })
-    if (!ct) {
+        const ct = await historiesPayByContractService({ contractId })
+        if (!ct) {
+            res.json({
+                status: 'error',
+                message: 'contract not found'
+            })
+            return
+        }
+        const result = await invoicesByContractService({ contractId })
+
+        const contract = {
+            ...ct,
+            logoPath: ct.company.logoPath ? `${env.HOST_IMAGE}${env.BASE_PATH}${ct.company.logoPath}` : null,
+            createdAt: dateFormatter({ date: ct.createdAt })
+        }
+
+        const invoices = result.map((item, i) => ({
+            ...item,
+            ...item.company,
+            indexNo: i + 1,
+            billPath: item.billPath ? `${env.HOST_IMAGE}${env.BASE_PATH}${item.billPath}` : null,
+            logoPath: item.company.logoPath ? `${env.HOST_IMAGE}${env.BASE_PATH}${item.company.logoPath}` : null,
+            paidDate: dateFormatter({ date: item.paidDate }),
+            createdAt: dateFormatter({ date: item.createdAt }),
+            updatedAt: dateFormatter({ date: item.updatedAt })
+        }))
+
+        res.json({
+            status: 'success',
+            contract,
+            invoices
+        })
+    } catch (error) {
         res.json({
             status: 'error',
-            message: 'contract not found'
         })
-        return
     }
-    const result = await invoicesByContractService({ contractId })
-
-    const contract = {
-        ...ct,
-        logoPath: ct.logoPath ? `${env.HOST_IMAGE}${env.BASE_PATH}${ct.logoPath}` : null,
-        createdAt: dateFormatter(ct.createdAt)
-    }
-
-    const invoices = result.map((item, i) => ({
-        ...item,
-        ...item.company,
-        indexNo: i + 1,
-        billPath: item.billPath ? `${env.HOST_IMAGE}${env.BASE_PATH}${item.billPath}` : null,
-        logoPath: item.company.logoPath ? `${env.HOST_IMAGE}${env.BASE_PATH}${item.company.logoPath}` : null,
-        paidDate: dateFormatter({ date: item.paidDate }),
-        createdAt: dateFormatter({ date: item.createdAt }),
-        updatedAt: dateFormatter({ date: item.updatedAt })
-    }))
-
-    res.json({
-        status: 'success',
-        contract,
-        invoices
-    })
 }
