@@ -1,10 +1,11 @@
 import logger from '../../configs/winston'
 import prismaClient from '../../prisma'
-import { company, invoice, Prisma, users } from '@prisma/client'
+import { company, contracts, invoice, Prisma, users } from '@prisma/client'
 import { TPaidInvoice, TResponseModel } from './type'
 import { Request } from 'express'
 import env from '../../env'
 import { dateFormatter } from '../../utils/dateFormat'
+import { PrismaTSX } from '../contract/type'
 export const findInvoicePaydayService = async (data: {
     companyId: number
     page: number
@@ -97,18 +98,22 @@ export const findInvoicePaydayServices = async (data: {
     key: string | null
     projectId: number | null
     invoiceStatus: string | null
-    date: string
-    monthly: string
+    date: string | null
+    monthly: string | null
 }): Promise<TResponseModel> => {
     const skip = (data.page - 1) * env.ROW_PER_PAGE
     const take = env.ROW_PER_PAGE
     const { invoiceStatus, companyId, key, projectId, monthly } = data
 
+    console.log({ data })
     try {
         const totalCountResult = await prismaClient.invoice.findMany({
             where: {
-                monthly: monthly,
-                invoiceStatus: invoiceStatus
+                companyId: companyId,
+                invoiceStatus: invoiceStatus,
+                ...(monthly ? { monthly: { equals: monthly } } : {}),
+                ...(projectId ? { projectId: { equals: projectId } } : {}),
+
             },
             include: {
                 users: {
@@ -220,46 +225,44 @@ export const findOneContractService = async (contractId: number) => {
     }
 }
 
-export const findCountInvoiceService = async (data: { contractId: number; invoiceId: number }) => {
+export const findCountInvoiceService = async (prisma: PrismaTSX, data: { contractId: number; invoiceId: number }) => {
     const { contractId, invoiceId } = data
     try {
-        const result = await prismaClient.invoice.count({
+        return await prisma.invoice.count({
             where: { contractId, invoiceId: { not: invoiceId } }
         })
-
-        return result
     } catch (err) {
-        logger.error(err)
-        console.error(err)
-        return 0
-    } finally {
-        prismaClient.$disconnect()
+        throw err
     }
 }
 
-export const paidInvoiceService = async (data: TPaidInvoice) => {
+
+export const paidInvoiceService = async (
+    prisma: PrismaTSX,
+    data: Pick<invoice, 'invoiceId' | 'paidDate' | 'createdBy' | "amount" | "currency" | "fines" | "paymentMethod" | "comment" | "invoiceStatus" | "exchangeRate" | "currencyExchange" | "updatedAt">,
+) => {
     try {
-        const result = await prismaClient.invoice.update({
+        const result = await prisma.invoice.update({
             where: { invoiceId: data.invoiceId },
-            data: data
+            data: data,
+
         })
 
         return result
     } catch (err) {
-        logger.error(err)
-        console.error(err)
-        return null
-    } finally {
-        prismaClient.$disconnect()
+        console.log(err)
+        throw err
     }
 }
 
-export const closeContractService = async (data: { contractId: number; contractStatus: string; updatedAt: Date; updatedBy: number }) => {
+export const closeContractService = async (prisma: PrismaTSX, data: Pick<contracts, 'contractId' | 'contractStatus' | 'updatedAt' | 'updatedBy'>) => {
     try {
-        const result = await prismaClient.contracts.update({
+        const result = await prisma.contracts.update({
             where: { contractId: data.contractId },
             data: {
-                ...data,
+                contractStatus: data.contractStatus,
+                updatedAt: data.updatedAt,
+                updatedBy: data.updatedBy,
                 reason: null,
                 cancelAt: null,
                 cancelBy: null
@@ -268,11 +271,7 @@ export const closeContractService = async (data: { contractId: number; contractS
 
         return result
     } catch (err) {
-        logger.error(err)
-        console.error(err)
-        return null
-    } finally {
-        prismaClient.$disconnect()
+        throw err
     }
 }
 

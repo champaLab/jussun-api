@@ -4,15 +4,23 @@ import env from '../../env'
 import { dateFormatter, today } from '../../utils/dateFormat'
 import dayjs from 'dayjs'
 
-export const findManyExpenseService = async (data: { projectId: number | null; companyId: number; skip: number; take: number }) => {
-    const { skip, take, companyId, projectId } = data
-
+export const findManyExpenseService = async (data: { projectId: number | null; companyId: number; skip: number; take: number; dateStart: Date | null; dateEnd: Date | null }) => {
+    const { skip, take, companyId, projectId, dateStart, dateEnd } = data
+    console.log(data)
     try {
         const result = await prismaClient.expenses.findMany({
             where: {
                 companyId: companyId,
                 deletedAt: null,
-                ...(projectId ? { projectId: projectId } : {})
+                ...(projectId ? { projectId: projectId } : {}),
+                ...(dateStart && dateEnd
+                    ? {
+                        expenseDate: {
+                            gte: new Date(dayjs(dateStart).startOf('day').toISOString()),
+                            lte: new Date(dayjs(dateEnd).endOf('day').toISOString()),
+                        },
+                    }
+                    : {}),
             },
 
             include: {
@@ -32,7 +40,15 @@ export const findManyExpenseService = async (data: { projectId: number | null; c
             where: {
                 companyId: data.companyId,
                 deletedAt: null,
-                ...(data.companyId ? { projectId: data.companyId } : {})
+                ...(data.companyId ? { projectId: data.companyId } : {}),
+                ...(dateStart && dateEnd
+                    ? {
+                        expenseDate: {
+                            gte: new Date(dayjs(dateStart).startOf('day').toISOString()),
+                            lte: new Date(dayjs(dateEnd).endOf('day').toISOString()),
+                        },
+                    }
+                    : {}),
             }
         })
 
@@ -55,6 +71,38 @@ export const findManyExpenseService = async (data: { projectId: number | null; c
         await prismaClient.$disconnect()
     }
 }
+
+export const findManyExpenseSummaryService = async (data: { projectId: number | null; companyId: number; dateStart: Date | null; dateEnd: Date | null }) => {
+    const { companyId, projectId, dateStart, dateEnd } = data
+
+    try {
+        const result = await prismaClient.expenses.aggregate({
+            where: {
+                companyId: companyId,
+                deletedAt: null,
+                ...(projectId ? { projectId: projectId } : {}),
+                ...(dateStart && dateEnd
+                    ? {
+                        expenseDate: {
+                            gte: new Date(dayjs(dateStart).startOf('day').toISOString()),
+                            lte: new Date(dayjs(dateEnd).endOf('day').toISOString()),
+                        },
+                    }
+                    : {}),
+            },
+            _sum: {
+                amount: true,
+            },
+        })
+
+        return result
+    } catch (err) {
+        throw err
+    } finally {
+        await prismaClient.$disconnect()
+    }
+}
+
 
 export const createExpenseService = async (data: Omit<expenses, 'id' | 'deletedAt'>) => {
     try {

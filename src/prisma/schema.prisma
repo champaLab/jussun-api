@@ -127,9 +127,9 @@ model expenses {
 
 model invoice {
   invoiceId                       Int       @id @default(autoincrement())
-  fines                           Float?    @default(0) @db.Float
+  fines                           Float     @default(0) @db.Float
   amount                          Float     @db.Float
-  debt                            Float?    @default(0) @db.Float
+  debt                            Float     @default(0) @db.Float
   contractId                      Int
   companyId                       Int
   currency                        String    @db.VarChar(30)

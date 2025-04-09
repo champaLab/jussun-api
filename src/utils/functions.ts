@@ -44,12 +44,12 @@ export const responseData = async (data: any, page: number) => {
         data.length == 0
             ? []
             : data.map((item: any, i: number) => ({
-                  ...item,
-                  indexNo: (page - 1) * rowsPerPage + (i + 1),
-                  createdAt: dateFormatter(item.createdAt),
-                  updatedAt: dateFormatter(item.updatedAt),
-                  cancelAt: dateFormatter(item.cancelAt)
-              }))
+                ...item,
+                indexNo: (page - 1) * rowsPerPage + (i + 1),
+                createdAt: dateFormatter({ date: item.createdAt }),
+                updatedAt: dateFormatter({ date: item.updatedAt }),
+                cancelAt: dateFormatter({ date: item.cancelAt })
+            }))
 
     return newData
 }

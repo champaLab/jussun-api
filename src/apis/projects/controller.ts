@@ -5,13 +5,20 @@ import { dateFormatter, today } from '../../utils/dateFormat'
 import { historyService } from '../../utils/createLog'
 
 export const projectsForAutocompleteController = async (req: Request, res: Response) => {
-    const payload = tokenPayloadService(req)
-    const projects = await projectsForAutocompleteService(payload.companyId!)
+    try {
+        const payload = tokenPayloadService(req)
+        const projects = await projectsForAutocompleteService(payload.companyId!)
 
-    res.json({
-        status: 'success',
-        projects
-    })
+        res.json({
+            status: 'success',
+            projects
+        })
+    } catch (error) {
+        res.json({
+            status: 'error',
+            projects: []
+        })
+    }
 }
 
 export const projectsController = async (req: Request, res: Response) => {
@@ -30,8 +37,8 @@ export const projectsController = async (req: Request, res: Response) => {
     const projects = result.projects.map((item, i) => ({
         ...item,
         indexNo: (i + 1) * page,
-        createdAt: dateFormatter(item.createdAt),
-        updatedAt: dateFormatter(item.updatedAt)
+        createdAt: dateFormatter({ date: item.createdAt }),
+        updatedAt: dateFormatter({ date: item.updatedAt })
     }))
 
     res.json({

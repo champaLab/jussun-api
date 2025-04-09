@@ -34,13 +34,17 @@ export const verify = async (req: Request, res: Response, next: NextFunction) =>
     if (req.headers.authorization) {
         token = `${req.headers.authorization}`.replace('Bearer ', '')
     }
-    if (!token) res.json({ status: 'error', message: 'No token provided.' })
+    if (!token) {
+        res.json({ status: 'error', message: 'No token provided.' })
+        return
+    }
 
     const publicKEY = env.JWT_PUBLIC_KEY ?? ''
 
     jwt.verify(token, publicKEY, optionsToken, (err, decoded) => {
         if (err) {
             res.json({ status: 'invalid', message: 'Token unauthorized.' })
+            return
         }
         if (decoded) {
             // const payload = decoded as TUserPayloadModel

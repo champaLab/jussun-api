@@ -63,7 +63,8 @@ export function logRequestResponse(req: Request, res: Response, next: NextFuncti
             statusCode: res.statusCode,
             responseTime,
             responseBody,
-            tracingData
+            tracingData,
+            path: req.path
         })
 
         // Call the original 'send' function with the provided data

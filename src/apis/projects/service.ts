@@ -8,14 +8,16 @@ import { today } from '../../utils/dateFormat'
 
 export const projectsForAutocompleteService = async (companyId: number) => {
     try {
-        const p = await prismaClient.projects.findMany({ where: { companyId }, orderBy: { area: 'desc' } })
+        const p = await prismaClient.projects.findMany({
+            where: {
+                companyId,
+
+            }, orderBy: { area: 'desc' }
+        })
 
         return p
     } catch (err) {
-        logger.error(err)
-        return { count: 1, projects: [] }
-    } finally {
-        prismaClient.$disconnect()
+        throw err
     }
 }
 

@@ -30,8 +30,8 @@ export const projectItemController = async (req: Request, res: Response) => {
     const projects = result.projects.map((item, i) => ({
         ...item,
         indexNo: (i + 1) * page,
-        createdAt: dateFormatter(item.createdAt),
-        updatedAt: dateFormatter(item.updatedAt)
+        createdAt: dateFormatter({ date: item.createdAt }),
+        updatedAt: dateFormatter({ date: item.updatedAt })
     }))
 
     res.json({

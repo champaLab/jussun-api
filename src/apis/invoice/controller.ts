@@ -20,16 +20,17 @@ import { TResponseModel } from './type'
 import dayjs from 'dayjs'
 import { getPhotoPath } from '../../utils/fileUrl'
 import { handlerResponse } from '../../utils/handlerResponse'
+import prismaClient from '../../prisma'
 
 export const invoicePaydayController = async (req: Request, res: Response) => {
     try {
         const payload = tokenPayloadService(req)
         let companyId = req.body.companyId
-        const key = req.body.key
+        const key = req.body.key != '' ? req.body.key : null
         const monthly = req.body.monthly
         const page = req.body.page ? Number(req.body.page) : 1
         const invoiceStatus = req.body.invoiceStatus
-        const date = dayjs(req.body.date).add(7, 'hours').format('DD')
+        const date = req.body.date ? dayjs(req.body.date).add(7, 'hours').format('DD') : null
         const projectId = req.body.projectId ? parseInt(req.body.projectId) : null
 
         if ((payload.role === 'ADMIN' || payload.role === 'SUPERADMIN') && companyId) {
@@ -40,13 +41,17 @@ export const invoicePaydayController = async (req: Request, res: Response) => {
 
         const inv = await findInvoicePaydayServices({ invoiceStatus, companyId, key, page, projectId, date, monthly })
 
-        const exchange = await findLastExchangeService({ companyId })
+        const exchangeResult = await findLastExchangeService({ companyId })
+        console.log(exchangeResult)
+        const exchange = {
+            ...exchangeResult, updatedAt: dateFormatter({ date: exchangeResult.updatedAt })
+        }
         res.json({
             status: 'success',
             reports: {
                 invoices: inv.invoices,
                 count: inv.count,
-                exchange: { ...exchange, updatedAt: dateFormatter({ date: exchange.updatedAt }) }
+                exchange
             }
         })
     } catch (error) {
@@ -54,142 +59,122 @@ export const invoicePaydayController = async (req: Request, res: Response) => {
     }
 }
 
+
 export const invoicePaidController = async (req: Request, res: Response) => {
     const payload = tokenPayloadService(req)
     const invoiceId = Number(req.body.invoiceId)
     const invAmount = parseFloat(req.body.invAmount)
     const invCurrency = req.body.invCurrency
-    const invoiceStatus = 'PAID'
     const fines = parseFloat(req.body.fines ?? 0)
     const paymentMethod = req.body.invPaymentMethod
     let currencyExchange = req.body.currencyExchange
-    let comment = req.body.comment
-    let exchangeRate: number | null = parseFloat(req.body.exchangeRate)
+    const comment = req.body.comment === 'null' ? null : req.body.comment
+    let exchangeRate = parseFloat(req.body.exchangeRate ?? '0')
     const paidDate = today()
+    const invoiceStatus = 'PAID'
 
-    const inv: any = await findOneInvoiceService({ invoiceId })
     const billPath = getPhotoPath(req.file)
-    console.log({ billPath })
 
-    if (!inv) {
-        res.json({
-            status: 'error',
-            message: 'ບໍ່ພົບຂໍ້ມູນ ໃຈແຈ້ງໜີ້'
-        })
-        return
-    } else if ((inv && inv.paidDate) || inv.invoiceStatus === 'PAID') {
-        res.json({
-            status: 'error',
-            message: 'ໃຈແຈ້ງໜີ້ ທີ່ທ່ານແຈ້ງການຊຳລະ ແມ່ນໄດ້ຖືກຊຳລະກ່ອນໜ້ານີ້ແລ້ວ'
-        })
-        return
-    }
+    try {
+        const inv: any = await findOneInvoiceService({ invoiceId })
 
-    const contract: any = await findOneContractService(inv.contractId)
-    if (!contract) {
-        res.json({
-            status: 'error',
-            message: 'ບໍ່ພົບຂໍ້ມູນສັນຍາ'
-        })
-        return
-    }
-
-    let debt: number = inv.debt ?? 0
-    if (inv.currency == invCurrency) {
-        debt = (inv.debt ?? 0) - invAmount
-        currencyExchange = null
-        exchangeRate = null
-    } else if (inv.currency != invCurrency) {
-        debt = (inv.debt ?? 0) - invAmount / exchangeRate
-    }
-
-    console.log('-'.repeat(100))
-    console.log({ debt })
-
-    const paid = await paidInvoiceService({
-        invoiceId,
-        amount: invAmount,
-        currency: invCurrency,
-        debt: debt,
-        fines,
-        paidDate,
-        paymentMethod,
-        updatedAt: paidDate,
-        currencyExchange,
-        exchangeRate,
-        invoiceStatus,
-        createdBy: payload.userId,
-        comment
-    })
-
-    if (!paid) {
-        res.json({
-            status: 'ຳerror',
-            message: 'ແຈ້ງຊຳລະ ຜິດພາດ ລອງໃໝ່ໃນພາຍຫຼັງ'
-        })
-        return
-    }
-    const monthly = dayjs().add(1, 'month').format('MM/YYYY')
-
-    if (debt > 0) {
-        const countInv = await findCountInvoiceService({ contractId: contract.contractId, invoiceId })
-        const numberOfInstallment = countInv > (contract.numberOfInstallment ?? 1) ? 1 : (contract.numberOfInstallment ?? 1) - countInv
-        const amount = inv.amount / numberOfInstallment
-
-        // const createInv: any = await createInvoiceService({
-        //     amount: amount,
-        //     debt,
-        //     contractId: inv.contractId,
-        //     createdAt: paidDate,
-        //     currency: inv.currency,
-        //     fines: 0,
-        //     invoiceId: 1,
-        //     invoiceStatus: 'PENDING',
-        //     paidDate: null,
-        //     updatedAt: null,
-        //     paymentMethod: null,
-        //     currencyExchange: null,
-        //     exchangeRate: null,
-        //     createdBy: null,
-        //     reservedAt: null,
-        //     reservedBy: null,
-        //     comment: null,
-        //     monthly,
-        //     billPath,
-        //     remindSentDate: null,
-        //     remindSentTime: null,
-        //     numberOfInstallment,
-        //     projectId: contract.projectId
-        // })
-        // if (!createInv) {
-        //     res.json({
-        //         status: 'error',
-        //         message: 'ສ້າງໃບແຈ້ງໜີ້ ຜິດພາດ ລອງໃໝ່ໃນພາຍຫຼັງ'
-        //     })
-        // }
-
-        // await updateContractInvoiceIdService(inv.contractId, createInv.invoiceId)
-    } else {
-        const closeContract = await closeContractService({
-            contractId: inv.contractId,
-            contractStatus: 'CLOSED',
-            updatedAt: paidDate,
-            updatedBy: payload.userId
-        })
-
-        if (!closeContract) {
-            res.json({
-                status: 'error',
-                message: 'ປິດສັນຍາ ຜິດພາດ ລອງໃໝ່ໃນພາຍຫຼັງ'
-            })
+        if (!inv) {
+            res.json({ status: 'error', message: 'ບໍ່ພົບຂໍ້ມູນ ໃຈແຈ້ງໜີ້' })
+            return
+        } else if (inv.paidDate || inv.invoiceStatus === 'PAID') {
+            res.json({ status: 'error', message: 'ໃຈແຈ້ງໜີ້ ຖືກຊຳລະແລ້ວ' })
             return
         }
-    }
 
-    res.json({
-        status: 'success',
-        message: 'ແຈ້ງຊຳລະ ສຳເລັດແລ້ວ'
-    })
+        const contract: any = await findOneContractService(inv.contractId)
+
+        if (!contract) {
+            res.json({ status: 'error', message: 'ບໍ່ພົບຂໍ້ມູນສັນຍາ' })
+            return
+        }
+
+        await prismaClient.$transaction(async (tx) => {
+            let debt: number = inv.debt ?? 0
+
+            if (inv.currency === invCurrency) {
+                debt -= invAmount
+                currencyExchange = null
+                exchangeRate = 0
+            } else {
+                debt -= invAmount / exchangeRate
+            }
+
+            const resultPaid = await paidInvoiceService(tx, {
+                invoiceId,
+                amount: invAmount,
+                currency: invCurrency,
+                fines,
+                paidDate,
+                paymentMethod,
+                updatedAt: paidDate,
+                currencyExchange,
+                exchangeRate,
+                invoiceStatus,
+                createdBy: payload.userId,
+                comment
+            })
+            console.log({ debt })
+
+
+            if (debt > 0) {
+                const month = resultPaid.monthly + '-20'
+                const monthly = dayjs(month, 'YYYY-MM-DD').add(1, 'month').format('YYYY-MM')
+                let newAmount = 0
+
+                if (resultPaid.debt > resultPaid.amount && inv.amount <= debt) {
+                    console.log('condition 1')
+                    newAmount = inv.amount
+                } else if (resultPaid.debt > resultPaid.amount && inv.amount > debt) {
+                    console.log('condition 2')
+                    newAmount = debt
+                } else {
+                    console.log('condition 3')
+                    newAmount = resultPaid.debt - invAmount
+                }
+
+                const createInv = await createInvoiceService(tx, {
+                    amount: newAmount,
+                    debt,
+                    contractId: inv.contractId,
+                    createdAt: paidDate,
+                    currency: inv.currency,
+                    fines: 0,
+                    monthly,
+                    billPath,
+                    projectId: contract.projectId,
+                    companyId: contract.companyId
+                })
+
+                await updateContractInvoiceIdService(inv.contractId, createInv.invoiceId, tx)
+            }
+
+            if (debt === 0) {
+                await closeContractService(tx, {
+                    contractId: inv.contractId,
+                    contractStatus: 'CLOSED',
+                    updatedAt: paidDate,
+                    updatedBy: payload.userId
+                })
+            }
+        })
+
+        res.json({
+            status: 'success',
+            message: 'ແຈ້ງຊຳລະ ສຳເລັດແລ້ວ'
+        })
+
+    } catch (error: any) {
+        console.error(error)
+        res.status(500).json({
+            status: 'error',
+            message: 'Internal Server Error'
+        })
+    }
 }
 
 export const actionInvoiceController = async (req: Request, res: Response) => {

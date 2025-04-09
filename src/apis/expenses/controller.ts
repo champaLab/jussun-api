@@ -2,7 +2,7 @@ import { Request, Response } from 'express'
 import { tokenPayloadService } from '../user/service'
 import dayjs from 'dayjs'
 import { today } from '../../utils/dateFormat'
-import { createExpenseService, deleteExpenseService, findManyExpenseService, updateExpenseService } from './service'
+import { createExpenseService, deleteExpenseService, findManyExpenseService, findManyExpenseSummaryService, updateExpenseService } from './service'
 import { expenses } from '@prisma/client'
 import env from '../../env'
 import { handlerResponse } from '../../utils/handlerResponse'
@@ -13,15 +13,27 @@ export const findManyExpenseController = async (req: Request, res: Response) => 
         const payload = tokenPayloadService(req)
         const companyId = req.body.companyId ? Number(req.body.companyId) : payload.companyId ?? 0
         const projectId = req.body.projectId
+        let dateStart = req.body.dateStart ? dayjs(req.body.dateStart).toDate() : null
+        let dateEnd = req.body.dateEnd ? dayjs(req.body.dateEnd).toDate() : null
+
+        if (dateStart && !dateEnd) {
+            dateEnd = dateStart
+        }
+        if (!dateStart && dateEnd) {
+            dateStart = dateEnd
+        }
+
         const page = req.body.page ?? 1
         const take = req.body.limit ?? env.ROW_PER_PAGE
         const skip = (page - 1) * take
 
-        const result = await findManyExpenseService({ companyId, projectId, skip, take })
+        const result = await findManyExpenseService({ companyId, projectId, skip, take, dateStart, dateEnd })
+        const total = await findManyExpenseSummaryService({ companyId, projectId, dateStart, dateEnd })
 
         res.json({
             status: 'success',
-            ...result
+            ...result,
+            total: total._sum.amount ? Number(total._sum.amount).toLocaleString() : '0.00'
         })
     } catch (error) {
         handlerResponse({ res, error })

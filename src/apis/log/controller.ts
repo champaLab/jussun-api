@@ -17,7 +17,7 @@ export const findManyHistoryController = async (req: Request, res: Response) => 
     const histories = hst.history.map((item, i) => ({
         ...item,
         indexNo: i + 1,
-        createdAt: dateFormatter(item.createdAt)
+        createdAt: dateFormatter({ date: item.createdAt }),
     }))
 
     res.json({

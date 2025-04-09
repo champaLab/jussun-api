@@ -204,16 +204,19 @@ export const createContractService = async (
 
 export const updateContractInvoiceIdService = async (contract: number, invoiceId: number, prisma?: PrismaTSX) => {
     try {
-        if (!prisma) prisma = prismaClient
-        const p = await prisma.contracts.update({
-            where: { contractId: contract },
-            data: { lastInvoice: invoiceId }
-        })
-        return p
+        if (!prisma) {
+            return await prismaClient.contracts.update({
+                where: { contractId: contract },
+                data: { lastInvoice: invoiceId }
+            })
+        } else {
+            return await prisma.contracts.update({
+                where: { contractId: contract },
+                data: { lastInvoice: invoiceId }
+            })
+        }
     } catch (err) {
-        logger.error(err)
-        console.error(err)
-        return null
+        throw err
     }
 }
 
@@ -251,15 +254,16 @@ export const updateContractService = async (
     }
 }
 
+
 export const createInvoiceService = async (
     prisma: PrismaTSX,
     data: Pick<invoice, 'amount' | 'billPath' | 'contractId' | 'createdAt' | 'currency' | 'debt' | 'fines' | 'monthly' | 'projectId' | "companyId">
 ) => {
+    console.log(data, '666666')
     try {
-        const p = await prisma.invoice.create({
+        return await prisma.invoice.create({
             data: data
         })
-        return p
     } catch (err) {
         throw err
     }

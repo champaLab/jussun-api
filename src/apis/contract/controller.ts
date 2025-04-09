@@ -83,8 +83,14 @@ export const createContractController = async (req: Request, res: Response) => {
     const invoiceStatus = 'PENDING'
     const paidNow = null
 
-    console.log({ companyId })
+    console.log({ companyId, totalPrice })
 
+    // if (!paidNow) {
+    //     res.json({
+    //         status: 'error',
+    //     })
+    //     return
+    // }
     try {
         const contract = await finOneContractService({ docId })
         if (contract) {
@@ -129,7 +135,7 @@ export const createContractController = async (req: Request, res: Response) => {
             }
             await updateProjectItemService({ prisma, projectId: projectItems, contractId: p.contractId })
 
-            const monthly = dayjs().format('MM/YYYY')
+            const monthly = dayjs().add(1, 'month').format('YYYY-MM')
             const createInv = await createInvoiceService(prisma, {
                 amount,
                 debt,
