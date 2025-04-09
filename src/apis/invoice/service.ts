@@ -239,13 +239,12 @@ export const findCountInvoiceService = async (prisma: PrismaTSX, data: { contrac
 
 export const paidInvoiceService = async (
     prisma: PrismaTSX,
-    data: Pick<invoice, 'invoiceId' | 'paidDate' | 'createdBy' | "amount" | "currency" | "fines" | "paymentMethod" | "comment" | "invoiceStatus" | "exchangeRate" | "currencyExchange" | "updatedAt">,
+    data: Pick<invoice, 'invoiceId' | 'paidDate' | 'createdBy' | "amount" | "currency" | "fines" | "paymentMethod" | "comment" | "invoiceStatus" | "exchangeRate" | "currencyExchange" | "updatedAt" | "reservedBy" | 'reservedAt'>,
 ) => {
     try {
         const result = await prisma.invoice.update({
             where: { invoiceId: data.invoiceId },
             data: data,
-
         })
 
         return result

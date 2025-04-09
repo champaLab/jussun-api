@@ -116,7 +116,9 @@ export const invoicePaidController = async (req: Request, res: Response) => {
                 exchangeRate,
                 invoiceStatus,
                 createdBy: payload.userId,
-                comment
+                comment,
+                reservedAt: null,
+                reservedBy: null
             })
             console.log({ debt })
 
