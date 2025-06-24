@@ -7,7 +7,7 @@
     "scripts": {
         "dev": "nodemon --delay 100ms src/index.ts",
         "start": "ts-node src/index.ts",
-        "serve": "pm2-runtime ./dist/index.js",
+        "serve": "bun ./src/index.ts",
         "build": "tsc",
         "test:watch": "jest --watch",
         "update:prisma": "yarn add --dev prisma@latest && yarn add @prisma/client@latest",

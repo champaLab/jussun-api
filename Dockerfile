@@ -1,31 +1,28 @@
-FROM node:18-bullseye-slim
+FROM oven/bun:alpine as base
 
-# Set working directory
 WORKDIR /app
 
-RUN apt update -y
-RUN apt install -y iputils-ping telnet
+# (optional) ติดตั้ง ping, telnet
+RUN apk add --no-cache iputils busybox-extras
 
-# Install PM2 globally
-RUN yarn global add pm2
+# Copy dependencies
+COPY bun.lock package.json ./
+RUN bun install --frozen-lockfile
 
-# Copy package.json and install dependencies
-COPY package.json .
-RUN yarn 
-
-# Copy the rest of the application code
+# Copy source code
 COPY . .
 
-# Copy the production .env file
+# Copy .env file
 COPY .env.prod .env
 
-RUN yarn db
+# If you have a DB setup command (like `yarn db`), convert it to bun:
+RUN bun run db
 
-# Build the application
-RUN yarn build
+# Build app (if applicable — e.g., TypeScript or frontend)
+RUN bun run build
 
-# Expose the desired port
+# Expose port
 EXPOSE 1188
 
-# Start the application
-CMD ["yarn", "serve"]
+# Start the app (assumes your script "serve" exists in package.json)
+CMD ["bun", "run", "serve"]
