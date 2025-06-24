@@ -18,9 +18,6 @@ COPY .env.prod .env
 # If you have a DB setup command (like `yarn db`), convert it to bun:
 RUN bun run db
 
-# Build app (if applicable — e.g., TypeScript or frontend)
-RUN bun run build
-
 # Expose port
 EXPOSE 1188
 
