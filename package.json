@@ -10,10 +10,10 @@
         "serve": "bun ./src/index.ts",
         "build": "tsc",
         "test:watch": "jest --watch",
-        "update:prisma": "yarn add --dev prisma@latest && yarn add @prisma/client@latest",
-        "db": "yarn update:prisma && yarn db:pull && yarn db:generate",
-        "db:pull": "yarn prisma db pull",
-        "db:generate": "yarn prisma generate"
+        "update:prisma": "bun add --dev prisma@latest && bun add @prisma/client@latest",
+        "db": "bun update:prisma && bun db:pull && bun db:generate",
+        "db:pull": "bun prisma db pull",
+        "db:generate": "bun prisma generate"
     },
     "prisma": {
         "schema": "./src/prisma/schema.prisma"
@@ -24,7 +24,7 @@
         "cache-manager": "5.2.2"
     },
     "dependencies": {
-        "@prisma/client": "^6.6.0",
+        "@prisma/client": "^6.10.1",
         "axios": "^1.7.8",
         "bcrypt": "^5.1.1",
         "cls-hooked": "^4.2.2",
@@ -72,6 +72,6 @@
         "@types/swagger-ui-express": "^4.1.7",
         "@types/uuid": "^10.0.0",
         "@types/ws": "^8.5.13",
-        "prisma": "^6.6.0"
+        "prisma": "^6.10.1"
     }
 }

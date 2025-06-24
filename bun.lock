@@ -4,7 +4,7 @@
     "": {
       "name": "jussun-api",
       "dependencies": {
-        "@prisma/client": "^6.6.0",
+        "@prisma/client": "^6.10.1",
         "axios": "^1.7.8",
         "bcrypt": "^5.1.1",
         "cls-hooked": "^4.2.2",
@@ -52,7 +52,7 @@
         "@types/swagger-ui-express": "^4.1.7",
         "@types/uuid": "^10.0.0",
         "@types/ws": "^8.5.13",
-        "prisma": "^6.6.0",
+        "prisma": "^6.10.1",
       },
     },
   },
