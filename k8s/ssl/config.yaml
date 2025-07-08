@@ -1,7 +1,0 @@
-kind: ConfigMap
-apiVersion: v1
-metadata:
-  name: demo-api-config
-  namespace: demo-api
-data:
-  NODE_ENV: "development"

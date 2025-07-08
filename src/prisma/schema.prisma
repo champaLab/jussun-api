@@ -43,10 +43,10 @@ model contract_customer {
   updatedAt                                DateTime? @db.DateTime(0)
   deletedAt                                DateTime? @db.DateTime(0)
   deletedBy                                Int?
-  company                                  company   @relation(fields: [companyId], references: [companyId], onUpdate: Restrict, map: "contract_customer_company_companyId_fk")
-  contracts                                contracts @relation(fields: [contractId], references: [contractId], onUpdate: Restrict, map: "contract_customer_contracts_contractId_fk")
-  users                                    users     @relation(fields: [customerId], references: [userId], onUpdate: Restrict, map: "contract_customer_users_userId_fk")
-  users_contract_customer_deletedByTousers users?    @relation("contract_customer_deletedByTousers", fields: [deletedBy], references: [userId], onDelete: Restrict, onUpdate: Restrict, map: "contract_customer_users_userId_fk_2")
+  company                                  company   @relation(fields: [companyId], references: [companyId], onDelete: NoAction, onUpdate: NoAction, map: "contract_customer_company_companyId_fk")
+  contracts                                contracts @relation(fields: [contractId], references: [contractId], onDelete: NoAction, onUpdate: NoAction, map: "contract_customer_contracts_contractId_fk")
+  users                                    users     @relation(fields: [customerId], references: [userId], onDelete: NoAction, onUpdate: NoAction, map: "contract_customer_users_userId_fk")
+  users_contract_customer_deletedByTousers users?    @relation("contract_customer_deletedByTousers", fields: [deletedBy], references: [userId], onDelete: NoAction, onUpdate: NoAction, map: "contract_customer_users_userId_fk_2")
 
   @@index([companyId], map: "contract_customer_company_companyId_fk")
   @@index([contractId], map: "contract_customer_contracts_contractId_fk")
@@ -81,10 +81,10 @@ model contracts {
   deletedBy                         Int?
   contract_customer                 contract_customer[]
   contract_items                    contract_items[]
-  company                           company             @relation(fields: [companyId], references: [companyId], onUpdate: Restrict, map: "contracts_company_companyId_fk")
-  users_contracts_customerIdTousers users               @relation("contracts_customerIdTousers", fields: [customerId], references: [userId], onUpdate: Restrict, map: "contracts_customerId_userId_fk")
-  projects                          projects            @relation(fields: [projectId], references: [projectId], onUpdate: Restrict, map: "contracts_projects_projectId_fk")
-  users_contracts_createdByTousers  users               @relation("contracts_createdByTousers", fields: [createdBy], references: [userId], onUpdate: Restrict, map: "contracts_users_userId_fk")
+  company                           company             @relation(fields: [companyId], references: [companyId], onDelete: NoAction, onUpdate: NoAction, map: "contracts_company_companyId_fk")
+  users_contracts_customerIdTousers users               @relation("contracts_customerIdTousers", fields: [customerId], references: [userId], onDelete: NoAction, onUpdate: NoAction, map: "contracts_customerId_userId_fk")
+  projects                          projects            @relation(fields: [projectId], references: [projectId], onDelete: NoAction, onUpdate: NoAction, map: "contracts_projects_projectId_fk")
+  users_contracts_createdByTousers  users               @relation("contracts_createdByTousers", fields: [createdBy], references: [userId], onDelete: NoAction, onUpdate: NoAction, map: "contracts_users_userId_fk")
   invoice                           invoice[]
   project_item                      project_item[]
   schedules                         schedules[]
@@ -121,9 +121,9 @@ model expenses {
   userId      Int
   updatedAt   DateTime? @db.Timestamp(0)
   deletedAt   DateTime? @db.Timestamp(0)
-  company     company   @relation(fields: [companyId], references: [companyId], onUpdate: Restrict, map: "expenses_company_companyId_fk")
-  projects    projects  @relation(fields: [projectId], references: [projectId], onUpdate: Restrict, map: "expenses_projects_projectId_fk")
-  users       users     @relation(fields: [userId], references: [userId], onUpdate: Restrict, map: "expenses_users_userId_fk")
+  company     company   @relation(fields: [companyId], references: [companyId], onDelete: NoAction, onUpdate: NoAction, map: "expenses_company_companyId_fk")
+  projects    projects  @relation(fields: [projectId], references: [projectId], onDelete: NoAction, onUpdate: NoAction, map: "expenses_projects_projectId_fk")
+  users       users     @relation(fields: [userId], references: [userId], onDelete: NoAction, onUpdate: NoAction, map: "expenses_users_userId_fk")
 
   @@index([projectId], map: "expenses_projects_projectId_fk")
   @@index([companyId], map: "expenses_company_companyId_fk")
@@ -155,11 +155,11 @@ model invoice {
   reservedAt                      DateTime? @db.DateTime(0)
   remindSentTime                  Int?      @default(0)
   remindSentDate                  DateTime? @db.DateTime(0)
-  company                         company   @relation(fields: [companyId], references: [companyId], onUpdate: Restrict, map: "invoice_company_companyId_fk")
-  contracts                       contracts @relation(fields: [contractId], references: [contractId], onUpdate: Restrict, map: "invoice_contracts_contractId_fk")
-  projects                        projects  @relation(fields: [projectId], references: [projectId], onUpdate: Restrict, map: "invoice_projects_projectId_fk")
-  users                           users?    @relation(fields: [createdBy], references: [userId], onDelete: Restrict, onUpdate: Restrict, map: "invoice_users_userId_fk")
-  users_invoice_reservedByTousers users?    @relation("invoice_reservedByTousers", fields: [reservedBy], references: [userId], onDelete: Restrict, onUpdate: Restrict, map: "invoice_users_userId_fk_3")
+  company                         company   @relation(fields: [companyId], references: [companyId], onDelete: NoAction, onUpdate: NoAction, map: "invoice_company_companyId_fk")
+  contracts                       contracts @relation(fields: [contractId], references: [contractId], onDelete: NoAction, onUpdate: NoAction, map: "invoice_contracts_contractId_fk")
+  projects                        projects  @relation(fields: [projectId], references: [projectId], onDelete: NoAction, onUpdate: NoAction, map: "invoice_projects_projectId_fk")
+  users                           users?    @relation(fields: [createdBy], references: [userId], onDelete: NoAction, onUpdate: NoAction, map: "invoice_users_userId_fk")
+  users_invoice_reservedByTousers users?    @relation("invoice_reservedByTousers", fields: [reservedBy], references: [userId], onDelete: NoAction, onUpdate: NoAction, map: "invoice_users_userId_fk_3")
 
   @@index([projectId], map: "invoice_projects_projectId_fk")
   @@index([companyId], map: "invoice_company_companyId_fk")
@@ -232,9 +232,9 @@ model project_item {
   updatedAt      DateTime?        @db.DateTime(0)
   deletedAt      DateTime?        @db.DateTime(0)
   contract_items contract_items[]
-  company        company          @relation(fields: [companyId], references: [companyId], onUpdate: Restrict, map: "project_item_company_companyId_fk")
-  contracts      contracts?       @relation(fields: [contractId], references: [contractId], onDelete: Restrict, onUpdate: Restrict, map: "project_item_contracts_contractId_fk")
-  projects       projects         @relation(fields: [projectId], references: [projectId], onUpdate: Restrict, map: "project_item_projects_projectId_fk")
+  company        company          @relation(fields: [companyId], references: [companyId], onDelete: NoAction, onUpdate: NoAction, map: "project_item_company_companyId_fk")
+  contracts      contracts?       @relation(fields: [contractId], references: [contractId], onDelete: NoAction, onUpdate: NoAction, map: "project_item_contracts_contractId_fk")
+  projects       projects         @relation(fields: [projectId], references: [projectId], onDelete: NoAction, onUpdate: NoAction, map: "project_item_projects_projectId_fk")
 
   @@index([companyId], map: "project_item_company_companyId_fk")
   @@index([contractId], map: "project_item_contracts_contractId_fk")
@@ -266,7 +266,7 @@ model schedules {
   date          DateTime  @db.DateTime(0)
   contractId    Int
   createdAt     DateTime? @default(now()) @db.DateTime(0)
-  contracts     contracts @relation(fields: [contractId], references: [contractId], onUpdate: Restrict, map: "schedules_contracts_contractId_fk")
+  contracts     contracts @relation(fields: [contractId], references: [contractId], onDelete: NoAction, onUpdate: NoAction, map: "schedules_contracts_contractId_fk")
 
   @@index([contractId], map: "schedules_contracts_contractId_fk")
 }
@@ -326,9 +326,9 @@ model contract_items {
   createdAt     DateTime?    @db.DateTime(0)
   updatedAt     DateTime?    @db.DateTime(0)
   deletedAt     DateTime?    @db.DateTime(0)
-  company       company      @relation(fields: [companyId], references: [companyId], onUpdate: Restrict, map: "contract_items_company_companyId_fk")
-  contracts     contracts    @relation(fields: [contractId], references: [contractId], onUpdate: Restrict, map: "contract_items_contracts_contractId_fk")
-  project_item  project_item @relation(fields: [projectItemId], references: [id], onUpdate: Restrict, map: "contract_items_project_item_id_fk")
+  company       company      @relation(fields: [companyId], references: [companyId], onDelete: NoAction, onUpdate: NoAction, map: "contract_items_company_companyId_fk")
+  contracts     contracts    @relation(fields: [contractId], references: [contractId], onDelete: NoAction, onUpdate: NoAction, map: "contract_items_contracts_contractId_fk")
+  project_item  project_item @relation(fields: [projectItemId], references: [id], onDelete: NoAction, onUpdate: NoAction, map: "contract_items_project_item_id_fk")
 
   @@index([companyId], map: "contract_items_company_companyId_fk")
   @@index([projectItemId], map: "contract_items_project_item_id_fk")
