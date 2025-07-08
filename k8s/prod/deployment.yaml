@@ -74,6 +74,6 @@ spec:
             path: /usr/share/zoneinfo/Asia/Bangkok
         - name: vol-jussun-api
           nfs:
-            path: /mnt/share
+            path: /mnt/gfs
             server: gfs-01
       restartPolicy: Always
