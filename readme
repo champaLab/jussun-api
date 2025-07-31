@@ -17,3 +17,5 @@ CREATE USER 'pos_hub' @'%' IDENTIFIED BY 'posHub@^9999';
 ALTER USER 'pos_hub' @'%' IDENTIFIED BY 'posHub@9999';
 GRANT ALL PRIVILEGES ON pos_hub.* TO 'pos_hub'@'%';
 FLUSH PRIVILEGES;
+
+npx npm-check-updates -u
