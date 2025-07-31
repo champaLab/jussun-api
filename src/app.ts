@@ -40,7 +40,7 @@ app.get('/metrics', async (req: Request, res: Response) => {
 })
 
 app.get('/', helpCheck)
-app.get('/test', helpCheck)
+// app.get('/test', helpCheck)
 app.get(env.BASE_PATH, helpCheck)
 
 export default app

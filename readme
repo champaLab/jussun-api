@@ -1,7 +1,19 @@
 CREATE USER 'jussun' @'%' IDENTIFIED BY 'jussun@^9999';
 ALTER USER 'jussun' @'%' IDENTIFIED BY 'jussun@^9999';
-FLUSH PRIVILEGES;
 GRANT ALL PRIVILEGES ON jussun.* TO 'jussun' @'%';
 FLUSH PRIVILEGES;
 TODO: - create customer_contract -
 update project_item - create customer_contract - create invoice
+
+
+
+CREATE USER 'eco_green' @'%' IDENTIFIED BY 'ecoGreen@^9999';
+ALTER USER 'eco_green' @'%' IDENTIFIED BY 'ecoGreen@^9999';
+GRANT ALL PRIVILEGES ON eco_green.* TO 'eco_green' @'%';
+
+FLUSH PRIVILEGES;
+
+CREATE USER 'pos_hub' @'%' IDENTIFIED BY 'posHub@^9999';
+ALTER USER 'pos_hub' @'%' IDENTIFIED BY 'posHub@9999';
+GRANT ALL PRIVILEGES ON pos_hub.* TO 'pos_hub'@'%';
+FLUSH PRIVILEGES;
