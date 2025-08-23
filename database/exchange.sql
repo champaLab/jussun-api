@@ -1,0 +1,1 @@
+INSERT INTO jussun.exchange (exchangeId, companyId, thb, usd, chy, createdBy, updatedBy, createdAt, updatedAt, deletedAt, deletedBy) VALUES (1, 1, 600, 20000, 300, 1, null, '2025-03-22 09:15:57', '2025-03-22 09:15:57', null, null);
